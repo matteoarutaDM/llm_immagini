@@ -21,6 +21,7 @@ ev/
 ENV/
 modello/
 llmimmagini/
+venvimmagini/
 
 # Jupyter
 .ipynb_checkpoints/

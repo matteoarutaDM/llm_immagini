@@ -1,0 +1,34 @@
+{
+  "n_chunks": 3998,
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "dim": 384,
+  "pdf_dir": "/Users/matteoarutadm/lavoro/digital_mens/llm_yolo/pdf_immagini",
+  "pdf_manifest": [
+    {
+      "path": "402944_Manutenzione_ESP.10_R2.7.1-IT.pdf",
+      "size": 117498179,
+      "mtime_ns": 1780475793556268102
+    },
+    {
+      "path": "402944_Servizio_ESP.10_R2.7.1-IT.pdf",
+      "size": 77346672,
+      "mtime_ns": 1780475996098525865
+    },
+    {
+      "path": "CVS F500 manuale U&M completo.pdf",
+      "size": 78636714,
+      "mtime_ns": 1780476076856895090
+    },
+    {
+      "path": "F19 - SY753757_SDCY90K7G5_Operation & Maint. Manual_IT.pdf",
+      "size": 59214911,
+      "mtime_ns": 1780476113810934299
+    },
+    {
+      "path": "RS - SRSC45G5 Uso e Manutenzione Italiano - R33-R34.pdf",
+      "size": 29986606,
+      "mtime_ns": 1780476140225131443
+    }
+  ],
+  "corpus_signature": "4043f7c6654aacfc043248cddd70c3be0f68f374aac7eb3ae924edae46c138e6"
+}

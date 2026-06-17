@@ -1,0 +1,25 @@
+[
+  {
+    "id": "sany_empty_container_handler",
+    "macchina": "movimentatore di container vuoti sany",
+    "tipo": "macchine da costruzione sany",
+    "reference_images": [
+      "reference_images/movimentatore_di_container.jpeg"
+    ],
+    "manuali": [
+      "F19 - SY753757_SDCY90K7G5_Operation & Maint. Manual_IT.pdf"
+    ]
+  },
+  {
+    "id": "gru_semovente_portuale_esp10_402944",
+    "macchina": "GRU SEMOVENTE PORTUALE",
+    "tipo": "ESP.10 Numero di serie 402944",
+    "reference_images": [
+      "reference_images/gru_semovente_portuale.jpeg"
+    ],
+    "manuali": [
+      "402944_Manutenzione_ESP.10_R2.7.1-IT.pdf",
+      "402944_Servizio_ESP.10_R2.7.1-IT.pdf"
+    ]
+  }
+]

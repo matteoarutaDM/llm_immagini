@@ -1,0 +1,25 @@
+{
+  "n_chunks": 2409,
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "dim": 384,
+  "pdf_dir": "/Users/matteoarutadm/lavoro/digital_mens/llm_yolo/pdf_immagini",
+  "machine_kb": "/Users/matteoarutadm/lavoro/digital_mens/llm_yolo/machine.json",
+  "corpus_signature": "7b16c65121c3d77a4959836c5375365d4c3d9fe8a92169dd2e88b2010246513b",
+  "manifest": [
+    {
+      "source": "402944_Manutenzione_ESP.10_R2.7.1-IT.pdf",
+      "size": 117498179,
+      "mtime": 1780475793.5562682
+    },
+    {
+      "source": "402944_Servizio_ESP.10_R2.7.1-IT.pdf",
+      "size": 77346672,
+      "mtime": 1780475996.0985258
+    },
+    {
+      "source": "F19 - SY753757_SDCY90K7G5_Operation & Maint. Manual_IT.pdf",
+      "size": 59214911,
+      "mtime": 1780476113.8109343
+    }
+  ]
+}

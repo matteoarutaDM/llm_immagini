@@ -1,0 +1,6 @@
+sentencepiece
+pillow
+protobuf
+openai
+python-dotenv
+ragmens-core @ git+https://github.com/matteoarutaDM/ragmens-core.git
