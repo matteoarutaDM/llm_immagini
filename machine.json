@@ -4,18 +4,42 @@
     "macchina": "movimentatore di container vuoti sany",
     "tipo": "macchine da costruzione sany",
     "reference_images": [
-      "reference_images/movimentatore_di_container.jpeg"
+      "reference_images/movimentatore_di_container1.jpeg",
+      "reference_images/movimentatore_di_container2.jpeg",
+      "reference_images/movimentatore_di_container3.jpeg",
+      "reference_images/movimentatore_di_container4.jpeg",
+      "reference_images/movimentatore_di_container5.jpeg",
+      "reference_images/movimentatore_di_container6.jpeg"
     ],
     "manuali": [
       "F19 - SY753757_SDCY90K7G5_Operation & Maint. Manual_IT.pdf"
     ]
   },
+
   {
     "id": "gru_semovente_portuale_esp10_402944",
     "macchina": "GRU SEMOVENTE PORTUALE",
     "tipo": "ESP.10 Numero di serie 402944",
     "reference_images": [
-      "reference_images/gru_semovente_portuale.jpeg"
+      "reference_images/gru_semovente_portuale1.jpeg",
+      "reference_images/gru_semovente_portuale2.jpeg",
+      "reference_images/gru_semovente_portuale3.jpeg"
+    ],
+    "manuali": [
+      "402944_Manutenzione_ESP.10_R2.7.1-IT.pdf",
+      "402944_Servizio_ESP.10_R2.7.1-IT.pdf"
+    ]
+  },
+
+    {
+    "id": "carroponte_portuale_gen",
+    "macchina": "CARROPONTE PORTUALE",
+    "tipo": "generico",
+    "reference_images": [
+      "reference_images/carroponte_portuale1.jpg",
+      "reference_images/carroponte_portuale2.jpg",
+      "reference_images/carroponte_portuale3.jpg",
+      "reference_images/carroponte_portuale4.jpg"
     ],
     "manuali": [
       "402944_Manutenzione_ESP.10_R2.7.1-IT.pdf",
