@@ -1,25 +1,34 @@
 {
-  "n_chunks": 2409,
-  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "n_chunks": 4034,
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
   "dim": 384,
   "pdf_dir": "/Users/matteoarutadm/lavoro/digital_mens/llm_yolo/pdf_immagini",
-  "machine_kb": "/Users/matteoarutadm/lavoro/digital_mens/llm_yolo/machine.json",
-  "corpus_signature": "7b16c65121c3d77a4959836c5375365d4c3d9fe8a92169dd2e88b2010246513b",
-  "manifest": [
+  "pdf_manifest": [
     {
-      "source": "402944_Manutenzione_ESP.10_R2.7.1-IT.pdf",
+      "path": "402944_Manutenzione_ESP.10_R2.7.1-IT.pdf",
       "size": 117498179,
-      "mtime": 1780475793.5562682
+      "mtime_ns": 1780475793556268102
     },
     {
-      "source": "402944_Servizio_ESP.10_R2.7.1-IT.pdf",
+      "path": "402944_Servizio_ESP.10_R2.7.1-IT.pdf",
       "size": 77346672,
-      "mtime": 1780475996.0985258
+      "mtime_ns": 1780475996098525865
     },
     {
-      "source": "F19 - SY753757_SDCY90K7G5_Operation & Maint. Manual_IT.pdf",
+      "path": "CVS F500 manuale U&M completo.pdf",
+      "size": 78636714,
+      "mtime_ns": 1780476076856895090
+    },
+    {
+      "path": "F19 - SY753757_SDCY90K7G5_Operation & Maint. Manual_IT.pdf",
       "size": 59214911,
-      "mtime": 1780476113.8109343
+      "mtime_ns": 1780476113810934299
+    },
+    {
+      "path": "RS - SRSC45G5 Uso e Manutenzione Italiano - R33-R34.pdf",
+      "size": 29986606,
+      "mtime_ns": 1780476140225131443
     }
-  ]
+  ],
+  "corpus_signature": "4043f7c6654aacfc043248cddd70c3be0f68f374aac7eb3ae924edae46c138e6"
 }
