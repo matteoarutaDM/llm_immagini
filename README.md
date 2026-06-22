@@ -1,36 +1,27 @@
-# Chatbot XR Supp CLI - Modello
+# LLM YOLO Web
 
-## Preparazione ambiente
+Web app Next.js con backend Python FastAPI basata su `CLI/modello_riconoscimento_finale.ipynb`.
 
-Prima di eseguire il notebook, creare un ambiente virtuale Python:
+## Struttura
+
+- `CLI/`: notebook, dati, immagini, manuali, indici e script originali.
+- `backend/`: API Python che riusa la logica del notebook.
+- `app/`: interfaccia Next.js e proxy verso il backend.
+
+## Avvio
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-```
-
-Installare poi le dipendenze richieste:
-
-```bash
 python3 -m pip install -r requirements.txt
+npm install
 ```
 
-## Preparazione dei PDF
-
-Creare una directory chiamata `pdfs` nella root del progetto:
+In due terminali:
 
 ```bash
-mkdir -p pdfs
+npm run backend
+npm run dev
 ```
 
-Inserire dentro `pdfs` i file PDF che devono essere usati per creare il contesto del chatbot.
-
-Esempio:
-
-```text
-pdfs/
-  documento_1.pdf
-  documento_2.pdf
-  manuale.pdf
-```
-# llm_immagini
+Aprire `http://localhost:3000`.

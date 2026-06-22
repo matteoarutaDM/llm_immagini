@@ -7370,7 +7370,7 @@ La rigenerazione, deve essere attivata dall’operatore tramite il Display.
 superficie che non bruci o fonda a temperature elevate. 
 • Inserire il freno di stazionamento (parking) e portare il cambio in N (neutral). 
 • Avviare la Rigenerazione andando nell’apposita sezione del Display. 
-• Nell’area spie (AS) si noterà l’accensione della spia ( SA) “alta temperatura sistema SCR” e il lampeggio 
+• Nell’area spie (AS) si noterà l’accensione della spia (SA) “alta temperatura sistema SCR” e il lampeggio 
 della spia (SR) Rigenerazione. 
 • Durante la Rigenerazione NON toccare nessun tipo di comando. ( si possono notare mutamenti nel 
 numero di giri motore e un aumento del rumore prodotto dal turbocompressore). 
@@ -7455,7 +7455,7 @@ Per avviare la macchina operare come segue :
 - Mantenendo premuto il pedale del freno “ F”, disinserire il freno di stazionamento [interruttore 21 ], che si 
 trova sul pannello interruttori centrale. 
  
-- Preselezionare la manovra desiderata e rilasciare il pedale del freno “ F” e premere gradualmente il pedale 
+- Preselezionare la manovra desiderata e rilasciare il pedale del freno “F” e premere gradualmente il pedale 
 acceleratore “A”. 
  
 NOTA: 
@@ -7787,7 +7787,7 @@ irreparabili danni alla trasmissione.
 NOTE: 
  
  
- La chiave “C” ed il segnalatore “ S”, sono corredati 
+ La chiave “C” ed il segnalatore “S”, sono corredati 
 di specifiche targhette; le posizioni in figura sono 
 indicative. 
  
@@ -8122,7 +8122,7 @@ Per inserire il freno di stazionamento agire
 sull'interruttore (del tipo instabile a 3 posizioni ) 
 “21”, posto sul pannello comandi anteriore [il Led 
 dell’interruttore s'illumina]; l’avvenuto inserimento è 
-segnalato dall’accensione dell ’apposita spia rossa 
+segnalato dall’accensione dell’apposita spia rossa 
 sul Display. 
  
 NOTE: 
@@ -8571,7 +8571,7 @@ sistema NON funziona).
  
 Girare la chiave del commutatore di avviamento 
 “Sk” in posizione 1 "ON", quindi premere per 
-almeno 7 secondi il pulsante “ 154” [Blocco Twist]; 
+almeno 7 secondi il pulsante “154” [Blocco Twist]; 
 l’avvenuto inserimento viene visualizzato 
 dall’accensione dell’apposita spia verde situata 
 sul Display [v. capitolo 3 “Posto di Guida”]. 
@@ -9036,7 +9036,7 @@ all’operatore di regolare l’inclinazione longitudinale del carico
 in funzione di particolari esigenze. 
  
 Per abilitare il sistema, premere il tasto “120” ; in seguito 
-utilizzare i tasti “114” e “ 121” per effettuare manualmente le 
+utilizzare i tasti “114” e “121” per effettuare manualmente le 
 manovre di inclinazione longitudinale. 
  
 Per disabilitare il sistema, premere nuovamente il tasto “120”. 
@@ -9071,7 +9071,7 @@ USO DELLA MACCHINA (continua)
 Comandi Attrezzature [Piggy-Back] 
  
 Le manovre del Piggy -Back, vengono comandate dal 
-posto di guida tramite apposit e leve instabili, “ 122” - 
+posto di guida tramite apposit e leve instabili, “122” - 
 “123”, situate sulla console comandi laterale destra. 
  
  
@@ -9649,7 +9649,7 @@ destra).
 2 - Fare abbassare il carico (cilindri di sollevamento) 
 come segue: 
  
-c. Aprire il rubinetto “ S” che si trova all’interno del 
+c. Aprire il rubinetto “S” che si trova all’interno del 
 telaio sulla mezzeria della traversa anteriore, 
 sotto al rubinetto “ X” dell’accumulatore, che 
 deve sempre essere chiuso. 
@@ -9753,7 +9753,7 @@ vicinanze non vi siano persone. Effettuare se possibile la manovra su un area li
 - Con macchina ferma, freno di stazionamento inserito e motore spento, 
  aprire il rubinetto “R”, in linea con la leva “L” adibita alla manovra che necessita [vedi Figura]. 
  
-- Ruotare la chiave “ K” (situata in prossimità del distributore e corredata di specifica targhetta) in posizione 
+- Ruotare la chiave “K” (situata in prossimità del distributore e corredata di specifica targhetta) in posizione 
 “ON” e mantenerla in posizione, perché di tipo instabile ( al rilascio la manovra in esecuzione si 
 interromperà). 
  
@@ -9856,16 +9856,16 @@ la pressione sia 40 bar.
 3. Chiudere tutti i rubinetti “A1” – “B1” – “A2” – “B2”. 
  
 4. Mandare a finecorsa i cilindri DAMPING “D” agendo nel seguente modo : 
-Con motore acceso al minimo, portare in posizione di "MAN" l’interruttore 20’ -40’ [AUTO/MAN] (posto sul 
+Con motore acceso al minimo, portare in posizione di "MAN" l’interruttore 20’-40’ [AUTO/MAN] (posto sul 
 pannello comandi laterale destro) , quindi agire sul pulsante di chiusura 20’ del Joystick (v. specifica 
 sezione del presente capitolo). 
  
-5. Aprire i rubinett i “ A1” e “ A2” e d attendere che gli steli dei cilindri Damping ( D) abbiano raggiunto il 
+5. Aprire i rubinett i “A1” e “A2” ed attendere che gli steli dei cilindri Damping ( D) abbiano raggiunto il 
 finecorsa. 
  
 6. Chiudere i rubinetti “A1” e “A2”. 
  
-7. Aprire i rubinetti “ B1” e “ B2” ed attendere che gli steli dei cilindri Damping “ D” abbiano raggiunto il 
+7. Aprire i rubinetti “ B1” e “B2” ed attendere che gli steli dei cilindri Damping “ D” abbiano raggiunto il 
 finecorsa. 
  
 Nota : Ripetere le operazioni di finecorsa cilindri Damping almeno 2 volte, affinché l’aria presente 
@@ -9909,7 +9909,7 @@ Caricamento circuito Damping (segue)
  
 8. Chiudere i rubinetti “B1” e “B2”. 
  
-9. Aprire i rubinetti “ A1” e “ A2” e lasciare sfilare lo stelo del cilindro Damping anteriore (lato destro) , di 
+9. Aprire i rubinetti “ A1” e “A2” e lasciare sfilare lo stelo del cilindro Damping anteriore (lato destro) , di 
 circa 10 ± 15 cm, quindi richiuderli. 
  
 10. Fissare i cilindri Damping “D” all’attrezzatura. 
@@ -21619,7 +21619,7 @@ colore rosso, la velocità è limitata al valore più piccolo riportato nell’i
  
  
 3) Zona di visualizzazione dei dati di lavoro. 
-Nella parte superiore è indicato lo stato e la modalità dell’attrezzat ura utilizzata; lo stato è rappresentato 
+Nella parte superiore è indicato lo stato e la modalità dell’attrezzatura utilizzata; lo stato è rappresentato 
 dal semaforo (in caso di spreader definisce lo stato twist), la modalità è rappresentata dalla sigla sotto al 
 semaforo e a seconda di questa varia il significato del luci del semaforo (per dettagli consultare il 
 manuale operatore). 
@@ -22073,7 +22073,7 @@ dati di taratura della macchina ed eseguire operazioni di calibrazione:
 •Pesatura 
 F5 
 Log-Book 
-Premere F5 per accedere al Menù “Log- Book”, che permette di accedere ai 
+Premere F5 per accedere al Menù “Log-Book”, che permette di accedere ai 
 registri del display: 
 •Elenco allarmi 
 •Registro container 
@@ -22387,7 +22387,7 @@ centralina si vogliono visualizzare le informazioni di diagnostica (accesso live
  
  
  
-Dal menù è possibile accedere alla visualizzazione della diagnostica con i pulsanti “ F”: 
+Dal menù è possibile accedere alla visualizzazione della diagnostica con i pulsanti “F”: 
 •F1 Centralina Cabina 0 
 •F2 Centralina Cabina 1 
 •F3 Centralina Master 
@@ -22942,7 +22942,7 @@ Pagina 44
  
  
 NOTA: 
-Nella pagina “IN/OUT Digital” e “WTP Spreader”, i riferimenti “ J” corrispondono ai connettori delle relative 
+Nella pagina “IN/OUT Digital” e “WTP Spreader”, i riferimenti “J” corrispondono ai connettori delle relative 
 centraline. 
 I numeri riportati all’interno delle celle corrispondono ai numeri dei pin di connessione. 
  
@@ -23847,7 +23847,7 @@ Dal menu principale, premere F3 per accedere alla seguente pagina (accesso livel
  
  
  
-Dal menù è possibile accedere alla visualizzazione dello stato della macchina con i pulsanti “ F”: 
+Dal menù è possibile accedere alla visualizzazione dello stato della macchina con i pulsanti “F”: 
 •F1 Macchina 
 •F2 LMI (limitatore di carico) 
 •F3 Motore 
@@ -24600,7 +24600,7 @@ Dal menù è possibile accedere ai registri della macchina con i pulsanti “F�
 NOTA 
 Le funzioni “F4 Init” e “F5 Download” sono accessibili soltanto con password di livello 3. 
  
-La funzione “ F4 Init” deve essere confermata tramite gli appositi pulsanti F9 e F10 e viene utilizzata per il 
+La funzione “F4 Init” deve essere confermata tramite gli appositi pulsanti F9 e F10 e viene utilizzata per il 
 reset dei dati.
 
 ---------------------------------------- [FINE PAGINA 414] ----------------------------------------
@@ -24629,7 +24629,7 @@ Pagina 90
  
  
 NOTA: 
-Nella parte in basso della pagina sono presenti le operazioni eseguibili con i pulsanti “ F”. 
+Nella parte in basso della pagina sono presenti le operazioni eseguibili con i pulsanti “F”. 
  
 Descrizione Parametri: 
 •ID – Numero evento 
@@ -24672,7 +24672,7 @@ movimentazioni container
  
  
 NOTA: 
-Nella parte in basso della pagina sono presenti le operazioni eseguibili con i pulsanti “ F”.
+Nella parte in basso della pagina sono presenti le operazioni eseguibili con i pulsanti “F”.
 
 ---------------------------------------- [FINE PAGINA 417] ----------------------------------------
 
@@ -24685,7 +24685,7 @@ Pagina 92
  
 6.5.3 Password “Log-Book” 
  
-Dal menù “Log- Book”, premere F3 per accedere alla seguente pagina dove sono riportati tutti gli accessi 
+Dal menù “Log-Book”, premere F3 per accedere alla seguente pagina dove sono riportati tutti gli accessi 
 effettuati con password 
  
  
@@ -24853,7 +24853,7 @@ manutenzione (accesso livello 2)
  
  
 Con i tasti 
- si seleziona l’intervallo di manutenzione, con ENTER 
+ si seleziona l’intervallo di manutenzione,con ENTER 
  si sposta il focus sui 
 parametri da programmare, con i tasti 
  impostare il parametro. 
@@ -25497,7 +25497,7 @@ Rotazione 300° (-105° + 195°)
 Oscillazione ±3° (±4° 30’ Optional) 
 Spostamento laterale ±800 mm 
  
-Lo SPREADER è un’attrezzatura tecnicame nte avanzata, che se usata e manutenzionata con attenzione 
+Lo SPREADER è un’attrezzatura tecnicamente avanzata, che se usata e manutenzionata con attenzione 
 avrà lunga durata. 
 E’ dotato di sensori di prossimità, i quali attraverso apposite spie, permettono di ottimizzare il lavoro 
 dell’operatore visualizzando le varie fasi di manovra. 
@@ -25739,7 +25739,7 @@ utilizzare esclusivamente detergenti e solventi di tipo adatto.
  
 PERICOLO 
  
-L’UTILIZZO DE LL’ATTREZZATURA E’ PERMESSO SOLAMENTE AD OPERATORI QUALIFICATI, 
+L’UTILIZZO DELL’ATTREZZATURA E’ PERMESSO SOLAMENTE AD OPERATORI QUALIFICATI, 
 ADDESTRATI E DOCUMENTATI. 
  
  
@@ -25849,7 +25849,7 @@ attenersi scrupolosamente alle avvertenze di
 sicurezza; per tutto il periodo di utilizzo 
 dell’attrezzatura è necessario prevedere i possibili 
 pericoli ed impegnarsi ad evitarli. 
-• Non impiegare l’attrezzatura finch é non si è raggiunta 
+• Non impiegare l’attrezzatura finché non si è raggiunta 
 la perfetta padronanza dello stesso. 
 • Non iniziare alcun lavoro, prima di essersi accertati 
 che la propria ed altrui incolumità siano salvaguardate. 
@@ -25982,7 +25982,7 @@ caso agire immediatamente per sigillarne le fuoriuscite.
 PERICOLO 
  
 L’olio è tossico: se ingerito, anche in piccole dosi, 
-evitare l’u rto di vomito e rivolgersi al medico. L’olio 
+evitare l’urto di vomito e rivolgersi al medico. L’olio 
 motore contiene pericolosi agenti contaminanti che 
 possono provocare tumori alla pelle. Maneggiare l’olio 
 quanto meno possibile e proteggere l’epidermide con 
@@ -26150,7 +26150,7 @@ ridurre la concentrazione di gas.
 Nell’accedere al locale, il soccorritore dovrà indossare una 
 maschera, non accendere fiamme, luci o attivare 
 campanelli elettrici o telefoni per evitare esplosioni. 
-Portare in salvo l’intossicat o in luogo arieggiato o all’aria 
+Portare in salvo l’intossicato in luogo arieggiato o all’aria 
 aperta, adagiandolo su un fianco se in stato di incoscienza.
 
 ---------------------------------------- [FINE PAGINA 453] ----------------------------------------
@@ -26876,7 +26876,7 @@ automaticamente in posizione di blocco quando lo
 spreader viene appoggiato al carico e i 4 tastatori 
 meccanici sono attivati; mentre quando il sistema viene 
 escluso, la rotazione dei Twists è comandata 
-manualmente per mezzo dei pulsanti “ 154” [Blocco Twist] 
+manualmente per mezzo dei pulsanti “154” [Blocco Twist] 
 e “153” [Sblocco Twist]. 
  
  
@@ -26906,7 +26906,7 @@ sul Display.
  
 Girare la chiave del commutatore di avviamento 
 “Sk” in posizione 1 " ON", quindi premere per 
-almeno 7 secondi il pulsante “ 153” [Sblocco Twist]; 
+almeno 7 secondi il pulsante “153” [Sblocco Twist]; 
 l’avvenuto disinserimento viene visualizzato dallo 
 spegnimento dell’apposita spia verde situata sul 
 Display. 
@@ -26972,7 +26972,7 @@ Manuale
 La modalità di funzionamento manuale consente 
 all’operatore di svolgere quelle funzioni che con i l solo 
 automatismo avrebbe precluso; come ad esempio 
-l’apertura 35 ’ senza il sensore di arresto automatico, 
+l’apertura 35’ senza il sensore di arresto automatico, 
 oppure la possibilità di fermare la corsa degli sfi lanti 
 Spreader in qualsiasi posizione tra i 20’ e 40’. 
  
@@ -26988,7 +26988,7 @@ rilascio la corsa si interromperà.
 AVVERTENZA 
  
 Se durante l’apertura dello Spreader (Es. apertura a 
-40’) viene premut o il comando di apertura infe riore 
+40’) viene premuto il comando di apertura infe riore 
 (Es. chiusura a 20’), lo Spreader non si ferma nella 
 posizione a cui è, ma si chiude alla misura 
 impostata (nel caso dell’esempio a 20’).
@@ -27036,7 +27036,7 @@ qualsiasi posizione.
 Per abilitare il sistema di funzionamento manuale, agire 
 nuovamente sul tasto“116” della console. 
  
-In questa condizione, il pulsante “ 110”, dovrà essere 
+In questa condizione, il pulsante “110”, dovrà essere 
 tenuto premuto costant emente per permettere agli 
 sfilanti dello spreader di effettuare totalmente la corsa 
 desiderata, dato che al suo rilascio la corsa si 
@@ -27087,7 +27087,7 @@ verso destra 30’ - 40’; ruotandolo verso sinistra 20’).
  
 NOTA 
  
-L'interruttore “ 115” è del tipo instabile, e deve essere 
+L'interruttore “115” è del tipo instabile, e deve essere 
 mantenuto premuto costantemente per permettere agli 
 sfilanti dello s preader di effettuare la corsa desiderata, 
 dato che al suo rilascio il sistema di forzatura si 
@@ -27305,7 +27305,7 @@ Si raccomanda di usare le chiavi di esclusione
 sicurezze nei casi strettamente necessari poiché un 
 abuso del sistema di esclusione può causare danni 
 molto gravi e irreparabili. 
-L’operatore c he utilizza le chiavi di escl usione ed 
+L’operatore che utilizza le chiavi di escl usione ed 
 impiega la macchina in caso di emergenza deve 
 farlo con giudizio e a sua responsabilità. 
  
@@ -28261,7 +28261,7 @@ funzionale, allo scopo di far compiere all’operatore le normali operazioni di 
  
 Il Costruttore si riserva il diritto di attuare modifiche senza preavviso, in qualunque momento, per 
 ragioni di natura tecnica e/o commerciale, nonché per adattamento ai requisiti di legge nei divers i 
-Paesi, senza l’obbligo di a ggiornamento delle edizioni precedenti e declina ogni responsabilità per 
+Paesi, senza l’obbligo di aggiornamento delle edizioni precedenti e declina ogni responsabilità per 
 eventuali errori o manomissioni. 
  
  
@@ -28288,7 +28288,7 @@ Rotazione 300° (-105° + 195°)
 Oscillazione ±3° (±4° 30’ Optional) 
 Spostamento laterale ±800 mm 
  
-Lo SPREADER è un’attrezzatura tecnicame nte avanzata, che se usata e manutenzionata con attenzione 
+Lo SPREADER è un’attrezzatura tecnicamente avanzata, che se usata e manutenzionata con attenzione 
 avrà lunga durata. 
 E’ dotato di sensori di prossimità, i quali attraverso apposite spie, permettono di ottimizzare il lavoro 
 dell’operatore visualizzando le varie fasi di manovra. 
@@ -28530,7 +28530,7 @@ utilizzare esclusivamente detergenti e solventi di tipo adatto.
  
 PERICOLO 
  
-L’UTILIZZO DE LL’ATTREZZATURA E’ PERMESSO SOLAMENTE AD OPERATORI QUALIFICATI, 
+L’UTILIZZO DELL’ATTREZZATURA E’ PERMESSO SOLAMENTE AD OPERATORI QUALIFICATI, 
 ADDESTRATI E DOCUMENTATI. 
  
  
@@ -28640,7 +28640,7 @@ attenersi scrupolosamente alle avvertenze di
 sicurezza; per tutto il periodo di utilizzo 
 dell’attrezzatura è necessario prevedere i possibili 
 pericoli ed impegnarsi ad evitarli. 
-• Non impiegare l’attrezzatura finch é non si è raggiunta 
+• Non impiegare l’attrezzatura finché non si è raggiunta 
 la perfetta padronanza dello stesso. 
 • Non iniziare alcun lavoro, prima di essersi accertati 
 che la propria ed altrui incolumità siano salvaguardate. 
@@ -28705,7 +28705,7 @@ dispositivi di assistenza necessari a proteggere l'ambiente in modo ecologicamen
 Seguendo le semplici regole di seguito descritte, si contribuisce alla protezione e alla cura per il nostro 
 ambiente. 
  
-Si ricorda inoltre che nell’ attrezzatura e nei suoi componenti, sono necessari (per il corretto funzionamento) 
+Si ricorda inoltre che nell’attrezzatura e nei suoi componenti, sono necessari (per il corretto funzionamento) 
 materiali che, se dispersi nell’ambiente, possono provocare danni ecologici. 
  
 Riciclaggio / Smaltimento 
@@ -28773,7 +28773,7 @@ caso agire immediatamente per sigillarne le fuoriuscite.
 PERICOLO 
  
 L’olio è tossico: se ingerito, anche in piccole dosi, 
-evitare l’u rto di vomito e rivolgersi al medico. L’olio 
+evitare l’urto di vomito e rivolgersi al medico. L’olio 
 motore contiene pericolosi agenti contaminanti che 
 possono provocare tumori alla pelle. Maneggiare l’olio 
 quanto meno possibile e proteggere l’epidermide con 
@@ -28941,7 +28941,7 @@ ridurre la concentrazione di gas.
 Nell’accedere al locale, il soccorritore dovrà indossare una 
 maschera, non accendere fiamme, luci o attivare 
 campanelli elettrici o telefoni per evitare esplosioni. 
-Portare in salvo l’intossicat o in luogo arieggiato o all’aria 
+Portare in salvo l’intossicato in luogo arieggiato o all’aria 
 aperta, adagiandolo su un fianco se in stato di incoscienza.
 
 ---------------------------------------- [FINE PAGINA 506] ----------------------------------------
@@ -29667,7 +29667,7 @@ automaticamente in posizione di blocco quando lo
 spreader viene appoggiato al carico e i 4 tastatori 
 meccanici sono attivati; mentre quando il sistema viene 
 escluso, la rotazione dei Twists è comandata 
-manualmente per mezzo dei pulsanti “ 154” [Blocco Twist] 
+manualmente per mezzo dei pulsanti “154” [Blocco Twist] 
 e “153” [Sblocco Twist]. 
  
  
@@ -29697,7 +29697,7 @@ sul Display.
  
 Girare la chiave del commutatore di avviamento 
 “Sk” in posizione 1 "ON", quindi premere per 
-almeno 7 secondi il pulsante “ 153” [Sblocco Twist]; 
+almeno 7 secondi il pulsante “153” [Sblocco Twist]; 
 l’avvenuto disinserimento viene visualizzato dallo 
 spegnimento dell’apposita spia verde situata sul 
 Display. 
@@ -29763,7 +29763,7 @@ Manuale
 La modalità di funzionamento manuale consente 
 all’operatore di svolgere quelle funzioni che con i l solo 
 automatismo avrebbe precluso; come ad esempio 
-l’apertura 35 ’ senza il sensore di arresto automatico, 
+l’apertura 35’ senza il sensore di arresto automatico, 
 oppure la possibilità di fermare la corsa degli sfi lanti 
 Spreader in qualsiasi posizione tra i 20’ e 40’. 
  
@@ -29779,7 +29779,7 @@ rilascio la corsa si interromperà.
 AVVERTENZA 
  
 Se durante l’apertura dello Spreader (Es. apertura a 
-40’) viene premut o il comando di apertura infe riore 
+40’) viene premuto il comando di apertura infe riore 
 (Es. chiusura a 20’), lo Spreader non si ferma nella 
 posizione a cui è, ma si chiude alla misura 
 impostata (nel caso dell’esempio a 20’).
@@ -29878,7 +29878,7 @@ verso destra 30’ - 40’; ruotandolo verso sinistra 20’).
  
 NOTA 
  
-L'interruttore “ 115” è del tipo instabile, e deve essere 
+L'interruttore “115” è del tipo instabile, e deve essere 
 mantenuto premuto costantemente per permettere agli 
 sfilanti dello s preader di effettuare la cors a desiderata, 
 dato che al suo rilascio il sistema di forzatura si 
@@ -30096,7 +30096,7 @@ Si raccomanda di usare le chiavi di esclusione
 sicurezze nei casi strettamente necessari poiché un 
 abuso del sistema di esclusione può causare danni 
 molto gravi e irreparabili. 
-L’operatore c he utilizza le chiavi di escl usione ed 
+L’operatore che utilizza le chiavi di escl usione ed 
 impiega la macchina in caso di emergenza deve 
 farlo con giudizio e a sua responsabilità. 
  

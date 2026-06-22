@@ -1,8 +1,8 @@
 {
-  "n_chunks": 4034,
+  "n_chunks": 4033,
   "model": "sentence-transformers/all-MiniLM-L6-v2",
   "dim": 384,
-  "pdf_dir": "/Users/matteoarutadm/lavoro/digital_mens/llm_yolo/pdf_immagini",
+  "pdf_dir": "/Users/matteoarutadm/lavoro/digital_mens/llm_yolo/CLI/pdf_immagini",
   "pdf_manifest": [
     {
       "path": "402944_Manutenzione_ESP.10_R2.7.1-IT.pdf",

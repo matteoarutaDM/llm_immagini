@@ -1,0 +1,78 @@
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.env
+.env.*
+.venv/
+venv/
+env/
+ev/
+ENV/
+modello/
+llmimmagini/
+venvimmagini/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Local generated data
+index/
+memory/
+outputs_debug/
+
+# Heavy/source data files
+pdfs/
+*.pdf
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.parquet
+*.jsonl
+*.sqlite
+*.sqlite3
+*.db
+
+# Heavy/source data files
+pdf_immagini/
+*.pdf
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.parquet
+*.jsonl
+*.sqlite
+*.sqlite3
+*.db
+
+# Model/vector artifacts
+*.index
+*.faiss
+*.pkl
+*.pickle
+*.joblib
+*.npy
+*.npz
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.bin
+
+# Logs and OS/editor files
+*.log
+.DS_Store
+.idea/
+.vscode/
