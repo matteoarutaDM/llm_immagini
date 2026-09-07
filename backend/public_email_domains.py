@@ -1,0 +1,67 @@
+from __future__ import annotations
+
+PUBLIC_EMAIL_DOMAINS: frozenset[str] = frozenset(
+    {
+        # major international webmail providers
+        "gmail.com",
+        "googlemail.com",
+        "outlook.com",
+        "outlook.it",
+        "hotmail.com",
+        "hotmail.it",
+        "hotmail.co.uk",
+        "live.com",
+        "live.it",
+        "msn.com",
+        "icloud.com",
+        "me.com",
+        "mac.com",
+        "yahoo.com",
+        "yahoo.it",
+        "yahoo.co.uk",
+        "aol.com",
+        "protonmail.com",
+        "proton.me",
+        "pm.me",
+        "gmx.com",
+        "gmx.net",
+        "gmx.de",
+        "web.de",
+        "t-online.de",
+        "mail.com",
+        "zoho.com",
+        "fastmail.com",
+        "hey.com",
+        "yandex.com",
+        "yandex.ru",
+        "mail.ru",
+        "qq.com",
+        "163.com",
+        "126.com",
+        "naver.com",
+        "orange.fr",
+        "laposte.net",
+        "seznam.cz",
+        "comcast.net",
+        "verizon.net",
+        "att.net",
+        "sbcglobal.net",
+        "btinternet.com",
+        "sky.com",
+        "rocketmail.com",
+        "inbox.com",
+        "ymail.com",
+        # italian consumer webmail providers
+        "libero.it",
+        "virgilio.it",
+        "tin.it",
+        "alice.it",
+        "tiscali.it",
+        "email.it",
+        "fastwebnet.it",
+    }
+)
+
+
+def is_public_domain(domain: str) -> bool:
+    return domain.strip().lower() in PUBLIC_EMAIL_DOMAINS

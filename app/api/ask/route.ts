@@ -8,8 +8,14 @@ export async function POST(request: NextRequest) {
   const formData = await request.formData();
 
   try {
+    const headers = new Headers();
+    const authorization = request.headers.get("authorization");
+    if (authorization) {
+      headers.set("authorization", authorization);
+    }
     const response = await fetch(`${backendUrl}/api/ask`, {
       method: "POST",
+      headers,
       body: formData,
     });
 
