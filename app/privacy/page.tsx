@@ -15,7 +15,7 @@ export default function PrivacyPage() {
           mai accessibili da altre aziende o da utenti senza account aziendale.
         </p>
         <Link className="text-sm text-emerald-800 underline" href="/">
-          Torna alla home
+          Torna alla home 
         </Link>
       </div>
     </main>
