@@ -47,8 +47,12 @@ type AskResult = {
   image_identifiers?: {
     available?: boolean;
     error?: string;
+    model_code?: string | null;
+    serial_number?: string | null;
+    asset_tag?: string | null;
     visible_text?: string[];
     raw_text?: string;
+    notes?: string | null;
   };
   answer?: string;
   hits?: Hit[];
@@ -261,6 +265,11 @@ function ResultView({ result }: { result: AskResult }) {
           <h3 className="text-lg font-semibold">OCR targhetta</h3>
           {result.image_identifiers?.available ? (
             <div className="mt-3 space-y-2 text-sm">
+              <div className="grid gap-2 sm:grid-cols-2">
+                <IdentifierField label="Modello" value={result.image_identifiers.model_code} />
+                <IdentifierField label="Seriale/codice letto" value={result.image_identifiers.serial_number} />
+                <IdentifierField label="Asset tag" value={result.image_identifiers.asset_tag} />
+              </div>
               {result.image_identifiers.visible_text?.length ? (
                 result.image_identifiers.visible_text.slice(0, 8).map((line, index) => (
                   <div key={`${line}-${index}`} className="rounded-md bg-neutral-50 px-3 py-2">
@@ -270,6 +279,9 @@ function ResultView({ result }: { result: AskResult }) {
               ) : (
                 <p className="text-neutral-600">Nessun testo classificabile trovato.</p>
               )}
+              {result.image_identifiers.notes ? (
+                <p className="text-xs leading-5 text-neutral-500">{result.image_identifiers.notes}</p>
+              ) : null}
             </div>
           ) : (
             <p className="mt-3 text-sm text-neutral-600">
@@ -310,6 +322,15 @@ function ResultView({ result }: { result: AskResult }) {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function IdentifierField({ label, value }: { label: string; value?: string | null }) {
+  return (
+    <div className="rounded-md bg-neutral-50 px-3 py-2">
+      <div className="text-xs uppercase text-neutral-500">{label}</div>
+      <div className="mt-1 font-semibold text-neutral-900">{value || "n/d"}</div>
     </div>
   );
 }

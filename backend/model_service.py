@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 import threading
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 
@@ -328,19 +329,117 @@ def first_regex_group(patterns: list[str], text: str) -> str | None:
     return None
 
 
+def normalize_identifier_code(value: str | None) -> str | None:
+    if not value:
+        return None
+    normalized = re.sub(r"\s+", "", value.strip().upper())
+    return normalized.strip(" :#-_") or None
+
+
+def looks_like_identifier_code(value: str) -> bool:
+    normalized = normalize_identifier_code(value) or ""
+    if len(normalized) < 5:
+        return False
+    return bool(re.search(r"[A-Z]", normalized) and re.search(r"\d", normalized))
+
+
+def first_unlabeled_identifier(text: str) -> str | None:
+    for line in [line.strip() for line in text.splitlines() if line.strip()]:
+        candidate = re.sub(r"[^A-Z0-9./_ -]", " ", line.upper()).strip()
+        if looks_like_identifier_code(candidate):
+            return normalize_identifier_code(candidate)
+    return first_regex_group([
+        r"\b([A-Z]{1,}[A-Z0-9]*\d(?:[\s./_-]*[A-Z0-9]+){1,})\b",
+        r"\b([A-Z0-9]{4,}[-_/][A-Z0-9]{2,})\b",
+    ], text.upper())
+
+
+def extract_code_candidates(text: str) -> set[str]:
+    candidates = set()
+    for raw in re.findall(r"\b[A-Z0-9][A-Z0-9._/-]{3,}[A-Z0-9]\b", text.upper()):
+        code = normalize_identifier_code(raw)
+        if not code or len(code) < 5 or len(code) > 24:
+            continue
+        if not re.search(r"[A-Z]", code) or not re.search(r"\d", code):
+            continue
+        if re.fullmatch(r"\d{4,}", code) or re.fullmatch(r"\d{4}[-./]?\d{1,2}[-./]?[A-Z0-9]{1,4}", code):
+            continue
+        if code.endswith(("PDF", "JPG", "JPEG", "PNG", "TXT")):
+            continue
+        candidates.add(code)
+    return candidates
+
+
+_KNOWN_MODEL_CODES_CACHE: set[str] | None = None
+
+
+def known_model_codes_from_project() -> set[str]:
+    global _KNOWN_MODEL_CODES_CACHE
+    if _KNOWN_MODEL_CODES_CACHE is not None:
+        return _KNOWN_MODEL_CODES_CACHE
+
+    texts = []
+    if MACHINE_KB_PATH.exists():
+        machine_data = json.loads(MACHINE_KB_PATH.read_text(encoding="utf-8"))
+        texts.append(json.dumps(machine_data, ensure_ascii=False))
+    index_meta_path = INDEX_DIR / "index_meta.json"
+    if index_meta_path.exists():
+        texts.append(index_meta_path.read_text(encoding="utf-8"))
+    if OUTPUT_DEBUG_DIR.exists():
+        for path in OUTPUT_DEBUG_DIR.glob("*_all_pages.txt"):
+            texts.append(path.name)
+            texts.append(path.read_text(encoding="utf-8", errors="ignore"))
+
+    codes = set()
+    for text in texts:
+        codes.update(extract_code_candidates(text))
+    _KNOWN_MODEL_CODES_CACHE = codes
+    return codes
+
+
+def code_overlap_score(ocr_code: str, known_code: str) -> float:
+    if known_code in ocr_code:
+        return 1.0
+    if ocr_code in known_code:
+        return 0.95
+    ratio = SequenceMatcher(None, ocr_code, known_code).ratio()
+    ocr_grams = {ocr_code[i:i + 3] for i in range(max(0, len(ocr_code) - 2))}
+    known_grams = {known_code[i:i + 3] for i in range(max(0, len(known_code) - 2))}
+    gram_score = len(ocr_grams & known_grams) / max(1, len(known_grams))
+    return max(ratio, gram_score)
+
+
+def extract_model_from_project_references(value: str | None) -> str | None:
+    normalized = normalize_identifier_code(value)
+    if not normalized:
+        return None
+    scored = []
+    for code in known_model_codes_from_project():
+        if code == normalized:
+            continue
+        score = code_overlap_score(normalized, code)
+        if score >= 0.82:
+            scored.append((score, len(code), code))
+    if not scored:
+        return None
+    scored.sort(reverse=True)
+    return scored[0][2]
+
+
 def parse_identifiers_from_ocr_text(text: str) -> dict[str, Any]:
-    serial = first_regex_group([
+    serial = normalize_identifier_code(first_regex_group([
         r"(?:serial\s*(?:no\.?|number)?|s/?n|matricola|n\.?\s*serie)\s*[:#-]?\s*([A-Z0-9][A-Z0-9./_-]{3,})",
-    ], text)
-    model = first_regex_group([
+    ], text))
+    model = normalize_identifier_code(first_regex_group([
         r"(?:model\s*(?:no\.?|number)?|modello|type|tipo)\s*[:#-]?\s*([A-Z0-9][A-Z0-9./_-]{2,})",
-    ], text)
+    ], text))
     asset_tag = None
     if not serial and not model:
-        asset_tag = first_regex_group([
-            r"\b([A-Z]{2,}[A-Z0-9]*\d[A-Z0-9./_-]{3,})\b",
-            r"\b([A-Z0-9]{4,}[-_/][A-Z0-9]{2,})\b",
-        ], text.upper())
+        serial = first_unlabeled_identifier(text)
+    if not model:
+        model = extract_model_from_project_references(serial) or extract_model_from_project_references(text)
+    if not serial and not model:
+        asset_tag = first_unlabeled_identifier(text)
 
     visible_text = [line.strip() for line in text.splitlines() if line.strip()]
     return {
@@ -352,7 +451,7 @@ def parse_identifiers_from_ocr_text(text: str) -> dict[str, Any]:
         "visible_text": visible_text,
         "raw_text": text,
         "confidence": None,
-        "notes": "Estratto con OCR; model_code/serial_number sono stimati con regex dal testo OCR.",
+        "notes": "Estratto con OCR; serial_number normalizzato dal testo OCR. model_code dedotto per sovrapposizione con codici presenti in machine.json, index_meta e testi debug dei manuali.",
     }
 
 
