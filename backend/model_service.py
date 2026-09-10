@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 import threading
+import hashlib
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
@@ -32,6 +33,7 @@ MACHINE_KB_PATH = Path(os.getenv("MACHINE_KB_PATH", CLI_DIR / "machine.json")).r
 INDEX_DIR = Path(os.getenv("INDEX_DIR", CLI_DIR / "index_no_finetuned")).resolve()
 MEM_DIR = Path(os.getenv("MEM_DIR", CLI_DIR / "memory_no_finetuned")).resolve()
 OUTPUT_DEBUG_DIR = Path(os.getenv("OUTPUT_DEBUG_DIR", CLI_DIR / "outputs_debug_no_finetuned")).resolve()
+COMPANY_DATA_DIR = Path(os.getenv("COMPANY_DATA_DIR", ROOT_DIR / "data" / "companies")).resolve()
 
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 SIGLIP_MODEL = os.getenv("SIGLIP_MODEL", "google/siglip-base-patch16-224")
@@ -93,6 +95,25 @@ class MachineAssistant:
     def __init__(self) -> None:
         self._lock = threading.Lock()
         self._ready = False
+        self._company_rags: dict[str, Any] = {}
+        # One lock per company, so building/invalidating company A's index
+        # never blocks a concurrent request for company B. `_company_locks_lock`
+        # only guards creating a new per-company lock the first time it is
+        # needed; it is never held while an index is actually being built.
+        self._company_locks: dict[str, threading.Lock] = {}
+        self._company_locks_lock = threading.Lock()
+
+    def _company_lock(self, company_domain: str) -> threading.Lock:
+        with self._company_locks_lock:
+            lock = self._company_locks.get(company_domain)
+            if lock is None:
+                lock = threading.Lock()
+                self._company_locks[company_domain] = lock
+            return lock
+
+    def invalidate_company_rag(self, company_domain: str) -> None:
+        with self._company_lock(company_domain):
+            self._company_rags.pop(company_domain, None)
 
     def ensure_ready(self) -> None:
         with self._lock:
@@ -210,10 +231,59 @@ class MachineAssistant:
             )
         return best["machine_id"], best["score"], candidates
 
-    def retrieve(self, query: str, machine_id: str | None, top_k: int) -> list[dict[str, Any]]:
+    def _company_rag(self, company_domain: str, document_ids: list[str] | None = None) -> tuple[Any, list[str]] | None:
+        if not company_domain:
+            return None
+        company_key = hashlib.sha256(company_domain.encode("utf-8")).hexdigest()[:16]
+        company_dir = COMPANY_DATA_DIR / company_key
+        pdf_dir = company_dir / "pdfs"
+        pdfs = sorted(pdf_dir.glob("*.pdf"))
+        if not pdfs:
+            return None
+        # Guard the check-build-store sequence with a per-company lock so two
+        # concurrent requests for the same company never trigger duplicate,
+        # concurrent index rebuilds, while requests for different companies
+        # can still build/read in parallel.
+        with self._company_lock(company_domain):
+            if company_domain not in self._company_rags:
+                config = RagConfig(
+                    base_dir=company_dir,
+                    pdf_dir=pdf_dir,
+                    index_dir=company_dir / "index",
+                    mem_dir=company_dir / "memory",
+                    output_debug_dir=company_dir / "debug",
+                    embedding_model=EMBEDDING_MODEL,
+                    top_k=TOP_K,
+                    context_max_chars=CONTEXT_MAX_CHARS,
+                    force_rebuild_index=False,
+                    chunk_size=CHUNK_SIZE,
+                    chunk_overlap=CHUNK_OVERLAP,
+                    min_chunk_chars=MIN_CHUNK_CHARS,
+                )
+                self._company_rags[company_domain] = RagIndex.prepare(config)
+            rag = self._company_rags[company_domain]
+        allowed = document_ids or [path.name for path in pdfs]
+        return rag, allowed
+
+    def retrieve(
+        self,
+        query: str,
+        machine_id: str | None,
+        top_k: int,
+        knowledge_mode: str = "base",
+        company_domain: str | None = None,
+        company_document_ids: list[str] | None = None,
+    ) -> list[dict[str, Any]]:
         machine = self.machines.get(machine_id or "")
         document_ids = list(machine.get("manuali", [])) if machine else None
-        return self.rag.retrieve(query, top_k=top_k, document_ids=document_ids)
+        results = self.rag.retrieve(query, top_k=top_k, document_ids=document_ids)
+        if knowledge_mode == "merged" and company_domain:
+            company = self._company_rag(company_domain, company_document_ids)
+            if company:
+                company_rag, company_documents = company
+                company_hits = company_rag.retrieve(query, top_k=top_k, document_ids=company_documents)
+                results = sorted(results + company_hits, key=lambda item: item.get("score", 0), reverse=True)[:top_k]
+        return results
 
     def build_context(self, results: list[dict[str, Any]]) -> str:
         return self.rag.build_context(results, max_chars=CONTEXT_MAX_CHARS)
@@ -277,7 +347,15 @@ class MachineAssistant:
         parsed["available"] = True
         return parsed
 
-    def ask_machine(self, image_path: str | Path, question: str, top_k: int = TOP_K) -> dict[str, Any]:
+    def ask_machine(
+        self,
+        image_path: str | Path,
+        question: str,
+        top_k: int = TOP_K,
+        knowledge_mode: str = "base",
+        company_domain: str | None = None,
+        company_document_ids: list[str] | None = None,
+    ) -> dict[str, Any]:
         self.ensure_ready()
         machine_id, vision_score, vision_candidates = self.identify_machine(image_path)
         machine = self.machines[machine_id]
@@ -290,7 +368,14 @@ class MachineAssistant:
             if key not in {"available", "error", "notes"} and value
         )
         rag_query = f"{machine['macchina']} {machine.get('tipo')} {identifier_text} {question}"
-        hits = self.retrieve(rag_query, machine_id=machine_id, top_k=top_k)
+        hits = self.retrieve(
+            rag_query,
+            machine_id=machine_id,
+            top_k=top_k,
+            knowledge_mode=knowledge_mode,
+            company_domain=company_domain,
+            company_document_ids=company_document_ids,
+        )
         context = self.build_context(hits)
         memory_hits = self.ltm.search(memory_session_id(machine_id), question, top_k=4)
         prompt = build_prompt(

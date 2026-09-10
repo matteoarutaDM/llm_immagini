@@ -6,6 +6,7 @@ pillow
 protobuf
 openai
 python-dotenv
-torch
-transformers
+torch==2.2.2
+transformers==4.46.3
+sentence-transformers==3.3.1
 ragmens-core @ git+https://github.com/matteoarutaDM/ragmens-core.git
