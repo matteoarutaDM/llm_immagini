@@ -4,24 +4,24 @@ import time
 
 from backend import database as database_module
 from backend import main as main_module
-from backend.tests.helpers import auth_headers, login, register_and_verify, signup_login
+from backend.tests.helpers import auth_headers, login, register, signup_login
 
 
-def test_login_with_correct_credentials_succeeds(client, captured_emails):
-    register_and_verify(client, captured_emails, "user@digitalmens.it")
+def test_login_with_correct_credentials_succeeds(client):
+    register(client, "user@digitalmens.it")
     response = login(client, "user@digitalmens.it")
     assert response.status_code == 200
     assert response.json()["token"]
 
 
-def test_login_with_wrong_password_is_rejected(client, captured_emails):
-    register_and_verify(client, captured_emails, "user@digitalmens.it")
+def test_login_with_wrong_password_is_rejected(client):
+    register(client, "user@digitalmens.it")
     response = login(client, "user@digitalmens.it", password="WrongPassword1")
     assert response.status_code == 401
 
 
-def test_login_with_unknown_email_gives_same_message_as_wrong_password(client, captured_emails):
-    register_and_verify(client, captured_emails, "user@digitalmens.it")
+def test_login_with_unknown_email_gives_same_message_as_wrong_password(client):
+    register(client, "user@digitalmens.it")
     wrong_password = login(client, "user@digitalmens.it", password="WrongPassword1")
     unknown_email = login(client, "ghost@digitalmens.it")
     assert wrong_password.status_code == unknown_email.status_code == 401
@@ -56,24 +56,24 @@ def test_protected_endpoint_rejects_malformed_token(client):
     assert response.status_code == 401
 
 
-def test_protected_endpoint_rejects_tampered_signature(client, captured_emails):
-    token = signup_login(client, captured_emails, "user@digitalmens.it")
+def test_protected_endpoint_rejects_tampered_signature(client):
+    token = signup_login(client, "user@digitalmens.it")
     payload, _signature = token.rsplit(".", 1)
     tampered = f"{payload}.deadbeef"
     response = client.get("/api/auth/me", headers=auth_headers(tampered))
     assert response.status_code == 401
 
 
-def test_expired_token_is_rejected(client, captured_emails, monkeypatch):
+def test_expired_token_is_rejected(client, monkeypatch):
     monkeypatch.setattr(database_module, "AUTH_TOKEN_TTL_SECONDS", 1)
-    token = signup_login(client, captured_emails, "user@digitalmens.it")
+    token = signup_login(client, "user@digitalmens.it")
     time.sleep(1.2)
     response = client.get("/api/auth/me", headers=auth_headers(token))
     assert response.status_code == 401
 
 
-def test_logout_revokes_the_token_server_side(client, captured_emails):
-    token = signup_login(client, captured_emails, "user@digitalmens.it")
+def test_logout_revokes_the_token_server_side(client):
+    token = signup_login(client, "user@digitalmens.it")
     ok_response = client.get("/api/auth/me", headers=auth_headers(token))
     assert ok_response.status_code == 200
 
@@ -84,9 +84,9 @@ def test_logout_revokes_the_token_server_side(client, captured_emails):
     assert after_logout.status_code == 401
 
 
-def test_login_locks_account_after_repeated_failures(client, captured_emails, monkeypatch):
+def test_login_locks_account_after_repeated_failures(client, monkeypatch):
     monkeypatch.setattr(database_module, "AUTH_MAX_FAILED_ATTEMPTS", 3)
-    register_and_verify(client, captured_emails, "user@digitalmens.it")
+    register(client, "user@digitalmens.it")
 
     for _ in range(3):
         response = login(client, "user@digitalmens.it", password="WrongPassword1")
@@ -96,9 +96,9 @@ def test_login_locks_account_after_repeated_failures(client, captured_emails, mo
     assert locked_response.status_code == 429
 
 
-def test_successful_login_resets_failed_attempts_counter(client, captured_emails, monkeypatch):
+def test_successful_login_resets_failed_attempts_counter(client, monkeypatch):
     monkeypatch.setattr(database_module, "AUTH_MAX_FAILED_ATTEMPTS", 3)
-    register_and_verify(client, captured_emails, "user@digitalmens.it")
+    register(client, "user@digitalmens.it")
 
     login(client, "user@digitalmens.it", password="WrongPassword1")
     login(client, "user@digitalmens.it", password="WrongPassword1")

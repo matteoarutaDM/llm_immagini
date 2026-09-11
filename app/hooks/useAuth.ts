@@ -13,9 +13,7 @@ export function useAuth() {
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [authError, setAuthError] = useState<string | null>(null);
   const [authInfo, setAuthInfo] = useState<string | null>(null);
-  const [verificationToken, setVerificationToken] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [resendingVerification, setResendingVerification] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotSubmitting, setForgotSubmitting] = useState(false);
 
@@ -50,13 +48,6 @@ export function useAuth() {
       setAuthError(response.data.detail ?? "Autenticazione non riuscita.");
       return null;
     }
-    if (mode === "register" && !response.data.token) {
-      // Email verification is required in this environment: the account
-      // stays pending until the confirmation link/token is verified.
-      setAuthInfo(response.data.message ?? "Controlla la tua email per confermare l'account.");
-      setAuthMode("verify");
-      return null;
-    }
     if (!response.data.token) {
       setAuthError("Autenticazione non riuscita.");
       return null;
@@ -64,29 +55,6 @@ export function useAuth() {
     persistToken(response.data.token);
     setCompanyDomain(response.data.company_domain ?? null);
     return { token: response.data.token, companyDomain: response.data.company_domain ?? null };
-  }
-
-  async function verifyEmail() {
-    setAuthError(null);
-    const response = await authApi.verifyEmail(verificationToken);
-    if (!response.ok) {
-      setAuthError(response.data.detail ?? "Verifica non riuscita.");
-      return;
-    }
-    setAuthInfo(response.data.message ?? "Email confermata. Ora puoi accedere.");
-    setVerificationToken("");
-    setAuthMode("login");
-  }
-
-  async function resendVerification() {
-    setAuthError(null);
-    setResendingVerification(true);
-    try {
-      const response = await authApi.resendVerification(email);
-      setAuthInfo(response.data.message ?? "Se l'indirizzo esiste, riceverai una nuova email.");
-    } finally {
-      setResendingVerification(false);
-    }
   }
 
   async function forgotPassword() {
@@ -129,11 +97,8 @@ export function useAuth() {
     authInfo,
     setAuthError,
     setAuthInfo,
-    verificationToken,
-    setVerificationToken,
     termsAccepted,
     setTermsAccepted,
-    resendingVerification,
     forgotEmail,
     setForgotEmail,
     forgotSubmitting,
@@ -141,8 +106,6 @@ export function useAuth() {
     hydrateProfile,
     clearSession,
     submitAuth,
-    verifyEmail,
-    resendVerification,
     forgotPassword,
     logout,
   };

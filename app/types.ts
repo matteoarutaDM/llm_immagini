@@ -49,5 +49,5 @@ export type AskResult = {
 export type Chat = { id: number; title: string; knowledge_mode: "base" | "merged" };
 export type CompanyDocument = { id: number; filename: string };
 export type ChatMessage = { id: number; role: "user" | "assistant"; content: string };
-export type AuthMode = "login" | "register" | "verify" | "forgot";
+export type AuthMode = "login" | "register" | "forgot";
 export type CurrentUser = { email?: string; company_domain?: string | null };

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from backend.tests.helpers import auth_headers, login, register_and_verify, signup_login
+from backend.tests.helpers import auth_headers, login, register, signup_login
 
 
 def _forgot_password(client, email: str):
@@ -19,10 +19,8 @@ def test_forgot_password_for_unknown_email_gives_generic_message_and_sends_nothi
     assert not captured_password_resets
 
 
-def test_full_reset_flow_changes_password_and_invalidates_old_sessions(
-    client, captured_emails, captured_password_resets
-):
-    old_token = signup_login(client, captured_emails, "user@digitalmens.it")
+def test_full_reset_flow_changes_password_and_invalidates_old_sessions(client, captured_password_resets):
+    old_token = signup_login(client, "user@digitalmens.it")
     assert client.get("/api/auth/me", headers=auth_headers(old_token)).status_code == 200
 
     response = _forgot_password(client, "user@digitalmens.it")
@@ -41,8 +39,8 @@ def test_full_reset_flow_changes_password_and_invalidates_old_sessions(
     assert client.get("/api/auth/me", headers=auth_headers(old_token)).status_code == 401
 
 
-def test_reset_token_cannot_be_reused(client, captured_emails, captured_password_resets):
-    register_and_verify(client, captured_emails, "user@digitalmens.it")
+def test_reset_token_cannot_be_reused(client, captured_password_resets):
+    register(client, "user@digitalmens.it")
     _forgot_password(client, "user@digitalmens.it")
     reset_token = captured_password_resets[0]["token"]
 
@@ -57,8 +55,8 @@ def test_reset_with_invalid_token_is_rejected(client):
     assert response.status_code == 400
 
 
-def test_reset_with_short_password_is_rejected(client, captured_emails, captured_password_resets):
-    register_and_verify(client, captured_emails, "user@digitalmens.it")
+def test_reset_with_short_password_is_rejected(client, captured_password_resets):
+    register(client, "user@digitalmens.it")
     _forgot_password(client, "user@digitalmens.it")
     reset_token = captured_password_resets[0]["token"]
 
@@ -66,12 +64,12 @@ def test_reset_with_short_password_is_rejected(client, captured_emails, captured
     assert response.status_code == 400
 
 
-def test_forgot_password_endpoint_is_rate_limited(client, captured_emails, captured_password_resets, monkeypatch):
+def test_forgot_password_endpoint_is_rate_limited(client, captured_password_resets, monkeypatch):
     from backend import main as main_module
     from backend.rate_limit import SlidingWindowRateLimiter
 
     monkeypatch.setattr(main_module, "_account_recovery_limiter", SlidingWindowRateLimiter(1, 60))
-    register_and_verify(client, captured_emails, "user@digitalmens.it")
+    register(client, "user@digitalmens.it")
 
     first = _forgot_password(client, "user@digitalmens.it")
     assert first.status_code == 200

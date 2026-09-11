@@ -20,11 +20,6 @@ os.environ.setdefault("DATABASE_PATH", str(Path(_import_time_db_dir) / "import-t
 os.environ.setdefault("AUTH_SECRET", "test-secret-not-for-production")
 os.environ.setdefault("APP_ENV", "development")
 os.environ.setdefault("ALLOWED_ORIGINS", "http://localhost:3000")
-# Forced (not setdefault): the test suite must behave the same regardless of
-# whatever a developer's local .env happens to say (e.g. someone disabling
-# email verification for their own manual testing). backend.database loads
-# .env on import, *after* this module runs, so this must win over it.
-os.environ["REQUIRE_EMAIL_VERIFICATION"] = "true"
 
 from fastapi.testclient import TestClient  # noqa: E402
 
@@ -60,22 +55,9 @@ def client() -> TestClient:
 
 
 @pytest.fixture
-def captured_emails(monkeypatch):
-    """Replaces the real email sender with an in-memory recorder, standing in
-    for the "log the link in dev / let tests call the confirm endpoint
-    directly" flow described in the requirements."""
-    sent: list[dict[str, str]] = []
-
-    def fake_send(to_email: str, token: str) -> None:
-        sent.append({"to": to_email, "token": token})
-
-    monkeypatch.setattr(main_module.email_service, "send_verification_email", fake_send)
-    return sent
-
-
-@pytest.fixture
 def captured_password_resets(monkeypatch):
-    """Same idea as captured_emails, for the password-reset email."""
+    """Replaces the real email sender with an in-memory recorder, so tests
+    can inspect the password-reset token without a real mailbox."""
     sent: list[dict[str, str]] = []
 
     def fake_send(to_email: str, token: str) -> None:
