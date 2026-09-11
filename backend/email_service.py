@@ -23,6 +23,10 @@ SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "1") == "1"
 APP_BASE_URL = os.getenv("APP_BASE_URL", "http://localhost:3000")
 
 
+def verification_link(token: str) -> str:
+    return f"{APP_BASE_URL.rstrip('/')}/verify-email?token={token}"
+
+
 def password_reset_link(token: str) -> str:
     return f"{APP_BASE_URL.rstrip('/')}/reset-password?token={token}"
 
@@ -50,6 +54,18 @@ def _send_or_log(to_email: str, subject: str, body: str, link: str, kind: str) -
         if SMTP_USER and SMTP_PASSWORD:
             client.login(SMTP_USER, SMTP_PASSWORD)
         client.send_message(message)
+
+
+def send_verification_email(to_email: str, token: str) -> None:
+    """Send (or log, if SMTP is not configured) the account verification link."""
+    link = verification_link(token)
+    _send_or_log(
+        to_email,
+        subject="Conferma il tuo account",
+        body=f"Conferma il tuo account seguendo questo link:\n{link}\n\nIl link scade tra 24 ore.",
+        link=link,
+        kind="verifica",
+    )
 
 
 def send_password_reset_email(to_email: str, token: str) -> None:

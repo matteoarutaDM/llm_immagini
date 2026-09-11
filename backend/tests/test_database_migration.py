@@ -59,10 +59,7 @@ def test_migration_marks_pre_existing_users_as_verified(tmp_path, monkeypatch):
     assert row["locked_until"] is None
 
 
-def test_migration_marks_leftover_pending_users_as_verified(tmp_path, monkeypatch):
-    """Email verification no longer exists: an account left "pending" by the
-    old mandatory-verification flow must be unblocked by the migration, not
-    left stuck forever."""
+def test_migration_does_not_retroactively_verify_new_users(tmp_path, monkeypatch):
     db_path = tmp_path / "legacy.db"
     _create_legacy_schema(db_path)
 
@@ -74,39 +71,20 @@ def test_migration_marks_leftover_pending_users_as_verified(tmp_path, monkeypatc
         connection.execute(
             "INSERT INTO users(email, password_hash, company_id, email_verified, token_version, "
             "failed_login_attempts, created_at) VALUES (?, ?, NULL, 0, 0, 0, ?)",
-            ("stuck-pending@digitalmens.it", "somehash$somehash", "2024-06-01T00:00:00+00:00"),
+            ("brand-new@digitalmens.it", "somehash$somehash", "2024-06-01T00:00:00+00:00"),
         )
         connection.commit()
     finally:
         connection.close()
 
-    database_module.init_db()  # second run must unblock this account too
+    database_module.init_db()  # second run must be a no-op migration-wise
 
     connection = database_module.connect()
     try:
         row = connection.execute(
-            "SELECT email_verified FROM users WHERE email = ?", ("stuck-pending@digitalmens.it",)
+            "SELECT email_verified FROM users WHERE email = ?", ("brand-new@digitalmens.it",)
         ).fetchone()
     finally:
         connection.close()
 
-    assert row["email_verified"] == 1
-
-
-def test_migration_drops_the_unused_verification_tokens_table(tmp_path, monkeypatch):
-    db_path = tmp_path / "legacy.db"
-    _create_legacy_schema(db_path)
-
-    monkeypatch.setattr(database_module, "DB_PATH", db_path)
-    database_module.init_db()
-    database_module.init_db()  # must stay idempotent even once the table is already gone
-
-    connection = database_module.connect()
-    try:
-        row = connection.execute(
-            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'email_verification_tokens'"
-        ).fetchone()
-    finally:
-        connection.close()
-
-    assert row is None
+    assert row["email_verified"] == 0

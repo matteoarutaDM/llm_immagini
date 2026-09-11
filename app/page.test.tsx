@@ -51,24 +51,14 @@ describe("utente senza azienda", () => {
 });
 
 describe("flusso di registrazione", () => {
-  it("effettua il login immediato dopo la registrazione", async () => {
+  it("mostra lo stato di verifica email e non effettua il login", async () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
       if (url.includes("/auth/register")) {
         return jsonResponse({
-          token: "fresh-token",
+          message: "Registrazione completata. Controlla la tua email per confermare l'account.",
           email: "nuovo@digitalmens.it",
-          company_domain: "digitalmens.it",
         });
-      }
-      if (url.includes("/auth/me")) {
-        return jsonResponse({ email: "nuovo@digitalmens.it", company_domain: "digitalmens.it" });
-      }
-      if (url.includes("/chats")) {
-        return jsonResponse([]);
-      }
-      if (url.includes("/company/documents")) {
-        return jsonResponse([]);
       }
       throw new Error(`Unexpected fetch: ${url}`);
     });
@@ -83,8 +73,8 @@ describe("flusso di registrazione", () => {
     await user.click(screen.getByRole("checkbox"));
     await user.click(screen.getByRole("button", { name: "Registrati" }));
 
-    await waitFor(() => expect(window.localStorage.getItem("assistant-token")).toBe("fresh-token"));
-    await waitFor(() => expect(screen.getByText("nuovo@digitalmens.it")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("Verifica la tua email")).toBeInTheDocument());
+    expect(window.localStorage.getItem("assistant-token")).toBeNull();
   });
 
   it("non invia la richiesta se i termini non sono accettati", async () => {

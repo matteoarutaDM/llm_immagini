@@ -17,9 +17,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend import email_service
 from backend.auth import CurrentUser, email_domain
 from backend.database import (
+    REQUIRE_EMAIL_VERIFICATION,
     bump_token_version,
     connect,
+    consume_email_verification_token,
     consume_password_reset_token,
+    create_email_verification_token,
     create_password_reset_token,
     hash_password,
     init_db,
@@ -67,8 +70,8 @@ _DUMMY_PASSWORD_HASH = hash_password(secrets.token_urlsafe(32))
 _login_limiter = SlidingWindowRateLimiter(RATE_LIMIT_LOGIN_MAX, RATE_LIMIT_LOGIN_WINDOW_SECONDS)
 _register_limiter = SlidingWindowRateLimiter(RATE_LIMIT_REGISTER_MAX, RATE_LIMIT_REGISTER_WINDOW_SECONDS)
 _ask_limiter = SlidingWindowRateLimiter(RATE_LIMIT_ASK_MAX, RATE_LIMIT_ASK_WINDOW_SECONDS)
-# Used by forgot-password: it sends an email to an address supplied by the
-# caller, so it needs abuse protection independent of the login limiter.
+# Shared by resend-verification and forgot-password: both send an email to an
+# address supplied by the caller, so both need the same abuse protection.
 _account_recovery_limiter = SlidingWindowRateLimiter(
     RATE_LIMIT_ACCOUNT_RECOVERY_MAX, RATE_LIMIT_ACCOUNT_RECOVERY_WINDOW_SECONDS
 )
@@ -134,8 +137,9 @@ def enforce_account_recovery_rate_limit(request: Request) -> None:
 
 def _associate_company_if_applicable(connection: sqlite3.Connection, user_id: int, email: str) -> None:
     """Creates (if needed) and links the company matching the user's email
-    domain, unless the domain is a public/personal one. Called at
-    registration, since accounts are active immediately."""
+    domain, unless the domain is a public/personal one. Shared by the normal
+    verify-email step and by registration when email verification is
+    disabled (REQUIRE_EMAIL_VERIFICATION=false)."""
     domain = email_domain(email)
     if is_public_domain(domain):
         return
@@ -166,30 +170,71 @@ def register(
             status_code=400,
             detail="Devi accettare i Termini di servizio e l'Informativa sulla privacy per registrarti.",
         )
-    email_domain(email)  # validates the email format; the domain itself is used below
+    email_domain(email)  # validates the email format; the domain itself is used below/at verification time
 
     with connect() as connection:
         try:
             cursor = connection.execute(
                 "INSERT INTO users(email, password_hash, company_id, email_verified, terms_accepted_at, created_at) "
-                "VALUES (?, ?, NULL, 1, ?, ?)",
-                (email, hash_password(password), utc_now(), utc_now()),
+                "VALUES (?, ?, NULL, ?, ?, ?)",
+                (email, hash_password(password), 0 if REQUIRE_EMAIL_VERIFICATION else 1, utc_now(), utc_now()),
             )
         except sqlite3.IntegrityError as exc:
             raise HTTPException(status_code=409, detail="Questa email e gia registrata.") from exc
         user_id = cursor.lastrowid
 
-        _associate_company_if_applicable(connection, user_id, email)
+        if not REQUIRE_EMAIL_VERIFICATION:
+            _associate_company_if_applicable(connection, user_id, email)
+            row = connection.execute(
+                "SELECT users.*, companies.domain FROM users LEFT JOIN companies ON companies.id = users.company_id "
+                "WHERE users.id = ?",
+                (user_id,),
+            ).fetchone()
+            return {
+                "token": make_token(row["id"], row["token_version"]),
+                "email": row["email"],
+                "company_domain": row["domain"],
+            }
+
+        verification_token = create_email_verification_token(connection, user_id)
+
+    email_service.send_verification_email(email, verification_token)
+    return {
+        "message": "Registrazione completata. Controlla la tua email per confermare l'account.",
+        "email": email,
+    }
+
+
+@app.post("/api/auth/verify-email")
+def verify_email(token: str = Form()) -> dict:
+    with connect() as connection:
+        user_id = consume_email_verification_token(connection, token)
+        if user_id is None:
+            raise HTTPException(status_code=400, detail="Token di verifica non valido o scaduto.")
+        user_row = connection.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+        _associate_company_if_applicable(connection, user_id, user_row["email"])
+        connection.execute("UPDATE users SET email_verified = 1 WHERE id = ?", (user_id,))
+    return {"message": "Email confermata. Ora puoi accedere.", "verified": True}
+
+
+@app.post("/api/auth/resend-verification", dependencies=[Depends(enforce_account_recovery_rate_limit)])
+def resend_verification(email: str = Form()) -> dict:
+    generic_message = {
+        "message": "Se l'indirizzo esiste ed e' in attesa di conferma, riceverai una nuova email di verifica."
+    }
+    if not REQUIRE_EMAIL_VERIFICATION:
+        return generic_message
+    with connect() as connection:
         row = connection.execute(
-            "SELECT users.*, companies.domain FROM users LEFT JOIN companies ON companies.id = users.company_id "
-            "WHERE users.id = ?",
-            (user_id,),
+            "SELECT id, email_verified FROM users WHERE email = ?", (email.strip().lower(),)
         ).fetchone()
-        return {
-            "token": make_token(row["id"], row["token_version"]),
-            "email": row["email"],
-            "company_domain": row["domain"],
-        }
+        if row is None or row["email_verified"]:
+            # Same response either way: don't reveal whether the email exists
+            # or is already verified.
+            return generic_message
+        verification_token = create_email_verification_token(connection, row["id"])
+    email_service.send_verification_email(email.strip().lower(), verification_token)
+    return generic_message
 
 
 @app.post("/api/auth/login", dependencies=[Depends(enforce_login_rate_limit)])
@@ -225,6 +270,8 @@ def login(email: str = Form(), password: str = Form()) -> dict:
         )
     if row is None or not credentials_ok:
         raise HTTPException(status_code=401, detail="Email o password non validi.")
+    if not row["email_verified"]:
+        raise HTTPException(status_code=403, detail="Conferma la tua email prima di accedere.")
 
     return {
         "token": make_token(row["id"], row["token_version"]),

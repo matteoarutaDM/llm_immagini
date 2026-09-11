@@ -18,7 +18,13 @@ const LINK_BUTTON_CLASS = "text-sm text-emerald-800 underline disabled:cursor-no
 export function AuthPanel({ auth, onAuthSubmit }: AuthPanelProps) {
   return (
     <main className="grid min-h-screen place-items-center px-4 py-8">
-      {auth.authMode === "forgot" ? <ForgotForm auth={auth} /> : <LoginRegisterForm auth={auth} onSubmit={onAuthSubmit} />}
+      {auth.authMode === "verify" ? (
+        <VerifyForm auth={auth} />
+      ) : auth.authMode === "forgot" ? (
+        <ForgotForm auth={auth} />
+      ) : (
+        <LoginRegisterForm auth={auth} onSubmit={onAuthSubmit} />
+      )}
     </main>
   );
 }
@@ -100,6 +106,54 @@ function LoginRegisterForm({ auth, onSubmit }: { auth: UseAuthResult; onSubmit: 
           </button>
         ) : null}
       </div>
+    </form>
+  );
+}
+
+function VerifyForm({ auth }: { auth: UseAuthResult }) {
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void auth.verifyEmail();
+  }
+  return (
+    <form className={CARD_CLASS} onSubmit={onSubmit}>
+      <div>
+        <h1 className="text-2xl font-semibold text-neutral-950 dark:text-neutral-50">Verifica la tua email</h1>
+        <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+          Ti abbiamo inviato un link di conferma. Incolla qui sotto il token ricevuto per attivare l&apos;account.
+        </p>
+      </div>
+      {auth.authInfo ? <p className="text-sm text-emerald-800 dark:text-emerald-400">{auth.authInfo}</p> : null}
+      <input
+        className={INPUT_CLASS}
+        type="text"
+        placeholder="Token di verifica"
+        value={auth.verificationToken}
+        onChange={(event) => auth.setVerificationToken(event.target.value)}
+        required
+      />
+      {auth.authError ? <p className="text-sm text-red-700 dark:text-red-400">{auth.authError}</p> : null}
+      <button className={PRIMARY_BUTTON_CLASS} type="submit">
+        Conferma account
+      </button>
+      <button
+        className={LINK_BUTTON_CLASS}
+        type="button"
+        disabled={auth.resendingVerification || !auth.email}
+        onClick={() => void auth.resendVerification()}
+      >
+        {auth.resendingVerification ? "Invio in corso..." : "Non hai ricevuto l'email? Invia di nuovo"}
+      </button>
+      <button
+        className={LINK_BUTTON_CLASS}
+        type="button"
+        onClick={() => {
+          auth.setAuthMode("login");
+          auth.setAuthError(null);
+        }}
+      >
+        Torna al login
+      </button>
     </form>
   );
 }

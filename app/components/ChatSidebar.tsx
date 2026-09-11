@@ -1,5 +1,5 @@
 import { FormEvent } from "react";
-import { ExclamationTriangleIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import { ArrowRightOnRectangleIcon, ExclamationTriangleIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
 
 import type { Chat, CompanyDocument } from "../types";
 import { DocumentUploader } from "./DocumentUploader";
@@ -54,8 +54,13 @@ export function ChatSidebar({
     <form className="space-y-5 p-5" onSubmit={onSubmit}>
       <div className="space-y-2 rounded-md bg-neutral-50 p-3 text-sm dark:bg-neutral-800/60">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-neutral-900 dark:text-neutral-100">{email || "Account autenticato"}</span>
-          <button type="button" className="text-emerald-800 underline dark:text-emerald-400" onClick={onLogout}>
+          <span className="truncate text-neutral-900 dark:text-neutral-100">{email || "Account autenticato"}</span>
+          <button
+            type="button"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-neutral-300 px-2.5 py-1.5 text-xs font-medium text-neutral-700 transition hover:border-red-300 hover:bg-red-50 hover:text-red-800 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-red-900 dark:hover:bg-red-950/40 dark:hover:text-red-300"
+            onClick={onLogout}
+          >
+            <ArrowRightOnRectangleIcon className="h-4 w-4" />
             Esci
           </button>
         </div>

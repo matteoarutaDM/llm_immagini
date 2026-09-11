@@ -39,6 +39,16 @@ export const authApi = {
   logout: (token: string) =>
     request<MessageResponse>("/api/backend/auth/logout", { method: "POST", headers: authHeaders(token) }),
   me: (token: string) => request<CurrentUser>("/api/backend/auth/me", { headers: authHeaders(token) }),
+  verifyEmail: (token: string) => {
+    const body = new FormData();
+    body.append("token", token);
+    return request<MessageResponse>("/api/backend/auth/verify-email", { method: "POST", body });
+  },
+  resendVerification: (email: string) => {
+    const body = new FormData();
+    body.append("email", email);
+    return request<MessageResponse>("/api/backend/auth/resend-verification", { method: "POST", body });
+  },
   forgotPassword: (email: string) => {
     const body = new FormData();
     body.append("email", email);

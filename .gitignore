@@ -12,3 +12,4 @@ uploads
 data/*.db
 data/*.db-*
 *.tsbuildinfo
+.claude/

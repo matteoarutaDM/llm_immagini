@@ -17,22 +17,22 @@ def _create_chat(client, token, knowledge_mode="base", company_document_ids=None
     )
 
 
-def test_user_without_company_cannot_create_merged_chat(client):
-    token = signup_login(client, "solo@gmail.com")
+def test_user_without_company_cannot_create_merged_chat(client, captured_emails):
+    token = signup_login(client, captured_emails, "solo@gmail.com")
     response = _create_chat(client, token, knowledge_mode="merged")
     assert response.status_code == 403
 
 
-def test_company_user_can_create_merged_chat(client):
-    token = signup_login(client, "user@digitalmens.it")
+def test_company_user_can_create_merged_chat(client, captured_emails):
+    token = signup_login(client, captured_emails, "user@digitalmens.it")
     response = _create_chat(client, token, knowledge_mode="merged")
     assert response.status_code == 200
     assert response.json()["knowledge_mode"] == "merged"
 
 
-def test_user_cannot_access_another_users_chat(client):
-    token_a = signup_login(client, "alice@digitalmens.it")
-    token_b = signup_login(client, "bob@digitalmens.it")
+def test_user_cannot_access_another_users_chat(client, captured_emails):
+    token_a = signup_login(client, captured_emails, "alice@digitalmens.it")
+    token_b = signup_login(client, captured_emails, "bob@digitalmens.it")
 
     chat = _create_chat(client, token_a).json()
 
@@ -51,9 +51,9 @@ def test_user_cannot_access_another_users_chat(client):
     assert delete.status_code == 404
 
 
-def test_chat_list_only_shows_own_chats(client):
-    token_a = signup_login(client, "alice@digitalmens.it")
-    token_b = signup_login(client, "bob@digitalmens.it")
+def test_chat_list_only_shows_own_chats(client, captured_emails):
+    token_a = signup_login(client, captured_emails, "alice@digitalmens.it")
+    token_b = signup_login(client, captured_emails, "bob@digitalmens.it")
 
     _create_chat(client, token_a)
     _create_chat(client, token_b)
@@ -66,7 +66,7 @@ def test_chat_list_only_shows_own_chats(client):
     assert chats_a[0]["id"] != chats_b[0]["id"]
 
 
-def test_documents_are_isolated_between_two_companies(client, monkeypatch):
+def test_documents_are_isolated_between_two_companies(client, captured_emails, monkeypatch):
     import io
 
     from backend import main as main_module
@@ -77,8 +77,8 @@ def test_documents_are_isolated_between_two_companies(client, monkeypatch):
 
     monkeypatch.setattr(main_module, "get_assistant", lambda: FakeAssistant())
 
-    token_company_a = signup_login(client, "user@digitalmens.it")
-    token_company_b = signup_login(client, "user@othercorp.it")
+    token_company_a = signup_login(client, captured_emails, "user@digitalmens.it")
+    token_company_b = signup_login(client, captured_emails, "user@othercorp.it")
 
     client.post(
         "/api/company/documents",
@@ -98,9 +98,9 @@ def test_documents_are_isolated_between_two_companies(client, monkeypatch):
     assert [doc["filename"] for doc in docs_b] == ["manuale_b.pdf"]
 
 
-def test_two_company_domains_get_different_company_records(client):
-    token_a = signup_login(client, "user@digitalmens.it")
-    token_b = signup_login(client, "user@othercorp.it")
+def test_two_company_domains_get_different_company_records(client, captured_emails):
+    token_a = signup_login(client, captured_emails, "user@digitalmens.it")
+    token_b = signup_login(client, captured_emails, "user@othercorp.it")
 
     me_a = client.get("/api/auth/me", headers=auth_headers(token_a)).json()
     me_b = client.get("/api/auth/me", headers=auth_headers(token_b)).json()
