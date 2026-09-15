@@ -29,7 +29,7 @@ export function DocumentUploader({ documents, selectedDocuments, uploading, onTo
         accept="application/pdf"
         disabled={uploading}
         onChange={(event) => onUpload(event.target.files?.[0] ?? null)}
-        className="text-xs text-neutral-700 file:mr-2 file:rounded file:border file:border-neutral-300 file:bg-white file:px-2 file:py-1 file:text-xs disabled:opacity-60 dark:text-neutral-300 dark:file:border-neutral-700 dark:file:bg-neutral-900"
+        className="text-xs text-neutral-700 file:mr-2 file:rounded-lg file:border file:border-neutral-300 file:bg-white file:px-2.5 file:py-1.5 file:text-xs file:font-medium file:transition hover:file:border-emerald-600 disabled:opacity-60 dark:text-neutral-300 dark:file:border-neutral-700 dark:file:bg-neutral-900"
         aria-label="Carica documento PDF aziendale"
       />
       {uploading ? <p className="text-xs text-neutral-500 dark:text-neutral-400">Caricamento in corso...</p> : null}

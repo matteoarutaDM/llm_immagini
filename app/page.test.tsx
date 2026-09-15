@@ -69,7 +69,8 @@ describe("flusso di registrazione", () => {
 
     await user.click(screen.getByRole("button", { name: "Crea un account" }));
     await user.type(screen.getByPlaceholderText("Email"), "nuovo@digitalmens.it");
-    await user.type(screen.getByPlaceholderText(/Password/), "SuperSecret123");
+    await user.type(screen.getByPlaceholderText("Password (almeno 8 caratteri)"), "SuperSecret123");
+    await user.type(screen.getByPlaceholderText("Conferma password"), "SuperSecret123");
     await user.click(screen.getByRole("checkbox"));
     await user.click(screen.getByRole("button", { name: "Registrati" }));
 
@@ -86,7 +87,8 @@ describe("flusso di registrazione", () => {
 
     await user.click(screen.getByRole("button", { name: "Crea un account" }));
     await user.type(screen.getByPlaceholderText("Email"), "nuovo@digitalmens.it");
-    await user.type(screen.getByPlaceholderText(/Password/), "SuperSecret123");
+    await user.type(screen.getByPlaceholderText("Password (almeno 8 caratteri)"), "SuperSecret123");
+    await user.type(screen.getByPlaceholderText("Conferma password"), "SuperSecret123");
     await user.click(screen.getByRole("button", { name: "Registrati" }));
 
     expect(fetchMock).not.toHaveBeenCalled();

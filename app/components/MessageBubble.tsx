@@ -4,7 +4,7 @@ export function MessageBubble({ message }: { message: ChatMessage }) {
   const isUser = message.role === "user";
   return (
     <div
-      className={`rounded-md p-3 text-sm leading-6 ${
+      className={`rounded-xl p-3 text-sm leading-6 ${
         isUser ? "bg-emerald-50 dark:bg-emerald-950/30" : "bg-neutral-50 dark:bg-neutral-800/60"
       }`}
     >

@@ -7,6 +7,7 @@ export function useChats() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChat, setActiveChat] = useState<Chat | null>(null);
   const [history, setHistory] = useState<ChatMessage[]>([]);
+  const [creatingChat, setCreatingChat] = useState(false);
 
   function hydrate(list: Chat[]) {
     setChats(list);
@@ -24,12 +25,18 @@ export function useChats() {
   }
 
   async function createChat(token: string | null, knowledgeMode: "base" | "merged", selectedDocuments: string[]) {
-    if (!token) return;
-    const title = knowledgeMode === "base" ? "Conoscenza base" : "Conoscenza aziendale";
-    const response = await chatsApi.create(token, knowledgeMode, title, selectedDocuments);
-    if (response.ok) {
-      setChats((current) => [response.data, ...current]);
-      setActiveChat(response.data);
+    if (!token || creatingChat) return;
+    setCreatingChat(true);
+    try {
+      const title = knowledgeMode === "base" ? "Conoscenza base" : "Conoscenza aziendale";
+      const response = await chatsApi.create(token, knowledgeMode, title, selectedDocuments);
+      if (response.ok) {
+        setChats((current) => [response.data, ...current]);
+        setActiveChat(response.data);
+        setHistory([]);
+      }
+    } finally {
+      setCreatingChat(false);
     }
   }
 
@@ -41,7 +48,7 @@ export function useChats() {
     ]);
   }
 
-  return { chats, activeChat, history, hydrate, selectChat, createChat, appendExchange };
+  return { chats, activeChat, history, creatingChat, hydrate, selectChat, createChat, appendExchange };
 }
 
 export type UseChatsResult = ReturnType<typeof useChats>;

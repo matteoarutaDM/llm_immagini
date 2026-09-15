@@ -27,10 +27,10 @@ export function ImageUploader({ previewUrl, onFileChange }: ImageUploaderProps) 
         id="machine-image"
       />
       <span
-        className={`flex min-h-48 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed px-4 py-6 text-center transition ${
+        className={`flex min-h-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-4 py-6 text-center transition ${
           dragActive
-            ? "border-emerald-700 bg-emerald-50 dark:bg-emerald-950/40"
-            : "border-neutral-400 bg-neutral-50 hover:border-emerald-700 hover:bg-emerald-50 dark:border-neutral-700 dark:bg-neutral-950 dark:hover:bg-emerald-950/30"
+            ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-950/40"
+            : "border-neutral-300 bg-neutral-50 hover:border-emerald-600 hover:bg-emerald-50/60 dark:border-neutral-700 dark:bg-neutral-950 dark:hover:bg-emerald-950/30"
         }`}
         onDragOver={(event) => {
           event.preventDefault();
@@ -40,10 +40,12 @@ export function ImageUploader({ previewUrl, onFileChange }: ImageUploaderProps) 
         onDrop={onDrop}
       >
         {previewUrl ? (
-          <img src={previewUrl} alt="Anteprima immagine caricata" className="max-h-64 w-full rounded-md object-contain" />
+          <img src={previewUrl} alt="Anteprima immagine caricata" className="max-h-64 w-full rounded-xl object-contain" />
         ) : (
           <>
-            <PhotoIcon className="h-10 w-10 text-neutral-500" />
+            <div className="grid h-12 w-12 place-items-center rounded-xl bg-neutral-200/70 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
+              <PhotoIcon className="h-6 w-6" />
+            </div>
             <span className="mt-3 text-sm font-medium text-neutral-800 dark:text-neutral-200">Seleziona o trascina una foto</span>
             <span className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">JPG, PNG, WEBP</span>
           </>
@@ -51,7 +53,7 @@ export function ImageUploader({ previewUrl, onFileChange }: ImageUploaderProps) 
       </span>
       <label
         htmlFor="machine-image"
-        className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800"
+        className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm font-medium transition hover:border-emerald-600 hover:text-emerald-800 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:border-emerald-500 dark:hover:text-emerald-400"
       >
         <ArrowUpTrayIcon className="h-4 w-4" />
         Carica immagine

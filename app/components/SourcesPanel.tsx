@@ -13,8 +13,8 @@ type SourcesPanelProps = {
 
 export function SourcesPanel({ hits, companyDocumentFilenames }: SourcesPanelProps) {
   return (
-    <div className="rounded-lg border border-neutral-300 bg-white p-5 shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
-      <h3 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50">Fonti recuperate</h3>
+    <div className="rounded-2xl border border-neutral-200/70 bg-white p-5 shadow-lg shadow-neutral-900/[0.05] dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-black/20">
+      <h3 className="font-display text-lg font-semibold text-neutral-950 dark:text-neutral-50">Fonti recuperate</h3>
       <div className="mt-3 space-y-3">
         {hits?.map((hit, index) => (
           <SourceItem
@@ -31,7 +31,7 @@ export function SourcesPanel({ hits, companyDocumentFilenames }: SourcesPanelPro
 function SourceItem({ hit, isCompanySource }: { hit: Hit; isCompanySource: boolean }) {
   const [open, setOpen] = useState(false);
   return (
-    <article className="rounded-md bg-neutral-50 p-3 dark:bg-neutral-800/60">
+    <article className="rounded-xl bg-neutral-50 p-3 dark:bg-neutral-800/60">
       <button
         type="button"
         className="flex w-full flex-wrap items-center gap-2 text-left text-sm font-medium"

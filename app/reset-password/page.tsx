@@ -4,17 +4,27 @@ import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
+import { CARD_CLASS, INPUT_CLASS, LINK_BUTTON_CLASS, PRIMARY_BUTTON_CLASS } from "../components/authStyles";
+import { BrandMark } from "../components/BrandMark";
+import { PasswordInput } from "../components/PasswordInput";
+
 function ResetPasswordContent() {
   const searchParams = useSearchParams();
   const [token, setToken] = useState(searchParams.get("token") ?? "");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [message, setMessage] = useState<string | null>(null);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus("loading");
     setMessage(null);
+    if (password !== confirmPassword) {
+      setStatus("error");
+      setMessage("Le due password non coincidono.");
+      return;
+    }
+    setStatus("loading");
     const body = new FormData();
     body.append("token", token);
     body.append("password", password);
@@ -31,44 +41,57 @@ function ResetPasswordContent() {
 
   return (
     <main className="grid min-h-screen place-items-center px-4 py-8">
-      <div className="w-full max-w-md space-y-4 rounded-lg border border-neutral-300 bg-white p-6 shadow-sm">
-        <div>
-          <h1 className="text-2xl font-semibold">Reimposta password</h1>
-          <p className="mt-1 text-sm text-neutral-600">Scegli una nuova password per il tuo account.</p>
+      <div className={CARD_CLASS}>
+        <div className="flex items-center gap-3">
+          <BrandMark size="md" />
+          <div>
+            <h1 className="font-display text-xl font-semibold text-neutral-950 dark:text-neutral-50">Reimposta password</h1>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">Scegli una nuova password per il tuo account.</p>
+          </div>
         </div>
 
         {status === "ok" ? (
-          <p className="text-sm text-emerald-800">{message}</p>
+          <p className="text-sm text-emerald-800 dark:text-emerald-400" role="status">
+            {message}
+          </p>
         ) : (
           <form className="space-y-4" onSubmit={onSubmit}>
             <input
-              className="w-full rounded-md border border-neutral-300 px-3 py-2"
+              className={INPUT_CLASS}
               type="text"
               placeholder="Token di reset"
               value={token}
               onChange={(event) => setToken(event.target.value)}
+              autoComplete="one-time-code"
+              autoFocus
               required
             />
-            <input
-              className="w-full rounded-md border border-neutral-300 px-3 py-2"
-              type="password"
-              placeholder="Nuova password (almeno 8 caratteri)"
+            <PasswordInput
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={setPassword}
+              placeholder="Nuova password (almeno 8 caratteri)"
+              autoComplete="new-password"
               required
             />
-            {status === "error" ? <p className="text-sm text-red-700">{message}</p> : null}
-            <button
-              className="w-full rounded-md bg-emerald-700 px-4 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:bg-neutral-400"
-              type="submit"
-              disabled={status === "loading"}
-            >
+            <PasswordInput
+              value={confirmPassword}
+              onChange={setConfirmPassword}
+              placeholder="Conferma nuova password"
+              autoComplete="new-password"
+              required
+            />
+            {status === "error" ? (
+              <p className="text-sm text-red-700 dark:text-red-400" role="alert">
+                {message}
+              </p>
+            ) : null}
+            <button className={PRIMARY_BUTTON_CLASS} type="submit" disabled={status === "loading"}>
               {status === "loading" ? "Aggiornamento in corso..." : "Reimposta password"}
             </button>
           </form>
         )}
 
-        <Link className="block text-sm text-emerald-800 underline" href="/">
+        <Link className={`block ${LINK_BUTTON_CLASS}`} href="/">
           Torna alla home
         </Link>
       </div>

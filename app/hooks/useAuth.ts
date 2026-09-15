@@ -9,10 +9,12 @@ export function useAuth() {
   const [token, setTokenState] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [companyDomain, setCompanyDomain] = useState<string | null>(null);
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [authError, setAuthError] = useState<string | null>(null);
   const [authInfo, setAuthInfo] = useState<string | null>(null);
+  const [authSubmitting, setAuthSubmitting] = useState(false);
   const [verificationToken, setVerificationToken] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [resendingVerification, setResendingVerification] = useState(false);
@@ -44,26 +46,35 @@ export function useAuth() {
   async function submitAuth(mode: "login" | "register"): Promise<{ token: string; companyDomain: string | null } | null> {
     setAuthError(null);
     setAuthInfo(null);
-    const response =
-      mode === "register" ? await authApi.register(email, password, termsAccepted) : await authApi.login(email, password);
-    if (!response.ok) {
-      setAuthError(response.data.detail ?? "Autenticazione non riuscita.");
+    if (mode === "register" && password !== confirmPassword) {
+      setAuthError("Le due password non coincidono.");
       return null;
     }
-    if (mode === "register" && !response.data.token) {
-      // Email verification is required in this environment: the account
-      // stays pending until the confirmation link/token is verified.
-      setAuthInfo(response.data.message ?? "Controlla la tua email per confermare l'account.");
-      setAuthMode("verify");
-      return null;
+    setAuthSubmitting(true);
+    try {
+      const response =
+        mode === "register" ? await authApi.register(email, password, termsAccepted) : await authApi.login(email, password);
+      if (!response.ok) {
+        setAuthError(response.data.detail ?? "Autenticazione non riuscita.");
+        return null;
+      }
+      if (mode === "register" && !response.data.token) {
+        // Email verification is required in this environment: the account
+        // stays pending until the confirmation link/token is verified.
+        setAuthInfo(response.data.message ?? "Controlla la tua email per confermare l'account.");
+        setAuthMode("verify");
+        return null;
+      }
+      if (!response.data.token) {
+        setAuthError("Autenticazione non riuscita.");
+        return null;
+      }
+      persistToken(response.data.token);
+      setCompanyDomain(response.data.company_domain ?? null);
+      return { token: response.data.token, companyDomain: response.data.company_domain ?? null };
+    } finally {
+      setAuthSubmitting(false);
     }
-    if (!response.data.token) {
-      setAuthError("Autenticazione non riuscita.");
-      return null;
-    }
-    persistToken(response.data.token);
-    setCompanyDomain(response.data.company_domain ?? null);
-    return { token: response.data.token, companyDomain: response.data.company_domain ?? null };
   }
 
   async function verifyEmail() {
@@ -111,6 +122,7 @@ export function useAuth() {
     }
     clearSession();
     setPassword("");
+    setConfirmPassword("");
     setAuthError(null);
     setAuthInfo(null);
     setAuthMode("login");
@@ -120,6 +132,8 @@ export function useAuth() {
     token,
     email,
     password,
+    confirmPassword,
+    setConfirmPassword,
     setPassword,
     setEmail,
     companyDomain,
@@ -127,6 +141,7 @@ export function useAuth() {
     setAuthMode,
     authError,
     authInfo,
+    authSubmitting,
     setAuthError,
     setAuthInfo,
     verificationToken,

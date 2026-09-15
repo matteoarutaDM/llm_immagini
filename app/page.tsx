@@ -36,6 +36,7 @@ export default function Home() {
     }
     auth.hydrateProfile(meResponse.data.email ?? "", meResponse.data.company_domain ?? null);
     chats.hydrate(chatsResponse.data);
+    if (chatsResponse.data[0]) await chats.selectChat(authToken, chatsResponse.data[0]);
     if (documentsResponse.ok) documents.hydrate(documentsResponse.data);
   }
 
@@ -63,7 +64,7 @@ export default function Home() {
   return (
     <main className="min-h-screen px-4 py-5 text-neutral-950 dark:text-neutral-50 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[420px_1fr]">
-        <section className="rounded-lg border border-neutral-300 bg-white/90 shadow-sm dark:border-neutral-700 dark:bg-neutral-900/90">
+        <section className="h-fit rounded-2xl border border-neutral-200/70 bg-white/90 shadow-xl shadow-neutral-900/[0.06] backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/90 dark:shadow-black/30">
           <ChatHeader />
           <ChatSidebar
             email={auth.email}
@@ -73,6 +74,7 @@ export default function Home() {
             activeChat={chats.activeChat}
             onSelectChat={(chat) => void chats.selectChat(auth.token, chat)}
             onCreateChat={(mode) => void chats.createChat(auth.token, mode, documents.selectedDocuments)}
+            creatingChat={chats.creatingChat}
             documents={documents.documents}
             selectedDocuments={documents.selectedDocuments}
             uploading={documents.uploading}
