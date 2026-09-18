@@ -8,6 +8,10 @@ export function useChats() {
   const [activeChat, setActiveChat] = useState<Chat | null>(null);
   const [history, setHistory] = useState<ChatMessage[]>([]);
   const [creatingChat, setCreatingChat] = useState(false);
+  const [deletingChatId, setDeletingChatId] = useState<number | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [renamingChatId, setRenamingChatId] = useState<number | null>(null);
+  const [renameError, setRenameError] = useState<string | null>(null);
 
   function hydrate(list: Chat[]) {
     setChats(list);
@@ -40,6 +44,47 @@ export function useChats() {
     }
   }
 
+  async function deleteChat(token: string | null, chat: Chat) {
+    if (!token || deletingChatId !== null) return;
+    setDeletingChatId(chat.id);
+    setDeleteError(null);
+    try {
+      const response = await chatsApi.delete(token, chat.id);
+      if (!response.ok) {
+        setDeleteError(response.data.detail ?? "Non è stato possibile eliminare la chat.");
+        return;
+      }
+
+      const remainingChats = chats.filter((item) => item.id !== chat.id);
+      setChats(remainingChats);
+      if (activeChat?.id === chat.id) {
+        await selectChat(token, remainingChats[0] ?? null);
+      }
+    } finally {
+      setDeletingChatId(null);
+    }
+  }
+
+  async function renameChat(token: string | null, chat: Chat, newTitle: string) {
+    if (!token || renamingChatId !== null) return;
+    setRenamingChatId(chat.id);
+    setRenameError(null);
+    try {
+      const response = await chatsApi.rename(token, chat.id, newTitle);
+      if (!response.ok) {
+        setRenameError(response.data.detail ?? "Non è stato possibile rinominare la chat.");
+        return;
+      }
+
+      setChats((current) => current.map((c) => (c.id === chat.id ? { ...c, title: response.data.title ?? newTitle } : c)));
+      if (activeChat?.id === chat.id) {
+        setActiveChat((prev) => (prev ? { ...prev, title: response.data.title ?? newTitle } : prev));
+      }
+    } finally {
+      setRenamingChatId(null);
+    }
+  }
+
   function appendExchange(question: string, answer: string) {
     setHistory((current) => [
       ...current,
@@ -48,7 +93,22 @@ export function useChats() {
     ]);
   }
 
-  return { chats, activeChat, history, creatingChat, hydrate, selectChat, createChat, appendExchange };
+  return {
+    chats,
+    activeChat,
+    history,
+    creatingChat,
+    deletingChatId,
+    deleteError,
+    hydrate,
+    selectChat,
+    createChat,
+    deleteChat,
+    appendExchange,
+    renamingChatId,
+    renameError,
+    renameChat,
+  };
 }
 
 export type UseChatsResult = ReturnType<typeof useChats>;

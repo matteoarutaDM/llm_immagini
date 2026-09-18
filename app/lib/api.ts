@@ -21,6 +21,7 @@ export type AuthResponse = {
 };
 
 export type MessageResponse = { message?: string; detail?: string };
+export type DeleteResponse = { deleted?: boolean; detail?: string };
 
 export const authApi = {
   register: (email: string, password: string, termsAccepted: boolean) => {
@@ -73,6 +74,13 @@ export const chatsApi = {
   },
   messages: (token: string, chatId: number) =>
     request<ChatMessage[]>(`/api/backend/chats/${chatId}/messages`, { headers: authHeaders(token) }),
+  delete: (token: string, chatId: number) =>
+    request<DeleteResponse>(`/api/backend/chats/${chatId}`, { method: "DELETE", headers: authHeaders(token) }),
+  rename: (token: string, chatId: number, title: string) => {
+    const body = new FormData();
+    body.append("title", title);
+    return request<Chat>(`/api/backend/chats/${chatId}`, { method: "PATCH", headers: authHeaders(token), body });
+  },
 };
 
 export const documentsApi = {

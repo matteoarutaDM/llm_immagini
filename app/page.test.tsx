@@ -193,3 +193,42 @@ describe("logout", () => {
     expect(await screen.findByText("Assistente macchine")).toBeInTheDocument();
   });
 });
+
+describe("storico chat", () => {
+  it("elimina una chat e seleziona automaticamente la successiva", async () => {
+    window.localStorage.setItem("assistant-token", "fake-token");
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes("/auth/me")) {
+        return jsonResponse({ email: "user@digitalmens.it", company_domain: "digitalmens.it" });
+      }
+      if (url.endsWith("/api/backend/chats") && (!init?.method || init.method === "GET")) {
+        return jsonResponse([
+          { id: 2, title: "Chat recente", knowledge_mode: "base" },
+          { id: 1, title: "Chat precedente", knowledge_mode: "base" },
+        ]);
+      }
+      if (url.includes("/company/documents")) return jsonResponse([]);
+      if (url.endsWith("/chats/2/messages")) return jsonResponse([]);
+      if (url.endsWith("/chats/1/messages")) return jsonResponse([]);
+      if (url.endsWith("/chats/2") && init?.method === "DELETE") return jsonResponse({ deleted: true });
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const user = userEvent.setup();
+    render(<Home />);
+
+    await screen.findByText("Chat recente");
+    await user.click(screen.getByRole("button", { name: "Elimina chat Chat recente" }));
+
+    await waitFor(() => expect(screen.queryByText("Chat recente")).not.toBeInTheDocument());
+    expect(screen.getByText("Chat precedente").closest("button")).toHaveAttribute("aria-current", "page");
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/backend/chats/2",
+      expect.objectContaining({ method: "DELETE", headers: { Authorization: "Bearer fake-token" } }),
+    );
+  });
+});

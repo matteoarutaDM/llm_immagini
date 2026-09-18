@@ -1,5 +1,11 @@
 import { FormEvent } from "react";
-import { ArrowRightOnRectangleIcon, ExclamationTriangleIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightOnRectangleIcon,
+  ExclamationTriangleIcon,
+  PaperAirplaneIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
+import { PencilIcon } from "@heroicons/react/24/outline";
 
 import type { Chat, CompanyDocument } from "../types";
 import { displayNameFromEmail, initialsFromEmail } from "../lib/format";
@@ -13,8 +19,14 @@ type ChatSidebarProps = {
   chats: Chat[];
   activeChat: Chat | null;
   onSelectChat: (chat: Chat | null) => void;
+  onDeleteChat: (chat: Chat) => void;
   onCreateChat: (mode: "base" | "merged") => void;
   creatingChat: boolean;
+  deletingChatId: number | null;
+  deleteError: string | null;
+  onRenameChat: (chat: Chat, title: string) => void;
+  renamingChatId: number | null;
+  renameError: string | null;
   documents: CompanyDocument[];
   selectedDocuments: string[];
   uploading: boolean;
@@ -37,8 +49,14 @@ export function ChatSidebar({
   chats,
   activeChat,
   onSelectChat,
+  onDeleteChat,
+  onRenameChat,
+  renamingChatId,
+  renameError,
   onCreateChat,
   creatingChat,
+  deletingChatId,
+  deleteError,
   documents,
   selectedDocuments,
   uploading,
@@ -89,7 +107,7 @@ export function ChatSidebar({
         </div>
         <div>
           <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-            Le tue chat
+            Storico chat
           </p>
           {chats.length === 0 ? (
             <p className="rounded-xl border border-dashed border-neutral-300 px-3 py-4 text-center text-xs text-neutral-500 dark:border-neutral-700 dark:text-neutral-400">
@@ -99,33 +117,69 @@ export function ChatSidebar({
             <div className="max-h-56 space-y-1 overflow-y-auto rounded-xl border border-neutral-200 bg-white/60 p-1 dark:border-neutral-800 dark:bg-neutral-900/40">
               {chats.map((chat) => {
                 const isActive = chat.id === activeChat?.id;
+                const isDeleting = deletingChatId === chat.id;
                 return (
-                  <button
+                  <div
                     key={chat.id}
-                    type="button"
-                    aria-current={isActive}
-                    onClick={() => onSelectChat(chat)}
-                    className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-sm transition ${
+                    className={`flex items-center gap-1 rounded-lg pr-1 transition ${
                       isActive
                         ? "bg-emerald-100 text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-100"
                         : "text-neutral-800 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800/70"
                     }`}
                   >
-                    <span className="truncate">{chat.title}</span>
-                    <span
-                      className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ${
+                    <button
+                      type="button"
+                      aria-current={isActive ? "page" : undefined}
+                      onClick={() => onSelectChat(chat)}
+                      className="flex min-w-0 flex-1 items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-sm"
+                    >
+                      <span className="truncate">{chat.title}</span>
+                      <span
+                        className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ${
                         isActive
                           ? "bg-emerald-200 text-emerald-900 dark:bg-emerald-800 dark:text-emerald-100"
                           : "bg-neutral-200 text-neutral-600 dark:bg-neutral-700 dark:text-neutral-300"
-                      }`}
-                    >
-                      {chat.knowledge_mode === "base" ? "Base" : "Azienda"}
-                    </span>
-                  </button>
+                        }`}
+                      >
+                        {chat.knowledge_mode === "base" ? "Base" : "Azienda"}
+                      </span>
+                    </button>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        aria-label={`Rinomina chat ${chat.title}`}
+                        title={`Rinomina ${chat.title}`}
+                        disabled={renamingChatId !== null}
+                        onClick={() => {
+                          const newTitle = window.prompt(`Nuovo nome per la chat “${chat.title}”:`, chat.title);
+                          if (newTitle !== null) {
+                            onRenameChat(chat, newTitle.trim() || "Nuova chat");
+                          }
+                        }}
+                        className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-neutral-500 transition hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800/70"
+                      >
+                        <PencilIcon className="h-4 w-4" aria-hidden="true" />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`Elimina chat ${chat.title}`}
+                        title={`Elimina ${chat.title}`}
+                        disabled={deletingChatId !== null}
+                        onClick={() => {
+                          if (window.confirm(`Eliminare definitivamente la chat “${chat.title}”?`)) onDeleteChat(chat);
+                        }}
+                        className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-neutral-500 transition hover:bg-red-100 hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-red-600 disabled:cursor-not-allowed disabled:opacity-40 dark:text-neutral-400 dark:hover:bg-red-950/60 dark:hover:text-red-300"
+                      >
+                        <TrashIcon className="h-4 w-4" aria-hidden="true" />
+                        <span className="sr-only">{isDeleting ? "Eliminazione in corso" : `Elimina ${chat.title}`}</span>
+                      </button>
+                    </div>
+                  </div>
                 );
               })}
             </div>
           )}
+          {deleteError ? <p className="mt-2 text-xs text-red-700 dark:text-red-400" role="alert">{deleteError}</p> : null}
         </div>
         <div className="flex gap-2">
           <button

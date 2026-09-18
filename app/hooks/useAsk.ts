@@ -4,7 +4,7 @@ import { askApi } from "../lib/api";
 import type { AskResult } from "../types";
 
 const DEFAULT_QUESTION =
-  "Riconosci l'oggetto, leggi seriale o modello se visibili, e dimmi cosa posso verificare per controllare se la pompa idraulica funziona correttamente.";
+  "Identifica l'oggetto nella foto. Se lo riconosci, spiega cosa indicano i manuali su funzionamento e controlli, citando le fonti. Se non lo riconosci, fermati.";
 
 export function useAsk() {
   const [image, setImage] = useState<File | null>(null);
