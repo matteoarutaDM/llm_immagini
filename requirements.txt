@@ -10,6 +10,8 @@ python-dotenv
 numpy>=1.26,<2
 torch==2.2.2
 torchvision==0.17.2
-transformers==4.46.3
+# Require a compatible 4.x transformers release that recognizes GOT-OCR model types
+# but stays compatible with `sentence-transformers` (<5.0).
+transformers==4.54.0
 sentence-transformers==3.3.1
 ragmens-core @ git+https://github.com/matteoarutaDM/ragmens-core.git

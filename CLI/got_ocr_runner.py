@@ -5,6 +5,27 @@ import json
 import sys
 
 import torch
+import torch.nn as _tnn
+
+# Some model repos expect `torch.nn.RMSNorm` to exist. Older/newer torch
+# builds may not expose this symbol; if missing, provide a small compatible
+# implementation so `trust_remote_code` model code can import it.
+if not hasattr(_tnn, "RMSNorm"):
+    import torch.nn as _nn
+
+    class RMSNorm(_nn.Module):
+        def __init__(self, dim: int, eps: float = 1e-8):
+            super().__init__()
+            self.dim = dim
+            self.eps = eps
+            self.scale = _nn.Parameter(torch.ones(dim))
+
+        def forward(self, x: torch.Tensor) -> torch.Tensor:
+            # compute root-mean-square across the last dim
+            rms = x.pow(2).mean(-1, keepdim=True).add(self.eps).sqrt()
+            return x / rms * self.scale
+
+    _tnn.RMSNorm = RMSNorm
 from PIL import Image
 from transformers import AutoModelForImageTextToText, AutoProcessor
 
@@ -22,12 +43,12 @@ def main() -> int:
         processor = AutoProcessor.from_pretrained(
             args.model,
             local_files_only=args.local_files_only,
+            trust_remote_code=True,
         )
-        dtype = torch.float16 if args.device == "cuda" else torch.float32
         model = AutoModelForImageTextToText.from_pretrained(
             args.model,
-            dtype=dtype,
             local_files_only=args.local_files_only,
+            trust_remote_code=True,
         ).to(args.device)
         model.eval()
 
