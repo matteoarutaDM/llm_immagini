@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f7f2;
-  --foreground: #171717;
+  --background: #fafaf9;
+  --foreground: #0a0a0a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #fafaf9;
+  }
 }
 
 * {
@@ -11,16 +18,37 @@
 
 body {
   min-height: 100vh;
-  background:
-    linear-gradient(135deg, rgba(34, 94, 80, 0.09), transparent 38%),
-    linear-gradient(315deg, rgba(190, 71, 49, 0.1), transparent 42%),
-    var(--background);
+  background: var(--background);
+  background-image: radial-gradient(ellipse 1200px 600px at 50% -10%, rgba(4, 120, 87, 0.07), transparent 60%);
+  background-attachment: fixed;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-image: radial-gradient(ellipse 1200px 600px at 50% -10%, rgba(16, 185, 129, 0.09), transparent 60%);
+  }
+}
+
+.font-display {
+  font-family: var(--font-display, var(--font-sans, ui-sans-serif, system-ui, sans-serif));
+  letter-spacing: -0.015em;
 }
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -531,6 +531,7 @@ def ask(
             knowledge_mode=knowledge_mode,
             company_domain=user["company_domain"],
             company_document_ids=company_document_ids,
+            chat_id=chat_id,
         )
         if chat_id is not None:
             with connect() as connection:

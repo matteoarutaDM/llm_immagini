@@ -102,6 +102,20 @@ class MachineAssistant:
         # needed; it is never held while an index is actually being built.
         self._company_locks: dict[str, threading.Lock] = {}
         self._company_locks_lock = threading.Lock()
+        # Short-term memory has no session concept of its own (ragmens_core's
+        # ShortTermMemory is a single deque), so we keep one per memory_session_id
+        # (chat + recognized machine) instead of sharing one buffer across every
+        # chat and every user, which used to bleed conversations into each other.
+        self._stm_by_session: dict[str, ShortTermMemory] = {}
+        self._stm_lock = threading.Lock()
+
+    def _stm_for(self, session_id: str) -> ShortTermMemory:
+        with self._stm_lock:
+            stm = self._stm_by_session.get(session_id)
+            if stm is None:
+                stm = ShortTermMemory(max_messages=10)
+                self._stm_by_session[session_id] = stm
+            return stm
 
     def _company_lock(self, company_domain: str) -> threading.Lock:
         with self._company_locks_lock:
@@ -143,7 +157,6 @@ class MachineAssistant:
                 min_chunk_chars=MIN_CHUNK_CHARS,
             )
             self.rag = RagIndex.prepare(self.rag_config)
-            self.stm = ShortTermMemory(max_messages=10)
             self.ltm = VectorMemory(
                 embedder=self.rag.embedder,
                 mem_dir=self.rag_config.mem_dir,
@@ -355,6 +368,7 @@ class MachineAssistant:
         knowledge_mode: str = "base",
         company_domain: str | None = None,
         company_document_ids: list[str] | None = None,
+        chat_id: int | None = None,
     ) -> dict[str, Any]:
         self.ensure_ready()
         machine_id, vision_score, vision_candidates = self.identify_machine(image_path)
@@ -377,7 +391,9 @@ class MachineAssistant:
             company_document_ids=company_document_ids,
         )
         context = self.build_context(hits)
-        memory_hits = self.ltm.search(memory_session_id(machine_id), question, top_k=4)
+        session_id = memory_session_id(chat_id, machine_id)
+        stm = self._stm_for(session_id)
+        memory_hits = self.ltm.search(session_id, question, top_k=4)
         prompt = build_prompt(
             question=question,
             context=context,
@@ -385,12 +401,12 @@ class MachineAssistant:
             vision_candidates=vision_candidates,
             memory_hits=memory_hits,
             image_identifiers=image_identifiers,
-            stm=self.stm.text(max_chars=1200),
+            stm=stm.text(max_chars=1200),
         )
         answer = self.call_llm(prompt)
-        self.stm.add("user", f"[{machine['macchina']}] {question}")
-        self.stm.add("assistant", answer)
-        self.ltm.add_turn(memory_session_id(machine_id), question, answer)
+        stm.add("user", f"[{machine['macchina']}] {question}")
+        stm.add("assistant", answer)
+        self.ltm.add_turn(session_id, question, answer)
 
         return {
             "recognized": True,
@@ -642,8 +658,9 @@ def build_prompt(
     )
 
 
-def memory_session_id(machine_id: str | None = None) -> str:
-    return f"{SESSION_ID}:{machine_id or 'all'}"
+def memory_session_id(chat_id: int | None, machine_id: str | None = None) -> str:
+    chat_scope = f"chat{chat_id}" if chat_id is not None else "nochat"
+    return f"{SESSION_ID}:{chat_scope}:{machine_id or 'all'}"
 
 
 def public_machine(machine: dict[str, Any]) -> dict[str, Any]:
