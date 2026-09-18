@@ -60,15 +60,7 @@ Il backend crea automaticamente `data/app.db` con SQLite. La registrazione class
 - domini pubblici/personali: utente base;
 - altri domini (es. `@digitalmens.it`): utente aziendale, associato a quel dominio.
 
-### Verifica email obbligatoria
-
-La registrazione **non effettua più il login automatico**. Crea l'utente in stato "pending" e genera un token di conferma:
-
-- se è configurato un provider SMTP (`SMTP_HOST` e variabili correlate), il link di conferma viene inviato via email;
-- altrimenti, in sviluppo, il link (con il token) viene stampato nei log del backend, con una riga tipo:
-  `SMTP non configurato: link di verifica per <email> ... token=<TOKEN>`.
-
-Per attivare l'account bisogna chiamare `POST /api/auth/verify-email` con quel token (dall'interfaccia c'è una schermata dedicata "Verifica la tua email" dove incollarlo). Il login resta bloccato (403) finché l'account non è verificato. Solo alla verifica l'utente aziendale viene associato alla company del proprio dominio.
+La registrazione attiva immediatamente l'account, effettua il login e apre l'app.
 
 Ogni chat salva la propria modalità di conoscenza:
 
@@ -84,9 +76,6 @@ export APP_ENV="production"                 # in produzione l'avvio fallisce se 
 export AUTH_SECRET="una-stringa-lunga-e-casuale"
 export DATABASE_PATH="/percorso/sicuro/app.db"
 export ALLOWED_ORIGINS="https://tuo-dominio.example"
-export SMTP_HOST="smtp.tuoprovider.example"  # altrimenti il link di verifica resta solo nei log
-export SMTP_USER="..."
-export SMTP_PASSWORD="..."
 export MAX_UPLOAD_MB="30"                    # limite dimensione upload documenti aziendali
 ```
 

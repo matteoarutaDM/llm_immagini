@@ -4,7 +4,7 @@ import io
 import json
 
 from backend import main as main_module
-from backend.tests.helpers import auth_headers, signup_login
+from backend.tests.helpers import auth_headers, signup
 
 TINY_PNG = (
     b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01"
@@ -56,9 +56,9 @@ def _create_chat(client, token, knowledge_mode="base", document_ids=None):
     ).json()
 
 
-def test_ask_rejects_non_image_upload(client, captured_emails, monkeypatch):
+def test_ask_rejects_non_image_upload(client, monkeypatch):
     monkeypatch.setattr(main_module, "get_assistant", lambda: FakeAssistant())
-    token = signup_login(client, captured_emails, "user@digitalmens.it")
+    token = signup(client, "user@digitalmens.it")
     response = client.post(
         "/api/ask",
         headers=auth_headers(token),
@@ -68,27 +68,27 @@ def test_ask_rejects_non_image_upload(client, captured_emails, monkeypatch):
     assert response.status_code == 400
 
 
-def test_ask_rejects_empty_question(client, captured_emails, monkeypatch):
+def test_ask_rejects_empty_question(client, monkeypatch):
     monkeypatch.setattr(main_module, "get_assistant", lambda: FakeAssistant())
-    token = signup_login(client, captured_emails, "user@digitalmens.it")
+    token = signup(client, "user@digitalmens.it")
     response = _ask(client, token, question="   ")
     assert response.status_code == 400
 
 
-def test_ask_without_chat_uses_base_knowledge_mode(client, captured_emails, monkeypatch):
+def test_ask_without_chat_uses_base_knowledge_mode(client, monkeypatch):
     fake = FakeAssistant()
     monkeypatch.setattr(main_module, "get_assistant", lambda: fake)
-    token = signup_login(client, captured_emails, "user@digitalmens.it")
+    token = signup(client, "user@digitalmens.it")
     response = _ask(client, token)
     assert response.status_code == 200
     assert fake.calls[0]["knowledge_mode"] == "base"
     assert fake.calls[0]["company_document_ids"] is None
 
 
-def test_ask_with_merged_chat_forwards_selected_documents(client, captured_emails, monkeypatch):
+def test_ask_with_merged_chat_forwards_selected_documents(client, monkeypatch):
     fake = FakeAssistant()
     monkeypatch.setattr(main_module, "get_assistant", lambda: fake)
-    token = signup_login(client, captured_emails, "user@digitalmens.it")
+    token = signup(client, "user@digitalmens.it")
     chat = _create_chat(client, token, knowledge_mode="merged", document_ids=["manuale_carroponte.pdf"])
 
     response = _ask(client, token, chat_id=chat["id"])
@@ -97,10 +97,10 @@ def test_ask_with_merged_chat_forwards_selected_documents(client, captured_email
     assert fake.calls[0]["company_document_ids"] == ["manuale_carroponte.pdf"]
 
 
-def test_ask_persists_history_in_order_and_bumps_updated_at(client, captured_emails, monkeypatch):
+def test_ask_persists_history_in_order_and_bumps_updated_at(client, monkeypatch):
     fake = FakeAssistant(answer="42")
     monkeypatch.setattr(main_module, "get_assistant", lambda: fake)
-    token = signup_login(client, captured_emails, "user@digitalmens.it")
+    token = signup(client, "user@digitalmens.it")
     chat = _create_chat(client, token)
     before_updated_at = chat.get("updated_at")
 
@@ -122,20 +122,20 @@ def test_ask_persists_history_in_order_and_bumps_updated_at(client, captured_ema
         assert chats[0]["updated_at"] >= before_updated_at
 
 
-def test_ask_with_another_users_chat_id_is_not_found(client, captured_emails, monkeypatch):
+def test_ask_with_another_users_chat_id_is_not_found(client, monkeypatch):
     monkeypatch.setattr(main_module, "get_assistant", lambda: FakeAssistant())
-    token_a = signup_login(client, captured_emails, "alice@digitalmens.it")
-    token_b = signup_login(client, captured_emails, "bob@digitalmens.it")
+    token_a = signup(client, "alice@digitalmens.it")
+    token_b = signup(client, "bob@digitalmens.it")
     chat = _create_chat(client, token_a)
 
     response = _ask(client, token_b, chat_id=chat["id"])
     assert response.status_code == 404
 
 
-def test_ask_internal_error_returns_generic_message_and_hides_details(client, captured_emails, monkeypatch, caplog):
+def test_ask_internal_error_returns_generic_message_and_hides_details(client, monkeypatch, caplog):
     fake = FakeAssistant(raise_error=True)
     monkeypatch.setattr(main_module, "get_assistant", lambda: fake)
-    token = signup_login(client, captured_emails, "user@digitalmens.it")
+    token = signup(client, "user@digitalmens.it")
 
     response = _ask(client, token)
     assert response.status_code == 500

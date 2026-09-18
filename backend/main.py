@@ -14,16 +14,10 @@ from typing import Annotated
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend import email_service
 from backend.auth import CurrentUser, email_domain
 from backend.database import (
-    REQUIRE_EMAIL_VERIFICATION,
     bump_token_version,
     connect,
-    consume_email_verification_token,
-    consume_password_reset_token,
-    create_email_verification_token,
-    create_password_reset_token,
     hash_password,
     init_db,
     is_locked,
@@ -37,12 +31,7 @@ from backend.public_email_domains import is_public_domain
 from backend.rate_limit import SlidingWindowRateLimiter
 
 
-# Without this, every logger in the app (this module's, email_service's,
-# ...) inherits the root logger's default WARNING level with no handler
-# attached, so all INFO-level logging - including the dev-mode "verification
-# link" fallback in email_service.py - is silently dropped. uvicorn only
-# configures its own "uvicorn.*" loggers, not the root logger, so this must
-# be done here.
+# Uvicorn configures its own loggers but not the application loggers.
 logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO").upper(),
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
@@ -60,8 +49,6 @@ RATE_LIMIT_REGISTER_MAX = int(os.getenv("RATE_LIMIT_REGISTER_MAX", "5"))
 RATE_LIMIT_REGISTER_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_REGISTER_WINDOW_SECONDS", "60"))
 RATE_LIMIT_ASK_MAX = int(os.getenv("RATE_LIMIT_ASK_MAX", "20"))
 RATE_LIMIT_ASK_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_ASK_WINDOW_SECONDS", "60"))
-RATE_LIMIT_ACCOUNT_RECOVERY_MAX = int(os.getenv("RATE_LIMIT_ACCOUNT_RECOVERY_MAX", "5"))
-RATE_LIMIT_ACCOUNT_RECOVERY_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_ACCOUNT_RECOVERY_WINDOW_SECONDS", "60"))
 
 # Fixed dummy hash used to keep the login endpoint's timing constant whether
 # or not the email exists (see login()). Computed once at import time.
@@ -70,11 +57,6 @@ _DUMMY_PASSWORD_HASH = hash_password(secrets.token_urlsafe(32))
 _login_limiter = SlidingWindowRateLimiter(RATE_LIMIT_LOGIN_MAX, RATE_LIMIT_LOGIN_WINDOW_SECONDS)
 _register_limiter = SlidingWindowRateLimiter(RATE_LIMIT_REGISTER_MAX, RATE_LIMIT_REGISTER_WINDOW_SECONDS)
 _ask_limiter = SlidingWindowRateLimiter(RATE_LIMIT_ASK_MAX, RATE_LIMIT_ASK_WINDOW_SECONDS)
-# Shared by resend-verification and forgot-password: both send an email to an
-# address supplied by the caller, so both need the same abuse protection.
-_account_recovery_limiter = SlidingWindowRateLimiter(
-    RATE_LIMIT_ACCOUNT_RECOVERY_MAX, RATE_LIMIT_ACCOUNT_RECOVERY_WINDOW_SECONDS
-)
 
 _default_origins = "http://localhost:3000,http://127.0.0.1:3000"
 ALLOWED_ORIGINS = [
@@ -130,16 +112,9 @@ def enforce_ask_rate_limit(request: Request) -> None:
         raise HTTPException(status_code=429, detail="Troppe richieste. Riprova piu tardi.")
 
 
-def enforce_account_recovery_rate_limit(request: Request) -> None:
-    if not _account_recovery_limiter.allow(_client_ip(request)):
-        raise HTTPException(status_code=429, detail="Troppe richieste. Riprova piu tardi.")
-
-
 def _associate_company_if_applicable(connection: sqlite3.Connection, user_id: int, email: str) -> None:
     """Creates (if needed) and links the company matching the user's email
-    domain, unless the domain is a public/personal one. Shared by the normal
-    verify-email step and by registration when email verification is
-    disabled (REQUIRE_EMAIL_VERIFICATION=false)."""
+    domain, unless the domain is a public/personal one."""
     domain = email_domain(email)
     if is_public_domain(domain):
         return
@@ -170,71 +145,30 @@ def register(
             status_code=400,
             detail="Devi accettare i Termini di servizio e l'Informativa sulla privacy per registrarti.",
         )
-    email_domain(email)  # validates the email format; the domain itself is used below/at verification time
+    email_domain(email)
 
     with connect() as connection:
         try:
             cursor = connection.execute(
-                "INSERT INTO users(email, password_hash, company_id, email_verified, terms_accepted_at, created_at) "
-                "VALUES (?, ?, NULL, ?, ?, ?)",
-                (email, hash_password(password), 0 if REQUIRE_EMAIL_VERIFICATION else 1, utc_now(), utc_now()),
+                "INSERT INTO users(email, password_hash, company_id, terms_accepted_at, created_at) "
+                "VALUES (?, ?, NULL, ?, ?)",
+                (email, hash_password(password), utc_now(), utc_now()),
             )
         except sqlite3.IntegrityError as exc:
             raise HTTPException(status_code=409, detail="Questa email e gia registrata.") from exc
         user_id = cursor.lastrowid
-
-        if not REQUIRE_EMAIL_VERIFICATION:
-            _associate_company_if_applicable(connection, user_id, email)
-            row = connection.execute(
-                "SELECT users.*, companies.domain FROM users LEFT JOIN companies ON companies.id = users.company_id "
-                "WHERE users.id = ?",
-                (user_id,),
-            ).fetchone()
-            return {
-                "token": make_token(row["id"], row["token_version"]),
-                "email": row["email"],
-                "company_domain": row["domain"],
-            }
-
-        verification_token = create_email_verification_token(connection, user_id)
-
-    email_service.send_verification_email(email, verification_token)
-    return {
-        "message": "Registrazione completata. Controlla la tua email per confermare l'account.",
-        "email": email,
-    }
-
-
-@app.post("/api/auth/verify-email")
-def verify_email(token: str = Form()) -> dict:
-    with connect() as connection:
-        user_id = consume_email_verification_token(connection, token)
-        if user_id is None:
-            raise HTTPException(status_code=400, detail="Token di verifica non valido o scaduto.")
-        user_row = connection.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
-        _associate_company_if_applicable(connection, user_id, user_row["email"])
-        connection.execute("UPDATE users SET email_verified = 1 WHERE id = ?", (user_id,))
-    return {"message": "Email confermata. Ora puoi accedere.", "verified": True}
-
-
-@app.post("/api/auth/resend-verification", dependencies=[Depends(enforce_account_recovery_rate_limit)])
-def resend_verification(email: str = Form()) -> dict:
-    generic_message = {
-        "message": "Se l'indirizzo esiste ed e' in attesa di conferma, riceverai una nuova email di verifica."
-    }
-    if not REQUIRE_EMAIL_VERIFICATION:
-        return generic_message
-    with connect() as connection:
+        _associate_company_if_applicable(connection, user_id, email)
         row = connection.execute(
-            "SELECT id, email_verified FROM users WHERE email = ?", (email.strip().lower(),)
+            "SELECT users.*, companies.domain FROM users LEFT JOIN companies ON companies.id = users.company_id "
+            "WHERE users.id = ?",
+            (user_id,),
         ).fetchone()
-        if row is None or row["email_verified"]:
-            # Same response either way: don't reveal whether the email exists
-            # or is already verified.
-            return generic_message
-        verification_token = create_email_verification_token(connection, row["id"])
-    email_service.send_verification_email(email.strip().lower(), verification_token)
-    return generic_message
+
+    return {
+        "token": make_token(row["id"], row["token_version"]),
+        "email": row["email"],
+        "company_domain": row["domain"],
+    }
 
 
 @app.post("/api/auth/login", dependencies=[Depends(enforce_login_rate_limit)])
@@ -257,6 +191,13 @@ def login(email: str = Form(), password: str = Form()) -> dict:
         if row is not None and not locked:
             if credentials_ok:
                 reset_failed_login(connection, row["id"])
+                if row["company_id"] is None:
+                    _associate_company_if_applicable(connection, row["id"], row["email"])
+                    row = connection.execute(
+                        "SELECT users.*, companies.domain FROM users "
+                        "LEFT JOIN companies ON companies.id = users.company_id WHERE users.id = ?",
+                        (row["id"],),
+                    ).fetchone()
             else:
                 register_failed_login(connection, row["id"], row["failed_login_attempts"])
         # The connection commits here (context manager exit) before any
@@ -270,9 +211,6 @@ def login(email: str = Form(), password: str = Form()) -> dict:
         )
     if row is None or not credentials_ok:
         raise HTTPException(status_code=401, detail="Email o password non validi.")
-    if not row["email_verified"]:
-        raise HTTPException(status_code=403, detail="Conferma la tua email prima di accedere.")
-
     return {
         "token": make_token(row["id"], row["token_version"]),
         "email": row["email"],
@@ -285,40 +223,6 @@ def logout(user: CurrentUser) -> dict:
     with connect() as connection:
         bump_token_version(connection, user["id"])
     return {"message": "Logout effettuato."}
-
-
-@app.post("/api/auth/forgot-password", dependencies=[Depends(enforce_account_recovery_rate_limit)])
-def forgot_password(email: str = Form()) -> dict:
-    generic_message = {"message": "Se l'indirizzo esiste, riceverai un'email con le istruzioni per il reset."}
-    with connect() as connection:
-        row = connection.execute(
-            "SELECT id FROM users WHERE email = ?", (email.strip().lower(),)
-        ).fetchone()
-        if row is None:
-            # Same response as the success case: don't reveal whether the
-            # email is registered.
-            return generic_message
-        reset_token = create_password_reset_token(connection, row["id"])
-    email_service.send_password_reset_email(email.strip().lower(), reset_token)
-    return generic_message
-
-
-@app.post("/api/auth/reset-password")
-def reset_password(token: str = Form(), password: str = Form()) -> dict:
-    if len(password) < 8:
-        raise HTTPException(status_code=400, detail="La password deve contenere almeno 8 caratteri.")
-    with connect() as connection:
-        user_id = consume_password_reset_token(connection, token)
-        if user_id is None:
-            raise HTTPException(status_code=400, detail="Token di reset non valido o scaduto.")
-        connection.execute(
-            "UPDATE users SET password_hash = ? WHERE id = ?", (hash_password(password), user_id)
-        )
-        # Resetting the password invalidates every session issued before now,
-        # in case the reset was triggered because the old password/sessions
-        # were compromised.
-        bump_token_version(connection, user_id)
-    return {"message": "Password aggiornata. Ora puoi accedere con la nuova password."}
 
 
 @app.get("/api/auth/me")

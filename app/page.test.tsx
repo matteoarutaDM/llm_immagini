@@ -51,15 +51,20 @@ describe("utente senza azienda", () => {
 });
 
 describe("flusso di registrazione", () => {
-  it("mostra lo stato di verifica email e non effettua il login", async () => {
+  it("effettua subito il login e apre l'app", async () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
       if (url.includes("/auth/register")) {
         return jsonResponse({
-          message: "Registrazione completata. Controlla la tua email per confermare l'account.",
+          token: "new-user-token",
           email: "nuovo@digitalmens.it",
+          company_domain: "digitalmens.it",
         });
       }
+      if (url.includes("/auth/me")) {
+        return jsonResponse({ email: "nuovo@digitalmens.it", company_domain: "digitalmens.it" });
+      }
+      if (url.includes("/chats") || url.includes("/company/documents")) return jsonResponse([]);
       throw new Error(`Unexpected fetch: ${url}`);
     });
     vi.stubGlobal("fetch", fetchMock);
@@ -74,8 +79,9 @@ describe("flusso di registrazione", () => {
     await user.click(screen.getByRole("checkbox"));
     await user.click(screen.getByRole("button", { name: "Registrati" }));
 
-    await waitFor(() => expect(screen.getByText("Verifica la tua email")).toBeInTheDocument());
-    expect(window.localStorage.getItem("assistant-token")).toBeNull();
+    await waitFor(() => expect(screen.getByText("nuovo@digitalmens.it")).toBeInTheDocument());
+    expect(window.localStorage.getItem("assistant-token")).toBe("new-user-token");
+    expect(screen.getByRole("button", { name: "Esci" })).toBeInTheDocument();
   });
 
   it("non invia la richiesta se i termini non sono accettati", async () => {
@@ -92,31 +98,6 @@ describe("flusso di registrazione", () => {
     await user.click(screen.getByRole("button", { name: "Registrati" }));
 
     expect(fetchMock).not.toHaveBeenCalled();
-  });
-});
-
-describe("password dimenticata", () => {
-  it("invia la richiesta di reset e torna al login", async () => {
-    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-      const url = String(input);
-      if (url.includes("/auth/forgot-password")) {
-        return jsonResponse({ message: "Se l'indirizzo esiste, riceverai un'email con le istruzioni." });
-      }
-      throw new Error(`Unexpected fetch: ${url}`);
-    });
-    vi.stubGlobal("fetch", fetchMock);
-
-    const user = userEvent.setup();
-    render(<Home />);
-
-    await user.click(screen.getByRole("button", { name: "Password dimenticata?" }));
-    await user.type(screen.getByPlaceholderText("Email"), "user@digitalmens.it");
-    await user.click(screen.getByRole("button", { name: "Invia istruzioni" }));
-
-    await waitFor(() =>
-      expect(fetchMock).toHaveBeenCalledWith("/api/backend/auth/forgot-password", expect.objectContaining({ method: "POST" })),
-    );
-    await waitFor(() => expect(screen.getByRole("button", { name: "Accedi" })).toBeInTheDocument());
   });
 });
 
