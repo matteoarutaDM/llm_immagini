@@ -86,10 +86,12 @@ export function useChats() {
   }
 
   function appendExchange(question: string, answer: string) {
+    // Append only the user's message here. The assistant's response
+    // is displayed via `ask.result` (AnswerCard) to avoid duplicate
+    // rendering of the LLM answer in both the history and the result card.
     setHistory((current) => [
       ...current,
       { id: Date.now(), role: "user", content: question },
-      { id: Date.now() + 1, role: "assistant", content: answer },
     ]);
   }
 

@@ -78,7 +78,9 @@ export default function Home() {
             onRenameChat={(chat, title) => void chats.renameChat(auth.token, chat, title)}
             renamingChatId={chats.renamingChatId}
             renameError={chats.renameError}
-            onCreateChat={(mode) => void chats.createChat(auth.token, mode, documents.selectedDocuments)}
+            onCreateChat={(mode) =>
+              void chats.createChat(auth.token, mode, mode === "merged" ? documents.selectedDocuments : [])
+            }
             creatingChat={chats.creatingChat}
             deletingChatId={chats.deletingChatId}
             deleteError={chats.deleteError}

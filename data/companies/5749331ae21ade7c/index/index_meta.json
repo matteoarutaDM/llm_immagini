@@ -1,0 +1,14 @@
+{
+  "n_chunks": 81,
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "dim": 384,
+  "pdf_dir": "/Users/matteoarutadm/lavoro/digital_mens/llm_yolo/data/companies/5749331ae21ade7c/pdfs",
+  "pdf_manifest": [
+    {
+      "path": "f1816a2c0571c4d46ca7dec298608d5c.pdf",
+      "size": 635018,
+      "mtime_ns": 1789740151786595542
+    }
+  ],
+  "corpus_signature": "38e8b190b024a9c69ebc869b30978c8e19993b23214e363204363ea03ecbe791"
+}

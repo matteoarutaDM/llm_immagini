@@ -188,7 +188,7 @@ export function ChatSidebar({
             disabled={creatingChat}
             onClick={() => onCreateChat("base")}
           >
-            {creatingChat ? "Creazione..." : "+ Base"}
+            {creatingChat ? "Creazione..." : "Nuova chat"}
           </button>
           {companyDomain ? (
             <button
