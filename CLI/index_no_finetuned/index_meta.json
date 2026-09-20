@@ -1,5 +1,5 @@
 {
-  "n_chunks": 4033,
+  "n_chunks": 4109,
   "model": "sentence-transformers/all-MiniLM-L6-v2",
   "dim": 384,
   "pdf_dir": "/Users/matteoarutadm/lavoro/digital_mens/llm_yolo/CLI/pdf_immagini",
@@ -28,7 +28,12 @@
       "path": "RS - SRSC45G5 Uso e Manutenzione Italiano - R33-R34.pdf",
       "size": 29986606,
       "mtime_ns": 1780476140225131443
+    },
+    {
+      "path": "manuale_condizionatore.pdf",
+      "size": 3206891,
+      "mtime_ns": 1789914045179503000
     }
   ],
-  "corpus_signature": "4043f7c6654aacfc043248cddd70c3be0f68f374aac7eb3ae924edae46c138e6"
+  "corpus_signature": "bd8e8240c437f897d4f678f689eca7587d34ecbd61d14bf60b207a958752669c"
 }

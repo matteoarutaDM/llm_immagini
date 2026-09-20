@@ -1,0 +1,2026 @@
+Manuale d'uso
+Climatizzatore per interni Daikin
+Italiano
+Manuale d'uso
+Climatizzatore per interni Daikin
+CTXM15R2V1B
+CTXM15R5V1B
+FTXM20R2V1B
+FTXM20R5V1B
+FTXM25R2V1B
+FTXM25R5V1B
+FTXM35R2V1B
+FTXM35R5V1B
+FTXM42R2V1B
+FTXM42R5V1B
+FTXM50R2V1B
+FTXM60R2V1B
+FTXM71R2V1B
+
+---------------------------------------- [FINE PAGINA 1] ----------------------------------------
+
+Sommario
+Manuale d'uso
+2
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+Sommario
+1 Note relative alla documentazione 2
+1.1 Informazioni su questo documento ........................................... 2
+2 Istruzioni di sicurezza per l'utente 2
+2.1 Generale .................................................................................... 3
+2.2 Istruzioni per un utilizzo sicuro .................................................. 3
+3 Informazioni sul sistema 5
+3.1 Unità interna .............................................................................. 5
+3.1.1 Display dell'unità interna ............................................. 5
+3.2 Informazioni sull'interfaccia utente ............................................ 6
+3.2.1 Componenti: Interfaccia utente ................................... 6
+4 Prima dell'uso 6
+4.1 Inserimento delle batterie .......................................................... 6
+4.2 Montaggio del supporto di interfaccia utente ............................. 6
+4.3 Impostazione dell'orologio ......................................................... 6
+4.4 Impostazione della luminosità del display dell'unità interna ...... 7
+4.5 Attivazione dell'alimentazione elettrica ...................................... 7
+5 Funzionamento 7
+5.1 Portata di funzionamento .......................................................... 7
+5.2 Modalità di funzionamento e setpoint della temperatura ........... 7
+5.2.1 Avvio/arresto della modalità di funzionamento e
+impostazione della temperatura .................................. 8
+5.3 Tasso del flusso d'aria ............................................................... 8
+5.3.1 Regolazione del tasso del flusso dell'aria ................... 8
+5.4 Direzione aria ............................................................................ 8
+5.4.1 Regolazione della direzione del flusso dell'aria
+verticale ....................................................................... 8
+5.4.2 Regolazione della direzione del flusso dell'aria
+orizzontale ................................................................... 8
+5.4.3 Utilizzo della direzione del flusso dell'aria 3D ............. 9
+5.5 Funzionamento "Comfort airflow" e "Intelligent Eye" ................. 9
+5.5.1 Funzionamento "Comfort airflow" ............................... 9
+5.5.2 Funzionamento "Intelligent Eye" ................................. 9
+5.5.3 Avvio/Arresto del funzionamento "Comfort" e
+"Intelligent Eye" ........................................................... 9
+5.6 Funzionamento in modalità "Powerful" ...................................... 9
+5.6.1 Avvio/Arresto del funzionamento "Powerful" ............... 9
+5.7 Funzionamento a basso rumore dell'unità esterna ed Econo ... 10
+5.7.1 Funzionamento "Econo" ............................................. 10
+5.7.2 Funzionamento a basso rumore dell'unità esterna ..... 10
+5.7.3 Avvio/arresto del funzionamento a basso rumore
+dell'unità esterna ed Econo ......................................... 10
+5.8 Funzionamento del Flash Streamer (pulizia dell'aria) ............... 10
+5.8.1 Come avviare/arrestare il funzionamento del Flash
+Streamer (pulizia dell'aria) .......................................... 10
+5.9 Funzione di ACCENSIONE/SPEGNIMENTO del timer ............. 10
+5.9.1 Avvio/Arresto della funzione di SPEGNIMENTO del
+timer ............................................................................ 10
+5.9.2 Avvio/Arresto della funzione di ACCENSIONE del
+timer ............................................................................ 11
+5.9.3 Combinazione delle funzioni di ACCENSIONE e
+SPEGNIMENTO del timer ........................................... 11
+5.10 Funzionamento del timer settimanale ....................................... 11
+5.10.1 Impostazione del funzionamento del timer
+settimanale .................................................................. 12
+5.10.2 Copia delle prenotazioni ............................................. 12
+5.10.3 Conferma di prenotazioni ............................................ 12
+5.10.4 Disattivare o riattivare il funzionamento del Timer
+settimanale .................................................................. 13
+5.10.5 Eliminazione di prenotazioni ....................................... 13
+5.11 Connessione LAN Wireless ....................................................... 13
+5.11.1 Precauzioni per l'uso della rete LAN wireless ............. 13
+5.11.2 Installazione dell'applicazione Daikin Residential
+Controller .................................................................... 13
+5.11.3 Impostazione della connessione wireless ................... 13
+6 Risparmio energetico e funzionamento
+ottimale 15
+7 Manutenzione e assistenza 15
+7.1 Panoramica: Manutenzione e assistenza ................................... 15
+7.2 Pulizia dell'unità interna e dell'interfaccia utente ........................ 16
+7.3 Pulizia del pannello anteriore ..................................................... 16
+7.4 Rimozione del pannello anteriore ............................................... 16
+7.5 Pulizia dei filtri dell'aria ............................................................... 17
+7.6 Pulizia del filtro deodorante al titanio rivestito di apatite e del
+filtro antiallergico in argento per la purificazione dell'aria ........... 17
+7.7 Sostituzione del filtro deodorante al titanio rivestito di apatite e
+del filtro antiallergico in argento per la purificazione dell'aria ..... 18
+7.8 Reinstallazione del pannello anteriore ....................................... 18
+8 Individuazione e risoluzione dei problemi 18
+9 Smaltimento 18
+1 Note relative alla
+documentazione
+1.1 Informazioni su questo documento
+Grazie per aver acquistato questo prodotto. Si prega di:
+▪ Conservare la documentazione per future consultazioni.
+Pubblico di destinazione
+Utenti finali
+INFORMAZIONI
+Quest'apparecchiatura è destinata ad essere utilizzata da
+utenti esperti o addestrati in officine, reparti dell'industria
+leggera e aziende agricole, oppure è destinata all'uso
+commerciale e domestico da parte di privati.
+Serie di documentazioni
+Questo documento fa parte di una serie di documentazioni. La serie
+completa è composta da:
+▪ Precauzioni generali di sicurezza:
+▪ Istruzioni di sicurezza che debbono essere lette prima di far
+funzionare il proprio sistema
+▪ Formato: Cartaceo (nella scatola dell'unità interna)
+▪ Manuale d'uso:
+▪ Guida rapida per l'utilizzo di base
+▪ Formato: Cartaceo (nella scatola dell'unità interna)
+▪ Guida di consultazione per l'utente:
+▪ Istruzioni passo-passo dettagliate e informazioni di fondo per un
+utilizzo di base e avanzato
+▪ Formato: File digitali sul sito http://www.daikineurope.com/
+support-and-manuals/product-information/
+Sul sito Web Daikin del proprio paese potrebbe essere disponibile
+una versione più recente della documentazione; in alternativa,
+informarsi presso l'installatore.
+La documentazione originale è scritta in inglese. La documentazione
+in tutte le altre lingue è stata tradotta.
+2 Istruzioni di sicurezza per
+l'utente
+Osservare sempre le seguenti istruzioni e norme per la sicurezza.
+
+---------------------------------------- [FINE PAGINA 2] ----------------------------------------
+
+2 Istruzioni di sicurezza per l'utente
+Manuale d'uso
+3
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+2.1 Generale
+AVVERTENZA
+In caso di dubbi su come usare l'unità,
+contattare l'installatore.
+AVVERTENZA
+L'apparecchio non può essere
+utilizzato da persone, compresi
+bambini, con capacità fisiche,
+sensoriali o mentali ridotte, ovvero
+senza la necessaria esperienza e le
+necessarie conoscenze, se non sotto
+la supervisione o la tutela di una
+persona responsabile della loro
+sicurezza.
+Tenere i bambini sotto la supervisione
+di un adulto per evitare che giochino
+con l'apparecchio.
+La pulizia e la manutenzione non
+devono essere effettuate da bambini
+senza supervisione.
+AVVERTENZA
+Per prevenire il rischio di elettrocuzione
+o incendi:
+▪ NON pulire l'unità con acqua.
+▪ NON azionare l'unità con le mani
+bagnate.
+▪ NON posizionare oggetti contenenti
+acqua sull'unità.
+ATTENZIONE
+▪ NON posizionare oggetti o
+apparecchiature sulla parte superiore
+dell'unità.
+▪ NON sedersi, non arrampicarsi né
+sostare in piedi sopra l'unità.
+▪ Le unità sono contrassegnate con il simbolo seguente:
+Questo indica che i prodotti elettrici ed elettronici NON possono
+essere smaltiti insieme ai rifiuti domestici non differenziati. NON
+cercare di smontare il sistema da soli: lo smontaggio del sistema,
+nonché il trattamento del refrigerante, dell'olio e di qualsiasi altra
+parte, devono essere eseguiti da un installatore qualificato in
+conformità alla legislazione applicabile.
+Le unità devono essere trattate presso una struttura specializzata
+nel riutilizzo, riciclaggio e recupero dei materiali. Il corretto
+smaltimento del prodotto eviterà le possibili conseguenze negative
+sull'ambiente e sulla salute dell'uomo. Per maggiori informazioni,
+contattare l'installatore o l'ente locale preposto.
+▪ Le batterie sono contrassegnate con il simbolo seguente:
+Indica che la batteria NON può essere smaltita insieme ai rifiuti
+domestici non differenziati. Se sotto a tale simbolo è stampato un
+simbolo chimico, quest'ultimo indica che la batteria contiene un
+metallo pesante in una concentrazione superiore a un determinato
+valore.
+I simboli chimici possibili sono: Pb: piombo (>0,004%).
+Le batterie esauste devono essere trattate presso una struttura
+specializzata per il riutilizzo. Il corretto smaltimento delle batterie
+da gettare via eviterà le possibili conseguenze negative
+sull'ambiente e sulla salute dell'uomo.
+2.2 Istruzioni per un utilizzo sicuro
+ATTENZIONE: MATERIALE
+LEGGERMENTE INFIAMMABILE
+Il refrigerante contenuto nell'unità è
+leggermente infiammabile.
+ATTENZIONE
+L'unità interna contiene
+l'apparecchiatura radio; la distanza di
+separazione tra la parte irradiante
+dell'apparecchiatura e l'utente deve
+essere di almeno 10 cm.
+ATTENZIONE
+NON inserire mani, corde o altri oggetti
+nell'ingresso o nell'uscita dell'aria. La
+rotazione del ventilatore ad alta
+velocità può causare lesioni.
+AVVERTENZA
+▪ NON modificare, smontare,
+rimuovere, reinstallare o riparare
+l'unità da soli. Uno smontaggio o
+un'installazione errati potrebbero
+favorire il rischio di folgorazione o
+incendio. Contattare il rivenditore.
+
+---------------------------------------- [FINE PAGINA 3] ----------------------------------------
+
+2 Istruzioni di sicurezza per l'utente
+Manuale d'uso
+4
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+▪ In caso di perdite accidentali di
+refrigerante, accertarsi che non ci
+siano fiamme libere. Il refrigerante è
+completamente sicuro, non è tossico
+ed è leggermente infiammabile, ma
+può generare gas nocivi nel caso di
+fughe accidentali in un ambiente in
+cui sono presenti vapori combustibili
+prodotti, ad esempio, da riscaldatori a
+ventilatore, fornelli a gas, ecc.
+Consultare sempre personale
+qualificato per accertarsi che il punto
+di perdita venga riparato o comunque
+corretto prima di mettere di nuovo in
+funzione l'unità.
+ATTENZIONE
+Usare SEMPRE un'interfaccia utente
+per regolare le posizioni delle alette e
+delle feritoie. Quando le alette e le
+feritoie oscillano e le si sposta
+forzatamente con le mani, il
+meccanismo si rompe.
+ATTENZIONE
+Non esporre MAI bambini piccoli,
+piante o animali direttamente al flusso
+d'aria.
+AVVERTENZA
+NON mettere oggetti sotto all'unità
+interna e/o esterna, in quanto
+potrebbero bagnarsi. In caso contrario,
+potrebbe verificarsi un gocciolamento
+dovuto alla condensa nell'unità o nei
+tubi del refrigerante, oppure
+all'ostruzione del filtro dell'aria o dello
+scarico, e gli oggetti in questione
+potrebbero sporcarsi o essere
+danneggiati.
+AVVERTENZA
+NON collocare contenitori di spray
+infiammabili accanto al climatizzatore;
+NON utilizzare spray vicino all'unità.
+Ciò potrebbe causare incendi.
+ATTENZIONE
+NON azionare il sistema se nel locale è
+stato utilizzato un insetticida a
+fumigazione. Le sostanze chimiche
+potrebbero depositarsi nell'unità e
+mettere in pericolo la salute delle
+persone particolarmente sensibili alle
+sostanze chimiche.
+AVVERTENZA
+Il refrigerante all'interno dell'unità è
+leggermente infiammabile, ma di
+norma NON dovrebbe presentare
+perdite. Se il refrigerante dovesse
+fuoriuscire nella stanza, entrando in
+contatto con la fiamma di un
+bruciatore, un riscaldatore o una
+cucina a gas, potrebbe causare un
+incendio o la formazione di gas nocivo.
+Spegnere i dispositivi di riscaldamento
+infiammabili, arieggiare l'ambiente e
+contattare il rivenditore da cui è stato
+acquistato l'apparecchio.
+NON utilizzare l'unità finché un tecnico
+qualificato non ha effettuato la
+riparazione del componente che
+presenta una perdita di refrigerante.
+AVVERTENZA
+▪ NON perforare né bruciare i
+componenti del ciclo del refrigerante.
+▪ NON utilizzare materiali per la pulizia
+o mezzi per accelerare il processo di
+sbrinamento diversi da quelli
+consigliati dal produttore.
+▪ Prestare attenzione al fatto che il
+refrigerante all'interno del sistema è
+inodore.
+AVVERTENZA
+L'apparecchiatura deve essere
+conservata in una stanza senza fonti di
+accensione in funzionamento continuo
+(esempio: fiamme libere,
+apparecchiature a gas in funzione o
+riscaldatori elettrici in funzione).
+PERICOLO: RISCHIO DI SCOSSA
+ELETTRICA
+Prima di pulire il climatizzatore o il filtro
+dell'aria, interromperne il
+funzionamento e spegnere tutte le fonti
+
+---------------------------------------- [FINE PAGINA 4] ----------------------------------------
+
+3 Informazioni sul sistema
+Manuale d'uso
+5
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+di alimentazione. In caso contrario,
+potrebbero verificarsi folgorazioni o
+lesioni alle persone.
+ATTENZIONE
+Dopo un uso prolungato, verificare le
+condizioni dei raccordi e del supporto
+dell'unità. Se sono danneggiati, l'unità
+potrebbe cadere e provocare danni alle
+persone.
+ATTENZIONE
+NON toccare le alette dello
+scambiatore di calore. Le alette sono
+affilate e potrebbero causare lesioni da
+taglio.
+AVVERTENZA
+Quando si lavora ad altezze elevate
+occorre fare molta attenzione con le
+scale a pioli.
+AVVERTENZA
+L'uso di detergenti o procedure di
+pulizia non adeguati può provocare
+danni ai componenti in plastica o
+perdite d'acqua. Eventuali schizzi di
+detergente sui componenti elettrici,
+come i motori, può provocare guasti,
+emissione di fumo o incendi.
+PERICOLO: RISCHIO DI SCOSSA
+ELETTRICA
+Prima di procedere alla pulizia,
+arrestare l'apparecchio, spegnere
+l'interruttore o staccare il cavo di
+alimentazione. In caso contrario,
+potrebbero verificarsi folgorazioni o
+lesioni alle persone.
+AVVERTENZA
+Interrompere il funzionamento e
+disattivare l'alimentazione se si
+verificano anomalie (puzza di
+bruciato, ecc.).
+Se l'unità continua a funzionare in tali
+circostanze, possono verificarsi guasti,
+scosse elettriche o incendi. Rivolgersi
+al rivenditore.
+3 Informazioni sul sistema
+ATTENZIONE: MATERIALE LEGGERMENTE
+INFIAMMABILE
+Il refrigerante contenuto nell'unità è leggermente
+infiammabile.
+ATTENZIONE
+L'unità interna contiene l'apparecchiatura radio; la distanza
+di separazione tra la parte irradiante dell'apparecchiatura e
+l'utente deve essere di almeno 10 cm.
+NOTA
+NON utilizzare il sistema per scopi diversi. NON utilizzare
+l'unità per raffreddare strumenti di precisione, cibo, piante,
+animali e opere d'arte. Ne potrebbe conseguire un
+deterioramento della qualità.
+3.1 Unità interna
+ATTENZIONE
+NON inserire mani, corde o altri oggetti nell'ingresso o
+nell'uscita dell'aria. La rotazione del ventilatore ad alta
+velocità può causare lesioni.
+INFORMAZIONI
+Il livello di pressione sonora è inferiore a 70 dBA.
+AVVERTENZA
+▪ NON modificare, smontare, rimuovere, reinstallare o
+riparare l'unità da soli. Uno smontaggio o
+un'installazione errati potrebbero favorire il rischio di
+folgorazione o incendio. Contattare il rivenditore.
+▪ In caso di perdite accidentali di refrigerante, accertarsi
+che non ci siano fiamme libere. Il refrigerante è
+completamente sicuro, non è tossico ed è leggermente
+infiammabile, ma può generare gas nocivi nel caso di
+fughe accidentali in un ambiente in cui sono presenti
+vapori combustibili prodotti, ad esempio, da riscaldatori
+a ventilatore, fornelli a gas, ecc. Consultare sempre
+personale qualificato per accertarsi che il punto di
+perdita venga riparato o comunque corretto prima di
+mettere di nuovo in funzione l'unità.
+INFORMAZIONI
+Le figure che seguono sono solo un esempio e potrebbero
+NON corrispondere del tutto al layout sistema in questione.
+3.1.1 Display dell'unità interna
+ON/
+OFF
+a
+b
+c
+d
+e
+a Ricevitore del segnale per l'interfaccia utente
+b Spia di funzionamento
+c Spia del timer
+d Spia Intelligent Eye
+e Pulsante ON/OFF
+Pulsante ON/OFF
+Se l'interfaccia utente è assente, è possibile utilizzare il pulsante di
+accensione/spegnimento sull'unità interna per avviare/interrompere il
+funzionamento. All'avvio del funzionamento mediante questo
+pulsante, vengono utilizzate le seguenti impostazioni:
+
+---------------------------------------- [FINE PAGINA 5] ----------------------------------------
+
+4 Prima dell'uso
+Manuale d'uso
+6
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+▪ Modalità di funzionamento = Automatica
+▪ Impostazione temperatura = 25°C
+▪ Tasso del flusso d'aria = Automatico
+3.2 Informazioni sull'interfaccia utente
+▪ Luce diretta del sole. NON esporre l'interfaccia utente alla luce
+diretta del sole.
+▪ Polvere. La presenza di polvere sul trasmettitore o ricevitore di
+segnale ne riduce la sensibilità. Togliere la polvere con un panno
+morbido.
+▪ Luci a fluorescenza. Potrebbe essere impossibile trasmettere e
+ricevere segnali se nell'ambiente sono presenti lampade a
+fluorescenza. In tal caso, contattare l'installatore.
+▪ Altri apparecchi. Se i segnali dell'interfaccia utente azionano altri
+apparecchi, spostare tali apparecchi o contattare l'installatore.
+▪ Tende. Accertarsi che il segnale tra l'unità e l'interfaccia utente
+NON sia bloccato da tende o altri oggetti.
+NOTA
+▪ NON lasciare cadere l'interfaccia utente.
+▪ NON far venire a contatto con l'acqua l'interfaccia
+utente.
+3.2.1 Componenti: Interfaccia utente
+d
+a
+g
+m
+h
+c
+b
+n
+l f
+e
+i
+j
+k
+p
+o
+a Trasmettitore di segnale
+b Display LCD
+c Pulsante di regolazione della temperatura
+d Pulsante ON/OFF
+e Pulsante di oscillazione verticale
+f Pulsante di oscillazione orizzontale
+g Pulsante di funzionamento "Comfort airflow" e "Intelligent
+Eye"
+h Pulsante di selezione
+i Pulsante dell'orologio e luminosità del display dell'unità
+interna
+j Pulsanti ACCENSIONE/SPEGNIMENTO del timer
+k Pulsanti funzionamento del timer settimanale
+l Pulsante funzionamento Flash Streamer (pulizia dell'aria)
+m Pulsante del funzionamento a basso rumore dell'unità
+esterna o Econo
+n Pulsante della modalità
+o Pulsante "Powerful"
+p Pulsante Ventola
+4 Prima dell'uso
+4.1 Inserimento delle batterie
+Le batterie hanno una durata di circa 1 anno.
+1 Rimuovere il coperchio anteriore.
+2 Inserire entrambe le batterie contemporaneamente.
+3 Reinserire il coperchio anteriore.
+2
+3
+1
+AAA.LR03
+INFORMAZIONI
+▪ Il livello ridotto di carica della batteria è indicato dal
+lampeggiamento del display LCD.
+▪ Sostituire SEMPRE entrambe le batterie
+contemporaneamente.
+4.2 Montaggio del supporto di
+interfaccia utente
+cba
+2×
+a Interfaccia utente
+b Viti (non in dotazione)
+c Supporto di interfaccia utente
+1 Scegliere una posizione in cui i segnali possano raggiungere
+l'unità.
+2 Fissare il supporto con le viti alla parete o in una posizione
+simile.
+3 Appendere l'interfaccia utente al relativo supporto.
+4.3 Impostazione dell'orologio
+Nota: Se l'ora NON è impostata, 
+ , 
+ e 
+ lampeggiano.
+1 Premere 
+ .
+Risultato: 
+ e 
+ lampeggiano
+
+---------------------------------------- [FINE PAGINA 6] ----------------------------------------
+
+5 Funzionamento
+Manuale d'uso
+7
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+2 Premere 
+ o 
+ per impostare il giorno corrente della
+settimana.
+3 Premere 
+ .
+Risultato: 
+ lampeggia.
+4 Premere 
+ o 
+ per impostare l'ora corretta.
+Nota: Tenendo premuto 
+ o 
+ , l'impostazione dell'ora aumenta
+o diminuisce rapidamente.
+5 Premere 
+ .
+Risultato: L'impostazione è terminata. 
+ lampeggia.
+4.4 Impostazione della luminosità del
+display dell'unità interna
+1 Tenere premuto 
+ per almeno 2  secondi ogni volta che si
+desidera cambiare l'impostazione.
+Risultato: La luminosità verrà cambiata nell'ordine: alta, bassa,
+disattivata.
+4.5 Attivazione dell'alimentazione
+elettrica
+1 Accendere l'interruttore.
+Risultato: L'aletta dell'unità interna si aprirà e si chiuderà per
+impostare la posizione di riferimento.
+5 Funzionamento
+5.1 Portata di funzionamento
+Per un funzionamento sicuro ed efficiente, utilizzare il sistema
+all'interno dei seguenti range di temperatura e umidità.
+In combinazione con unità esterna RZAG
+Raffreddamento e
+deumidificazione
+(
+a) (b)
+Riscaldamento
+(a)
+Temperatura esterna –20~52°C DB –20~24°C DB
+-21~18°C WB
+Temperatura interna 17~38°C DB
+12~28°C WB
+10~27°C DB
+Umidità interna ≤80%
+(b)
+—
+( a )
+Un dispositivo di sicurezza potrebbe arrestare il funzionamento
+del sistema quando l'unità supera il proprio intervallo di
+funzionamento.
+( b )
+Potrebbero verificarsi condensa e gocciolamento dell'acqua
+quando l'unità supera il proprio intervallo di funzionamento.
+In combinazione con unità esterne: RXM71R, 2MXM, 3MXM,
+4MXM, 5MXM
+Raffreddamento e
+deumidificazione
+(
+a) (b)
+Riscaldamento
+(a)
+Temperatura esterna -10~46°C DB -15~24°C DB
+-15~18°C WB
+Temperatura interna 18~37°C DB
+14~28°C WB
+10~30°C DB
+Umidità interna ≤80%
+(b)
+—
+( a )
+Un dispositivo di sicurezza potrebbe arrestare il funzionamento
+del sistema quando l'unità supera il proprio intervallo di
+funzionamento.
+( b )
+Potrebbero verificarsi condensa e gocciolamento dell'acqua
+quando l'unità supera il proprio intervallo di funzionamento.
+In combinazione con altre unità esterne
+Raffreddamento e
+deumidificazione
+(
+a) (b)
+Riscaldamento
+(a)
+Temperatura esterna -10~50°C DB –20~24°C DB
+-21~18°C WB
+Temperatura interna 18~37°C DB
+14~28°C WB
+10~30°C DB
+Umidità interna ≤80%
+(b)
+—
+( a )
+Un dispositivo di sicurezza potrebbe arrestare il funzionamento
+del sistema quando l'unità supera il proprio intervallo di
+funzionamento.
+( b )
+Potrebbero verificarsi condensa e gocciolamento dell'acqua
+quando l'unità supera il proprio intervallo di funzionamento.
+5.2 Modalità di funzionamento e
+setpoint della temperatura
+Quando. Regolare la modalità di funzionamento del sistema e
+impostare la temperatura quando lo si desidera per:
+▪ Riscaldare o raffreddare una stanza
+▪ Far circolare aria in una stanza senza riscaldamento o
+raffreddamento
+▪ Diminuire l'umidità in una stanza
+Cosa. Il sistema funziona in maniera diversa a seconda della
+selezione dell'utente.
+INFORMAZIONI
+Modalità di funzionamento: il raffreddamento , la
+deumidificazione e il funzionamento automatico NON
+sono disponibili per la versione per solo riscaldamento
+del prodotto.
+Impostazione Descrizione
+ Automatica
+Il sistema raffredda o riscalda una
+stanza al setpoint di temperatura. Se
+necessario passa automaticamente tra
+raffreddamento e riscaldamento.
+ Deumidificazione
+Il sistema diminuisce l'umidità in una
+stanza.
+ Riscaldamento
+Il sistema riscalda una stanza al
+setpoint di temperatura.
+ Raffreddamento
+Il sistema raffredda una stanza al
+setpoint di temperatura.
+ Ventilazione
+Il sistema controlla solo il flusso d'aria
+(direzione e tasso del flusso d'aria).
+Il sistema NON controlla la temperatura.
+
+---------------------------------------- [FINE PAGINA 7] ----------------------------------------
+
+5 Funzionamento
+Manuale d'uso
+8
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+Informazioni aggiuntive:
+▪ Temperatura esterna. L'effetto di raffreddamento o
+riscaldamento del sistema diminuisce quando la temperatura
+esterna è troppo alta o troppo bassa.
+▪ Funzionamento in sbrinamento. Durante il funzionamento di
+riscaldamento, sull'unità esterna potrebbe formarsi del ghiaccio
+che diminuisce la capacità di riscaldamento. In tal caso, il sistema
+passa automaticamente al funzionamento in sbrinamento per
+rimuovere il ghiaccio. Durante il funzionamento in sbrinamento,
+l'unità interna NON emette aria calda.
+5.2.1 Avvio/arresto della modalità di
+funzionamento e impostazione della
+temperatura
+: L'unità è in funzione.
+: Modalità di funzionamento = Automatica
+: Modalità di funzionamento =
+Deumidificazione
+: Modalità di funzionamento =
+Raffreddamento
+: Modalità di funzionamento = Riscaldamento
+: Modalità di funzionamento = Solo
+ventilazione
+: Mostra la temperatura impostata.
+1 Premere 
+ una o più volte per selezionare la modalità di
+funzionamento.
+Risultato: La modalità verrà impostata nella seguente
+sequenza:
+2 Premere 
+ per avviare il funzionamento.
+Risultato: 
+ e la modalità selezionata vengono visualizzati
+sul display LCD.
+3 Premere 
+ o 
+ una o più volte per ridurre o aumentare la
+temperatura .
+Funzionament
+o in
+raffreddament
+o
+Funzionament
+o in
+riscaldamento
+Funzionament
+o automatico
+Funzionament
+o in
+deumidificazio
+ne o solo
+ventilazione
+18~32°C 10~30°C 18~30°C —
+Nota: Quando si utilizza la modalità in deumidificazione o solo
+ventilazione , non è possibile regolare la temperatura.
+4 Premere 
+ per interrompere il funzionamento.
+Risultato: 
+ scompare dal display LCD. La spia di
+funzionamento si spegne.
+5.3 Tasso del flusso d'aria
+1 Premere 
+ per scegliere:
+5 livelli di tasso del flusso d'aria, da "
+ " a "
+ "
+Funzionamento con tasso del flusso d'aria automatico
+Funzionamento a basso rumore dell'unità interna.
+Quando il tasso del flusso dell'aria è impostato su "
+", il rumore generato dall'unità si riduce.
+INFORMAZIONI
+▪ Se l'unità raggiunge il setpoint della temperatura in
+modalità di raffreddamento o di riscaldamento, la
+ventola smetterà di funzionare.
+▪ Quando si utilizza la modalità di funzionamento in
+Deumidificazione, NON È POSSIBILE regolare
+l'impostazione del tasso del flusso d'aria.
+5.3.1 Regolazione del tasso del flusso dell'aria
+1 Premere 
+ per cambiare l'impostazione del flusso d'aria nella
+seguente sequenza:
+5.4 Direzione aria
+Quando. Regolare la direzione del flusso d'aria come desiderato.
+Cosa. Il sistema dirige il flusso d'aria in maniera diversa, a seconda
+della selezione dell'utente (posizione oscillante o fissa). Ciò è
+possibile con il movimento dei deflettori orizzontali (alette) o i
+deflettori verticali (feritoie).
+Impostazione Direzione del flusso d'aria
+ Oscillazione verticale
+automatica
+Si muove su e giù.
+ Oscillazione
+orizzontale automatica
+Si muove da un lato all'altro.
++
+ Direzione del
+flusso dell'aria
+tridimensionale (3D)
+Si muove alternatamente su e giù e da
+un lato all'altro
+[—] Resta in una posizione fissa.
+ATTENZIONE
+Usare SEMPRE un'interfaccia utente per regolare le
+posizioni delle alette e delle feritoie. Quando le alette e le
+feritoie oscillano e le si sposta forzatamente con le mani, il
+meccanismo si rompe.
+L'intervallo di movimento del deflettore varia in base alla modalità di
+funzionamento. Il deflettore si arresta nella posizione superiore
+quando il tasso del flusso d'aria viene ridotto durante l'impostazione
+dell'oscillazione verso l'alto e verso il basso.
+5.4.1 Regolazione della direzione del flusso
+dell'aria verticale
+1 Premere 
+ .
+Risultato: 
+ appare sul display LCD. Le alette (deflettori
+orizzontali) inizieranno ad oscillare.
+2 Per utilizzare una posizione fissa, premere 
+ quando le
+alette raggiungono la posizione desiderata.
+Risultato: 
+ scompare dal display LCD. Le alette si fermano.
+5.4.2 Regolazione della direzione del flusso
+dell'aria orizzontale
+1 Premere 
+ .
+Risultato: 
+ appare sul display LCD. Le feritoie (deflettori
+verticali) inizieranno ad oscillare.
+2 Per utilizzare una posizione fissa, premere 
+ quando le
+feritoie raggiungono la posizione desiderata.
+
+---------------------------------------- [FINE PAGINA 8] ----------------------------------------
+
+5 Funzionamento
+Manuale d'uso
+9
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+Risultato: 
+ scompare dal display LCD. Le feritoie si
+fermano.
+INFORMAZIONI
+Quando l'unità è installata in un angolo di una stanza, la
+direzione delle feritoie deve essere distante dalla parete.
+L'efficienza sarà ridotta se una parete blocca l'aria.
+5.4.3 Utilizzo della direzione del flusso dell'aria
+3D
+1 Premere 
+ e 
+ .
+Risultato: 
+ e 
+ vengono visualizzati sul display LCD. Le
+alette (deflettori orizzontali) e le feritoie (deflettori verticali)
+inizieranno ad oscillare.
+2 Per utilizzare una posizione fissa, premere 
+ e 
+quando le alette e le feritoie raggiungono la posizione
+desiderata.
+Risultato: 
+ e 
+ scompaiono dal display LCD. Le alette e
+le feritoie si fermano.
+5.5 Funzionamento "Comfort airflow"
+e "Intelligent Eye"
+È possibile utilizzate il funzionamento "Comfort airflow" e "Intelligent
+Eye" separatamente, o combinarli.
+5.5.1 Funzionamento "Comfort airflow"
+Questo funzionamento può essere utilizzato nella modalità di
+riscaldamento o di raffreddamento . Fornirà un flusso d'aria
+confortevole che NON sarà a contatto diretto con le persone. Il
+sistema imposta automaticamente la posizione fissa del flusso d'aria
+verso l'alto nella modalità di funzionamento in Raffreddamento e
+verso il basso nella modalità di funzionamento in Riscaldamento.
+Modalità di funzionamento in
+raffreddamento
+Modalità di funzionamento in
+riscaldamento
+INFORMAZIONI
+NON è possibile usare contemporaneamente il
+funzionamento "Powerful" e il funzionamento "Comfort
+airflow". L'ultima funzione selezionata ha la priorità. Se si
+seleziona l'oscillazione automatica verticale, il
+funzionamento "Comfort airflow" sarà annullato.
+5.5.2 Funzionamento "Intelligent Eye"
+Il sistema regola automaticamente la direzione del flusso d'aria e la
+temperatura a seconda del rilevamento dei movimenti umani per
+evitare il contatto diretto con le persone. Se non viene rilevato alcun
+movimento per 20 minuti, il sistema va in modalità di funzionamento
+a risparmio energetico:
+Informazioni sul sensore Intelligent Eye
+NOTA
+▪ NON colpire né spingere il sensore Intelligent Eye,
+poiché potrebbero verificarsi malfunzionamenti.
+▪ NON collocare oggetti di grandi dimensioni nei pressi
+del sensore "Intelligent Eye".
+INFORMAZIONI
+NON è possibile usare il funzionamento Impostazione
+notte o Powerful in contemporanea al funzionamento
+Intelligent Eye. L'ultima funzione selezionata ha la priorità.
+▪ Sensibilità di rilevamento. Varia a seconda della posizione, del
+numero di persone nella stanza, dell'intervallo di temperatura, ecc.
+▪ Errori di rilevamento. Il sensore può rilevare erroneamente
+animali domestici, luce del sole, tende in movimento, ecc.
+5.5.3 Avvio/Arresto del funzionamento
+"Comfort" e "Intelligent Eye"
+1 Premere 
+ una o più volte.
+Risultato: L'impostazione verrà modificata nella seguente
+sequenza:
+Display Funzionamento
+"Comfort airflow"
+"Intelligent Eye"
++
+"Comfort airflow" e "Intelligent Eye"
+— Entrambi disattivati
+Nota: Se sono presenti persone nei pressi del lato frontale dell'unità
+interna o se ci sono troppe persone, usare contemporaneamente
+entrambi i tipi di funzionamento.
+2 Per interrompere il funzionamento, premere 
+ finché
+entrambi i simboli non scompaiono dal display LCD.
+5.6 Funzionamento in modalità
+"Powerful"
+Questa operazione massimizza con rapidità l'effetto del
+raffreddamento/riscaldamento in qualsiasi modalità di
+funzionamento. È possibile ottenere la capacità massima.
+INFORMAZIONI
+NON è possibile usare il funzionamento "Powerful" insieme
+al funzionamento "Econo", "Comfort airflow", "Intelligent
+Eye" e al funzionamento a basso rumore dell'unità esterna.
+L'ultima funzione selezionata ha la priorità.
+Il funzionamento "Powerful" NON aumenta la capacità
+dell'unità se quest'ultimo è già in funzione alla massima
+capacità.
+5.6.1 Avvio/Arresto del funzionamento
+"Powerful"
+1 Premere 
+ per iniziare.
+Risultato: 
+ viene visualizzato sul display LCD. Il
+funzionamento "Powerful" dura per 20  minuti; dopodiché, il
+funzionamento torna alla modalità precedentemente impostata.
+2 Premere 
+ per interrompere il funzionamento.
+Risultato: 
+ scompare dal display LCD.
+Nota: Il funzionamento "Powerful" può essere impostato solo
+quando l'unità è in funzione. Premendo 
+ o modificando la
+modalità di funzionamento, l'operazione viene annullata; 
+scompare dal display LCD.
+
+---------------------------------------- [FINE PAGINA 9] ----------------------------------------
+
+5 Funzionamento
+Manuale d'uso
+10
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+5.7 Funzionamento a basso rumore
+dell'unità esterna ed Econo
+5.7.1 Funzionamento "Econo"
+Questa funzione consente un funzionamento efficiente limitando il
+valore massimo di consumo energetico. Tale funzione è utile se è
+necessario prestare attenzione per assicurare che non scatti alcun
+interruttore di protezione quando il prodotto viene usato insieme ad
+altri apparecchi.
+INFORMAZIONI
+▪ NON è possibile usare contemporaneamente il
+funzionamento "Powerful" e il funzionamento "Econo".
+L'ultima funzione selezionata ha la priorità.
+▪ Il funzionamento "Econo" riduce il consumo energetico
+dell'unità esterna limitando la velocità di rotazione del
+compressore. Se il consumo energetico è già basso, il
+funzionamento "Econo" NON ridurrà ulteriormente il
+consumo energetico.
+5.7.2 Funzionamento a basso rumore dell'unità
+esterna
+Utilizzare il funzionamento a basso rumore dell'unità esterna quando
+si desidera diminuire il livello di rumore dell'unità esterna. Esempio:
+Di notte.
+INFORMAZIONI
+▪ NON è possibile usare contemporaneamente il
+funzionamento "Powerful" e il Funzionamento a basso
+rumore dell'unità esterna. L'ultima funzione selezionata
+ha la priorità.
+▪ Questa funzione è disponibile solo nel funzionamento
+Automatico, in Raffreddamento e in Riscaldamento.
+▪ Il funzionamento a basso rumore dell'unità esterna
+limita la velocità di rotazione del compressore. Se la
+velocità di rotazione del compressore è già bassa, il
+funzionamento a basso rumore dell'unità esterna NON
+ridurrà ulteriormente la velocità di rotazione del
+compressore.
+5.7.3 Avvio/arresto del funzionamento a basso
+rumore dell'unità esterna ed Econo
+1 Premere 
+ una o più volte.
+Risultato: L'impostazione verrà modificata nella seguente
+sequenza:
+Visualizza Funzionamento
+Econo
+Basso rumore dell'unità esterna
++
+ Funzionamento a basso rumore
+dell'unità esterna ed Econo
+— Entrambi disattivati
+2 Per interrompere il funzionamento, premere 
+ finché
+entrambi i simboli non scompaiono dal display LCD.
+Nota: Il funzionamento Econo può essere impostato solo quando
+l'unità è in funzione. Se si preme 
+ , l'impostazione verrà annullata
+e 
+ scompare dal display LCD.
+Nota: 
+ resta sul display LCD anche se si disattiva l'unità
+utilizzando l'interruttore ON/OFF dell'interfaccia utente o dell'unità
+interna.
+5.8 Funzionamento del Flash Streamer
+(pulizia dell'aria)
+Streamer genera un flusso di elettroni ad alta velocità con un'elevata
+potenza ossidante, che riduce i cattivi odori. Insieme al filtro
+deodorante al titanio rivestito di apatite, al filtro antiallergico in
+argento per la purificazione dell'aria e ai filtri dell'aria, questa
+funzione pulisce l'aria nella stanza.
+INFORMAZIONI
+▪ Gli elettroni ad alta velocità sono generati e si spostano
+all'interno dell'unità per assicurare un funzionamento
+sicuro.
+▪ Lo scarico di Streamer può generare un suono di
+effervescenza.
+▪ Se il flusso d'aria si indebolisce, lo scarico di Streamer
+può arrestarsi temporaneamente per impedire l'odore
+di ozono.
+5.8.1 Come avviare/arrestare il funzionamento
+del Flash Streamer (pulizia dell'aria)
+Requisito preliminare: assicurarsi che l'unità sia in funzione
+(sull'interfaccia utente LCD è visualizzato 
+ ).
+1 Premere 
+ .
+Risultato: sul display LCD viene visualizzato 
+ e l'aria nella
+stanza viene purificata quando l'unità è in funzione.
+2 Per interrompere il funzionamento, premere 
+ .
+Risultato: 
+ scompare dal display LCD e il funzionamento si
+arresta.
+5.9 Funzione di ACCENSIONE/
+SPEGNIMENTO del timer
+Le funzioni del timer sono utili per accendere/spegnere
+automaticamente il climatizzatore di notte o di mattina. È inoltre
+possibile usare le funzioni di ACCENSIONE/SPEGNIMENTO del
+timer in combinazione.
+INFORMAZIONI
+Programmare di nuovo il timer in caso di:
+▪ Spegnimento dell'unità da parte di un interruttore.
+▪ Interruzione dell'alimentazione.
+▪ Dopo la sostituzione delle batterie nell'interfaccia
+utente.
+INFORMAZIONI
+L'orologio DEVE essere correttamente impostato prima di
+utilizzare qualsiasi funzione del timer. Consultare
+"4.3 Impostazione dell'orologio"  [4   6 ] .
+5.9.1 Avvio/Arresto della funzione di
+SPEGNIMENTO del timer
+1 Premere 
+ per iniziare.
+Risultato: sul display LCD viene visualizzato 
+ e
+l'indicazione 
+ lampeggia. 
+ e il giorno della settimana
+scompaiono dal display LCD.
+2 Premere 
+ o 
+ per cambiare l'impostazione dell'ora.
+3 Premere nuovamente 
+ .
+
+---------------------------------------- [FINE PAGINA 10] ----------------------------------------
+
+5 Funzionamento
+Manuale d'uso
+11
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+Risultato: 
+ e l'ora impostata vengono visualizzati sul display
+LCD.
+Risultato: La spia del timer sia accende.
+INFORMAZIONI
+Ogni volta che viene premuto 
+ o 
+ , l'impostazione
+dell'ora avanza di 10 minuti. Tenendo premuto il pulsante,
+l'impostazione cambia rapidamente.
+4 Per interrompere il funzionamento, premere 
+ .
+Risultato: 
+ e 
+ scompaiono dal display LCD e la spia del
+timer si spegne. 
+ e il giorno della settimana vengono visualizzati
+sul display LCD.
+INFORMAZIONI
+Quando si imposta la funzione di ACCENSIONE/
+SPEGNIMENTO del timer, l'impostazione dell'ora viene
+memorizzata. La memoria viene azzerata quando si
+sostituiscono le batterie dell'interfaccia utente.
+Utilizzo della modalità Impostazione notte in
+combinazione con lo SPEGNIMENTO del timer
+Il climatizzatore regola automaticamente l'impostazione
+della temperatura (0,5°C in più nella modalità di
+raffreddamento, 2,0°C in meno nella modalità di
+riscaldamento) per impedire un raffreddamento/
+riscaldamento eccessivo e assicurare una temperatura
+confortevole durante il sonno.
+5.9.2 Avvio/Arresto della funzione di
+ACCENSIONE del timer
+1 Premere 
+ per iniziare.
+Risultato: sul display LCD viene visualizzato 
+ e
+l'indicazione 
+ lampeggia. 
+ e il giorno della settimana
+scompaiono dal display LCD.
+2 Premere 
+ o 
+ per cambiare l'impostazione dell'ora.
+3 Premere nuovamente 
+ .
+Risultato: 
+ e l'ora impostata vengono visualizzati sul display
+LCD. La spia del timer sia accende.
+INFORMAZIONI
+Ogni volta che viene premuto 
+ o 
+ , l'impostazione
+dell'ora avanza di 10 minuti. Tenendo premuto il pulsante,
+l'impostazione cambia rapidamente.
+4 Per interrompere il funzionamento, premere 
+ .
+Risultato: 
+ e 
+ scompaiono dal display LCD e la
+spia del timer si spegne. 
+ e il giorno della settimana vengono
+visualizzati sul display LCD.
+5.9.3 Combinazione delle funzioni di
+ACCENSIONE e SPEGNIMENTO del timer
+1 Per impostare i timer, fare riferimento a "5.9.1  Avvio/Arresto
+della funzione di SPEGNIMENTO del timer"  [4   10 ] e a
+"5.9.2  Avvio/Arresto della funzione di ACCENSIONE del
+timer"  [4   11 ] .
+Risultato: 
+ e 
+ vengono visualizzati sul display LCD.
+Esempio:
+Display Ora attuale Impostata
+mentre…
+Funzionament
+o
+6:00 l'unità è in
+funzione.
+Si arresta alle
+7:00 e inizia alle
+14:00.
+l'unità NON è in
+funzione.
+Inizia alle 14:00.
+Nota: Se l'impostazione del timer è attiva, l'ora attuale NON viene
+visualizzata sul display LCD.
+5.10 Funzionamento del timer
+settimanale
+Con questo funzionamento è possibile salvare fino a 4 impostazioni
+del timer per ogni giorno della settimana.
+Esempio: Creare un'impostazione diversa da lunedì a venerdì e
+un'impostazione diversa per il weekend.
+Giorno della settimana Impostazione di esempio
+Lunedì
+▪ Effettuare fino a
+4 impostazioni.
+6:00 8:30 17:30
+25°C 27°C25°C
+22:00
+1 2 3 4
+ON OFF ON OFF
+Dal martedì al venerdì
+▪ Usare la modalità di
+copia se le impostazioni
+sono uguali a quelle per
+il lunedì.
+6:00 8:30 17:30
+25°C 27°C25°C
+22:00
+1 2 3 4
+ON OFF ON OFF
+Sabato
+▪ Nessuna impostazione
+del timer
+—
+Domenica
+▪ Effettuare fino a
+4 impostazioni.
+8:00 10:00 19:00 21:00
+27°C 27°C25°C
+ON OFF OFF ON
+1 2 3 4
+▪ Impostazione ON-ON-ON-ON. Consente di programmare la
+modalità di funzionamento e di impostare la temperatura.
+▪ Impostazione OFF-OFF-OFF-OFF. È possibile impostare solo
+l'ora di spegnimento per ogni giorno.
+Nota: assicurarsi di dirigere l'interfaccia utente verso l'unità interna e
+verificare la presenza di un segnale di ricezione durante
+l'impostazione del funzionamento del timer settimanale.
+INFORMAZIONI
+L'orologio DEVE essere correttamente impostato prima di
+utilizzare qualsiasi funzione del timer. Consultare
+"4.3 Impostazione dell'orologio"  [4   6 ] .
+INFORMAZIONI
+▪ NON è possibile usare contemporaneamente il
+funzionamento di timer settimanale e accensione/
+spegnimento con timer. Il funzionamento di
+accensione/spegnimento con timer ha la priorità. Il
+timer settimanale sarà in modalità standby, 
+scompare dal display LCD. Quando la modalità di
+accensione/spegnimento con timer è terminata, si
+attiva il timer settimanale.
+▪ Con il timer settimanale, è possibile impostare il giorno
+della settimana, la modalità di accensione/spegnimento
+con timer, l'ora e la temperatura (solo per timer
+ATTIVO). Le altre impostazioni sono basate sulla
+precedente impostazione di ACCENSIONE del timer.
+
+---------------------------------------- [FINE PAGINA 11] ----------------------------------------
+
+5 Funzionamento
+Manuale d'uso
+12
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+5.10.1 Impostazione del funzionamento del timer
+settimanale
+1 Premere 
+ .
+Risultato: Vengono visualizzati il giorno della settimana e il
+numero di prenotazione del giorno corrente.
+2 Premere 
+ o 
+ per selezionare il giorno della settimana e il
+numero di prenotazione.
+3 Premere 
+ .
+Risultato: Il giorno della settimana è impostato. 
+ e 
+lampeggiano.
+4 Premere 
+ o 
+ per selezionare la modalità.
+Risultato: L'impostazione cambia come indicato di seguito:
+Visualizza Funzione
+ACCENSIONE timer
+Timer di spegnimento
+Vuoto Elimina la prenotazione
+5 Premere 
+ .
+Risultato: La modalità di accensione/spegnimento con timer è
+impostata. 
+ e l'ora lampeggiano.
+Nota: Premere 
+ per tornare alla schermata precedente. Se
+si seleziona "vuoto", continuare dal punto 9.
+6 Premere 
+ o 
+ per impostare l'ora. L'ora può essere
+impostata tra le 00:00 e le 23:50 con intervalli di 10 minuti.
+7 Premere 
+ .
+Risultato: L'ora è impostata e 
+ e la temperatura
+lampeggiano.
+Nota: Premere 
+ per tornare alla schermata precedente. Se
+è selezionato il timer di spegnimento, continuare dal punto 9.
+8 Premere 
+ o 
+ per selezionare la temperatura desiderata.
+Nota: La temperatura impostata per il timer settimanale viene
+visualizzata solo quando si imposta la modalità timer settimanale.
+INFORMAZIONI
+La temperatura può essere impostata tra 10 e 32°C
+sull'interfaccia utente, tuttavia:
+▪ In modalità di funzionamento in raffreddamento e di
+funzionamento automatico, l'unità funzionerà come
+minimo a 18°C anche se è impostata tra 10 e 17°C;
+▪ in modalità di funzionamento in riscaldamento e in
+modalità automatica, l'unità funzionerà come massimo
+a 30°C anche se è impostata tra 31 e 32°C.
+9 Premere 
+ .
+Risultato: La temperatura e l'ora sono impostate per
+l'attivazione del timer. L'ora è impostata per la
+DISATTIVAZIONE del timer. La spia del timer sia accende in
+arancione.
+Risultato: Viene visualizzata la schermata di nuova
+prenotazione.
+10 Ripetere la procedura precedente per impostare un'altra
+prenotazione o premere 
+ per completare l'impostazione.
+Risultato: 
+ viene visualizzato sul display LCD.
+Nota: È possibile copiare una prenotazione con le stesse
+impostazioni per un altro giorno. Consultare "5.10.2  Copia delle
+prenotazioni"  [4   12 ] .
+5.10.2 Copia delle prenotazioni
+È possibile copiare la prenotazione creata per un altro giorno. La
+completa prenotazione del giorno selezionato della settimana verrà
+copiata.
+1 Premere 
+ .
+2 Premere 
+ o 
+ per selezionare la settimana da copiare.
+3 Premere 
+ .
+Risultato: La prenotazione del giorno selezionato della
+settimana verrà copiata.
+4 Premere 
+ o 
+ per impostare il giorno della settimana di
+destinazione.
+5 Premere 
+ .
+Risultato: L'intera prenotazione viene copiata nel giorno selezionato
+e la spia del timer si accende in arancione.
+Nota: Per copiare in un altro giorno, ripetere la procedura.
+6 Premere 
+ per completare l'impostazione.
+Risultato: 
+ viene visualizzato sul display LCD.
+Nota: Se si modifica l'impostazione della prenotazione dopo la
+copia, fare riferimento a "5.10.1 Impostazione del funzionamento del
+timer settimanale"  [4   12 ] .
+5.10.3 Conferma di prenotazioni
+È possibile confermare se tutte le prenotazioni sono impostate in
+base alle proprie esigenze.
+1 Premere 
+ .
+Risultato: Vengono visualizzati il giorno della settimana e il
+numero di prenotazione del giorno corrente.
+
+---------------------------------------- [FINE PAGINA 12] ----------------------------------------
+
+5 Funzionamento
+Manuale d'uso
+13
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+2 Premere 
+ o 
+ per selezionare il giorno della settimana e il
+numero di prenotazione da confermare e vedere i dettagli della
+prenotazione.
+Nota: Per modificare l'impostazione della prenotazione, fare
+riferimento a "5.10.1  Impostazione del funzionamento del timer
+settimanale"  [4   12 ] .
+3 Premere 
+ per uscire dalla modalità di conferma.
+5.10.4 Disattivare o riattivare il funzionamento
+del Timer settimanale
+1 Per disattivare l'impostazione Settimanale, premere 
+mentre 
+ viene visualizzato sul display LCD.
+Risultato: 
+ scompare dal display LCD e la spia del timer si
+spegne.
+2 Per riattivare il timer settimanale, premere di nuovo 
+ .
+Risultato: Viene utilizzata l'ultima modalità di prenotazione
+impostata.
+5.10.5 Eliminazione di prenotazioni
+Eliminazione di prenotazioni individuali
+Utilizzare questa funzione se si desidera eliminare una singola
+impostazione della prenotazione.
+1 Premere 
+ .
+Risultato: Vengono visualizzati il giorno della settimana e il
+numero di prenotazione.
+2 Premere 
+ o 
+ per selezionare il giorno della settimana da
+eliminare.
+3 Premere 
+ .
+Risultato: 
+ , 
+ e 
+ lampeggiano.
+4 Premere 
+ o 
+ e selezionare "vuoto".
+Risultato: L'impostazione cambia come indicato di seguito:
+5 Premere 
+ .
+Risultato: La prenotazione selezionata viene eliminata.
+6 Premere 
+ per uscire.
+Risultato: Le prenotazioni restanti vengono attivate.
+Eliminazione di una prenotazione per ogni giorno
+della settimana
+Usare tale funzione se si desidera eliminare tutte le impostazioni
+delle prenotazioni per un giorno della settimana. È possibile
+utilizzarla durante la modalità di conferma o di impostazione.
+1 Premere 
+ .
+2 Premere 
+ o 
+ per selezionare il giorno della settimana da
+eliminare.
+3 Tenere premuto 
+ per circa 5 secondi.
+Risultato: Tutte le prenotazioni per il giorno selezionato vengono
+eliminate.
+4 Premere 
+ per uscire.
+Risultato: Le prenotazioni restanti vengono attivate.
+Eliminazione di tutte le prenotazione
+Usare tale funzione se si desidera eliminare contemporaneamente
+tutte le prenotazioni per tutti i giorni della settimana. NON è possibile
+utilizzare questa procedura nella modalità di impostazione.
+1 Tenere premuto 
+ per circa 5 secondi mentre si è nella
+visualizzazione predefinita.
+Risultato: Tutte le prenotazioni vengono eliminate.
+5.11 Connessione LAN Wireless
+Il cliente ha la responsabilità di fornire:
+▪ Smartphone o tablet con versione minima supportata di Android o
+iOS specificata su http://www.onlinecontroller.daikineurope.com
+▪ linea Internet e dispositivo di comunicazione come modem, router
+ecc.
+▪ punto di accesso LAN Wireless
+▪ Applicazione gratuita Daikin Residential Controller installata
+5.11.1 Precauzioni per l'uso della rete LAN
+wireless
+NON utilizzare vicino a:
+▪ Apparecchiature mediche. Ad es. persone che utilizzano
+defibrillatori o pacemaker cardiaci. Questo prodotto potrebbe
+causare interferenze elettromagnetiche.
+▪ Apparecchiature a controllo automatico. Ad es. porte
+automatiche o apparecchiature antincendio. Questo prodotto può
+causare un comportamento difettoso dell'apparecchiatura.
+▪ Forno a microonde. Potrebbe influenzare le comunicazioni LAN
+wireless.
+5.11.2 Installazione dell'applicazione Daikin
+Residential Controller
+1 Aprire:
+▪ Google Play per i dispositivi che utilizzano Android.
+▪ App Store per i dispositivi che utilizzano iOS.
+2 Cercare Daikin Residential Controller.
+3 Seguire le indicazioni di installazione sullo schermo.
+5.11.3 Impostazione della connessione wireless
+Esistono due opzioni per collegare l'adattatore wireless al proprio
+dispositivo smart.
+▪ Collegare la LAN wireless direttamente al proprio dispositivo
+smart.
+▪ Collegare la LAN wireless alla propria rete domestica. La rete
+LAN wireless comunicherà con il dispositivo smart nella rete
+domestica utilizzando un modem, un router o un dispositivo simile.
+Per ulteriori informazioni e FAQ, fare riferimento al link:
+http://www.onlinecontroller.daikineurope.com/ .
+1 Arrestare il funzionamento prima di impostare il collegamento
+wireless.
+2 Utilizzare l'interfaccia utente per selezionare il menu di
+configurazione della LAN wireless.
+Nota: quando si utilizza l'interfaccia utente, indirizzarla sempre
+verso il ricevitore del segnale sull'unità.
+Menu Descrizione
+Verifica stato connessione
+Impostazione connessione WPS
+
+---------------------------------------- [FINE PAGINA 13] ----------------------------------------
+
+5 Funzionamento
+Manuale d'uso
+14
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+Menu Descrizione
+Impostazione connessione modalità AP/ RUN
+(SSID + KEY)
+Ripristinare alle impostazioni predefinite di
+fabbrica
+LAN wireless disattivata
+Conferma dello stato di connessione dalla LAN
+wireless
+1 Sul menu della schermata iniziale, tenere premuto 
+ per
+almeno 5 secondi con l'unità disattivata.
+Risultato: Viene visualizzata l'icona SP (menu di
+configurazione della connessione wireless). 
+ lampeggia.
+(5 sec.) 
+2 Premere 
+ per confermare la selezione.
+Risultato: 
+ lampeggia.
+3 Verificare i LED di funzionamento e del timer sul display
+dell'unità interna.
+ON/
+OFF
+a
+b
+a LED di funzionamento
+b LED del timer
+Se il LED di
+funzionament
+o…
+…e il LED del
+timer…
+…allora la LAN wireless è…
+lampeggia lampeggia non collegata
+spento lampeggia a
+intervalli di
+0,5 secondo
+funzionante e pronta alla
+connessione con la rete
+domestica tramite il pulsante
+WPS sul router.
+spento lampeggia a
+intervalli di
+1 secondo
+▪ connessa alla rete
+domestica tramite SSID +
+KEY.
+o
+▪ connessa alla rete
+domestica tramite il
+pulsante WPS sul router.
+4 Premere 
+ per uscire dal menu.
+Risultato: Il display tornerà alla schermata predefinita.
+Collegamento della LAN wireless alla propria rete
+domestica
+È possibile collegare l'adattatore wireless alla propria rete domestica
+utilizzando il:
+▪ Pulsante WPS sul router (se presente),
+▪ il codice SSID e la CHIAVE riportati sull'unità.
+Collegamento mediante il pulsante WPS
+1 Sul menu della schermata iniziale, tenere premuto 
+ per
+almeno 5 secondi con l'unità disattivata.
+Risultato: Viene visualizzato il menu SP 
+ . 
+ lampeggia.
+2 Passare al menu SP  
+ premendo una volta 
+ o 
+ripetutamente.
+1×
+(5 sec.) 
+3 Premere 
+ per confermare la selezione.
+Risultato: 
+ lampeggia. Il timer del LED lampeggia a intervalli
+di 0,5 secondi e il LED di funzionamento è spento.
+4 Premere il pulsante WPS sul proprio dispositivo di
+comunicazione (es. router) entro 1  minuto circa. Consultare il
+manuale del dispositivo di comunicazione.
+Risultato: Se la connessione al dispositivo di comunicazione
+viene eseguita correttamente, il timer del LED lampeggia a
+intervalli di 1 secondo e il LED di funzionamento è spento.
+INFORMAZIONI
+Se non è possibile connettersi al router, provare la
+procedura "Collegamento mediante codice SSID e
+CHIAVE"  [4   14 ] .
+5 Premere 
+ per uscire dal menu.
+Risultato: Il display tornerà alla schermata predefinita.
+Collegamento mediante codice SSID e CHIAVE
+1 Sul menu della schermata iniziale, tenere premuto 
+ per
+almeno 5 secondi con l'unità disattivata.
+Risultato: Viene visualizzato il menu SP 
+ . 
+ lampeggia.
+2 Passare al menu SP  
+ premendo due volte 
+ o 
+ripetutamente.
+2×
+(5 sec.) 
+3 Premere 
+ per confermare la selezione.
+Risultato: 
+ lampeggia. I LED del timer e di funzionamento
+lampeggiano contemporaneamente.
+4 Aprire l'applicazione Daikin Residential Controller sul proprio
+dispositivo smart e seguire i passaggi indicati sullo schermo.
+Risultato: Se la connessione al dispositivo smart viene
+eseguita correttamente, il timer del LED lampeggia a intervalli di
+1 secondo e il LED di funzionamento è spento.
+5 Premere 
+ per uscire dal menu.
+Risultato: Il display tornerà alla schermata predefinita.
+Riportare il collegamento all'impostazione
+predefinita di fabbrica
+Riportare la connessione all'impostazione predefinita di fabbrica
+qualora si desideri:
+▪ scollegare la LAN wireless e il dispositivo di comunicazione (ad
+es. router) o il dispositivo smart,
+▪ ripetere l'impostazione se la connessione non è riuscita.
+1 Sul menu della schermata iniziale, tenere premuto 
+ per
+almeno 5 secondi con l'unità disattivata.
+Risultato: Viene visualizzato il menu SP 
+ . 
+ lampeggia.
+
+---------------------------------------- [FINE PAGINA 14] ----------------------------------------
+
+6 Risparmio energetico e funzionamento ottimale
+Manuale d'uso
+15
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+2 Passare al menu SP  
+ premendo due volte 
+ o 
+ripetutamente.
+2×(5 sec.) 
+3 Tenere premuto 
+ per almeno 2  secondi per confermare la
+selezione.
+Risultato: 
+ lampeggia. I LED di funzionamento e del timer
+lampeggiano contemporaneamente a intervalli di 1  secondo.
+Viene ripristinata l'impostazione predefinita di fabbrica.
+4 Premere 
+ per uscire dal menu.
+Risultato: Il display tornerà alla schermata predefinita.
+Disattivazione della connessione LAN wireless
+Per disattivare la funzione di connessione wireless:
+1 Sul menu della schermata iniziale, premere 
+ per almeno
+5 secondi con l'unità disattivata.
+Risultato: Viene visualizzato il menu SP 
+ . 
+ lampeggia.
+2 Passare al menu SP  
+ premendo una volta 
+ o 
+ripetutamente.
+1×(5 sec.) 
+3 Tenere premuto 
+ per almeno 2  secondi per confermare la
+selezione.
+Risultato: 
+ lampeggia. I LED di funzionamento e del timer
+lampeggiano in maniera alternata a intervalli di 1 secondo. La
+comunicazione è DISATTIVATA.
+4 Premere 
+ per uscire dal menu.
+Risultato: Il display tornerà alla schermata predefinita.
+6 Risparmio energetico e
+funzionamento ottimale
+INFORMAZIONI
+▪ Anche se l'unità viene spenta, si consuma energia
+elettrica.
+▪ Quando l'energia elettrica torna dopo un'interruzione,
+verrà ripresa la modalità precedentemente selezionata.
+ATTENZIONE
+Non esporre MAI bambini piccoli, piante o animali
+direttamente al flusso d'aria.
+AVVERTENZA
+NON mettere oggetti sotto all'unità interna e/o esterna, in
+quanto potrebbero bagnarsi. In caso contrario, potrebbe
+verificarsi un gocciolamento dovuto alla condensa
+nell'unità o nei tubi del refrigerante, oppure all'ostruzione
+del filtro dell'aria o dello scarico, e gli oggetti in questione
+potrebbero sporcarsi o essere danneggiati.
+AVVERTENZA
+NON collocare contenitori di spray infiammabili accanto al
+climatizzatore; NON utilizzare spray vicino all'unità. Ciò
+potrebbe causare incendi.
+ATTENZIONE
+NON azionare il sistema se nel locale è stato utilizzato un
+insetticida a fumigazione. Le sostanze chimiche
+potrebbero depositarsi nell'unità e mettere in pericolo la
+salute delle persone particolarmente sensibili alle sostanze
+chimiche.
+Per un corretto funzionamento del sistema, attenersi alle seguenti
+precauzioni.
+▪ Proteggere la stanza dalla luce diretta del sole durante il
+raffreddamento mediante tende o dispositivi oscuranti.
+▪ Assicurarsi che l'area sia ben ventilata. NON ostruire le aperture
+di ventilazione.
+▪ Aerare spesso. Un utilizzo prolungato implica un'attenzione
+particolare per l'aerazione.
+▪ Tenere chiuse le porte e le finestre. Se porte e finestre rimangono
+aperte, l'aria uscirà dalla stanza riducendo l'effetto di
+raffreddamento o riscaldamento.
+▪ EVITARE un raffreddamento o un riscaldamento eccessivo. Per
+risparmiare energia, mantenere l'impostazione della temperatura
+ad un livello medio.
+▪ Non appoggiare MAI oggetti accanto all'ingresso o all'uscita
+dell'aria dell'unità. in quanto l'effetto di riscaldamento/
+raffreddamento potrebbe ridursi oppure l'unità potrebbe arrestarsi.
+▪ Spegnere l'interruttore principale di alimentazione dell'unità
+quando quest'ultima NON viene utilizzata per lunghi periodi di
+tempo. Se l'interruttore principale di alimentazione rimane acceso,
+l'unità consuma energia. Prima di riavviare l'unità, accendere
+l'interruttore di alimentazione generale 6 ore prima della messa in
+funzione per garantire il corretto funzionamento.
+▪ Potrebbe formarsi della condensa se l'umidità supera l'80% o se
+l'uscita di drenaggio è ostruita.
+▪ Regolare la temperatura della stanza in modo da creare un
+ambiente confortevole. Evitare un riscaldamento o un
+raffreddamento eccessivi. Si prega di notare che potrebbe
+trascorrere un po' di tempo prima che l'ambiente raggiunga la
+temperatura impostata. Prendere in considerazione la possibilità
+di usare le opzioni di impostazione del timer.
+▪ Regolare la direzione del flusso dell'aria per evitare che l'aria
+fredda si raccolga a livello del pavimento o che l'aria calda si
+accumuli a livello del soffitto. (L'aria sale verso il soffitto durante le
+operazioni di raffreddamento o deumidificazione e scende durante
+l'operazione di riscaldamento.)
+▪ Evitare di dirigere il flusso dell'aria sugli occupanti dell'ambiente.
+▪ Utilizzare il sistema entro l'intervallo di temperatura consigliato
+(26~28°C per il raffreddamento e 20~24°C per il riscaldamento)
+per risparmiare energia.
+7 Manutenzione e assistenza
+7.1 Panoramica: Manutenzione e
+assistenza
+L'installatore deve effettuare una manutenzione annuale.
+Informazioni sul refrigerante
+Questo prodotto contiene gas a effetto serra fluorurati. NON liberare
+tali gas nell'atmosfera.
+
+---------------------------------------- [FINE PAGINA 15] ----------------------------------------
+
+7 Manutenzione e assistenza
+Manuale d'uso
+16
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+Tipo di refrigerante: R32
+Valore potenziale di riscaldamento globale (GWP): 675
+NOTA
+Le normative vigenti sui gas fluorurati a effetto serra
+richiedono che la carica di refrigerante dell'unità sia
+indicata sia in peso che in CO
+2
+ equivalente.
+Formula per calcolare la quantità in tonnellate di CO
+2
+equivalente: valore GWP del refrigerante × carica totale di
+refrigerante [in kg] / 1000
+Per ulteriori informazioni, contattare il proprio installatore.
+AVVERTENZA
+Il refrigerante all'interno dell'unità è leggermente
+infiammabile, ma di norma NON dovrebbe presentare
+perdite. Se il refrigerante dovesse fuoriuscire nella stanza,
+entrando in contatto con la fiamma di un bruciatore, un
+riscaldatore o una cucina a gas, potrebbe causare un
+incendio o la formazione di gas nocivo.
+Spegnere i dispositivi di riscaldamento infiammabili,
+arieggiare l'ambiente e contattare il rivenditore da cui è
+stato acquistato l'apparecchio.
+NON utilizzare l'unità finché un tecnico qualificato non ha
+effettuato la riparazione del componente che presenta una
+perdita di refrigerante.
+AVVERTENZA
+▪ NON perforare né bruciare i componenti del ciclo del
+refrigerante.
+▪ NON utilizzare materiali per la pulizia o mezzi per
+accelerare il processo di sbrinamento diversi da quelli
+consigliati dal produttore.
+▪ Prestare attenzione al fatto che il refrigerante all'interno
+del sistema è inodore.
+AVVERTENZA
+L'apparecchiatura deve essere conservata in una stanza
+senza fonti di accensione in funzionamento continuo
+(esempio: fiamme libere, apparecchiature a gas in
+funzione o riscaldatori elettrici in funzione).
+NOTA
+La manutenzione DEVE essere eseguita da un installatore
+autorizzato o da un tecnico dell'assistenza.
+Si consiglia di eseguire la manutenzione almeno una volta
+l'anno. Tuttavia, le leggi vigenti potrebbero imporre
+intervalli di manutenzione più brevi.
+PERICOLO: RISCHIO DI SCOSSA ELETTRICA
+Prima di pulire il climatizzatore o il filtro dell'aria,
+interromperne il funzionamento e spegnere tutte le fonti di
+alimentazione. In caso contrario, potrebbero verificarsi
+folgorazioni o lesioni alle persone.
+AVVERTENZA
+Per prevenire il rischio di elettrocuzione o incendi:
+▪ NON pulire l'unità con acqua.
+▪ NON azionare l'unità con le mani bagnate.
+▪ NON posizionare oggetti contenenti acqua sull'unità.
+ATTENZIONE
+Dopo un uso prolungato, verificare le condizioni dei
+raccordi e del supporto dell'unità. Se sono danneggiati,
+l'unità potrebbe cadere e provocare danni alle persone.
+ATTENZIONE
+NON toccare le alette dello scambiatore di calore. Le alette
+sono affilate e potrebbero causare lesioni da taglio.
+AVVERTENZA
+Quando si lavora ad altezze elevate occorre fare molta
+attenzione con le scale a pioli.
+Sull'unità interna possono essere riportati i seguenti simboli:
+Simbolo Spiegazione
+Misurare la tensione ai terminali dei condensatori del
+circuito principale o dei componenti elettrici prima di
+intervenire.
+7.2 Pulizia dell'unità interna e
+dell'interfaccia utente
+AVVERTENZA
+L'uso di detergenti o procedure di pulizia non adeguati può
+provocare danni ai componenti in plastica o perdite
+d'acqua. Eventuali schizzi di detergente sui componenti
+elettrici, come i motori, può provocare guasti, emissione di
+fumo o incendi.
+NOTA
+▪ NON utilizzare benzina, benzene, solventi, polvere per
+lucidare o liquidi insetticidi. Conseguenza possibile:
+Scolorimento e deformazione.
+▪ NON utilizzare acqua o aria a temperatura superiore a
+40°C. Conseguenza possibile: Scolorimento e
+deformazione.
+▪ NON utilizzare composti di lucidatura.
+▪ NON utilizzare spazzole abrasive. Conseguenza
+possibile: La finitura della superficie potrebbe
+staccarsi.
+▪ L'utente finale non deve MAI occuparsi della pulizia
+delle parti interne dell'unità; tali operazioni devono
+essere eseguite esclusivamente da un tecnico
+dell'assistenza qualificato. Contattare il rivenditore.
+PERICOLO: RISCHIO DI SCOSSA ELETTRICA
+Prima di procedere alla pulizia, arrestare l'apparecchio,
+spegnere l'interruttore o staccare il cavo di alimentazione.
+In caso contrario, potrebbero verificarsi folgorazioni o
+lesioni alle persone.
+1 Pulire con un panno morbido. Se risulta difficile rimuovere le
+macchie, utilizzare acqua o un detergente neutro.
+7.3 Pulizia del pannello anteriore
+1 Pulire il pannello frontale con un panno morbido. Se risulta
+difficile rimuovere le macchie, utilizzare acqua o un detergente
+neutro.
+7.4 Rimozione del pannello anteriore
+1 Tenere il pannello frontale per le relative linguette su entrambi i
+lati ed aprirlo.
+
+---------------------------------------- [FINE PAGINA 16] ----------------------------------------
+
+7 Manutenzione e assistenza
+Manuale d'uso
+17
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+2 Rimuovere il pannello anteriore facendolo scorrere verso
+sinistra o verso destra e tirandolo verso di sé.
+Risultato: L'albero del pannello frontale su 1 lato verrà
+scollegato.
+3 Scollegare l'albero del pannello frontale sull'altro lato nello
+stesso modo.
+a
+a Albero del pannello frontale
+7.5 Pulizia dei filtri dell'aria
+1 Spingere la linguetta al centro di ogni filtro dell'aria, quindi tirare
+verso il basso.
+2 Estrarre i filtri dell'aria.
+21
+Nota: (classi 50~71) il filtro deodorante al titanio rivestito di apatite
+e il filtro antiallergico in argento DEVONO essere rimossi prima di
+pulire il filtro dell'aria.
+3 Rimuovere il filtro deodorante al titanio rivestito di apatite e il
+filtro antiallergico in argento dai 4 fermi.
+a Fermo
+4 Lavare i filtri dell'aria con acqua o pulirli con l'aspirapolvere.
+5 Immergerli in acqua tiepida per circa 10-15 minuti.
+INFORMAZIONI
+▪ Se la polvere NON si elimina facilmente, lavare i filtri
+con un detergente neutro disciolto in acqua tiepida.
+Lasciar asciugare i filtri dell'aria all'ombra.
+▪ Si consiglia di pulire i filtri dell'aria ogni 2 settimane.
+7.6 Pulizia del filtro deodorante al
+titanio rivestito di apatite e del
+filtro antiallergico in argento per la
+purificazione dell'aria
+INFORMAZIONI
+Pulire il filtro con acqua ogni 6 mesi.
+1 Rimuovere:
+▪ per le classi 15~42: filtro antiallergico in argento per la
+purificazione dell'aria dalle linguette
+▪ per le classi 50~71: filtro deodorante al titanio rivestito di apatite
+e filtro antiallergico in argento per la purificazione dell'aria dai 4
+fermi.
+a Fermo
+2 Rimuovere la polvere dal filtro con un'aspirapolvere.
+
+---------------------------------------- [FINE PAGINA 17] ----------------------------------------
+
+8 Individuazione e risoluzione dei problemi
+Manuale d'uso
+18
+CTXM15+FTXM20~42R5V1B + CTXM15+FTXM20~71R2V1B
+Climatizzatore per interni Daikin
+3P485919-11S – 2020.06
+3 Immergere il filtro in acqua tiepida per 10-15 minuti.
+Nota: (classi 50~71) NON rimuovere il filtro dal telaio.
+Classe 15~42
+ Classe 50~71
+4 Dopo il lavaggio, scrollare l'acqua residua e asciugare il filtro
+all'ombra. NON estrarre il filtro durante la rimozione dell'acqua.
+7.7 Sostituzione del filtro deodorante
+al titanio rivestito di apatite e del
+filtro antiallergico in argento per la
+purificazione dell'aria
+INFORMAZIONI
+Sostituire il filtro ogni 3 anni.
+1 Rimuovere il filtro dalle linguette (classe 15~42) o dal telaio
+(classe 50~71) e sostituire il filtro con uno nuovo.
+Classe 15~42 Classe 50~71
+INFORMAZIONI
+▪ NON gettare via il telaio del filtro e riutilizzarlo.
+▪ Smaltire i filtri usati tra i rifiuti non infiammabili.
+Per ordinare il filtro deodorante al titanio rivestito di apatite e il filtro
+antiallergico in argento, contattare il rivenditore.
+Elemento Numero del componente
+Filtro deodorante al titanio - 1 kit KAF970A46
+Filtro antiallergico in argento per
+la purificazione dell'aria - 1 kit
+KAF057A41
+7.8 Reinstallazione del pannello
+anteriore
+1 Fissare il pannello anteriore. Allineare gli alberi con le fessure e
+spingere fino in fondo.
+2 Chiudere lentamente il pannello frontale; premere su entrambi i
+lati e al centro.
+8 Individuazione e risoluzione
+dei problemi
+Se si verifica uno dei seguenti problemi di funzionamento, adottare
+le misure specificate di seguito e rivolgersi al rivenditore di zona.
+AVVERTENZA
+Interrompere il funzionamento e disattivare
+l'alimentazione se si verificano anomalie (puzza di
+bruciato, ecc.).
+Se l'unità continua a funzionare in tali circostanze, possono
+verificarsi guasti, scosse elettriche o incendi. Rivolgersi al
+rivenditore.
+Il sistema DEVE essere riparato da un tecnico qualificato.
+Problema di funzionamento Misura
+Se un dispositivo di sicurezza, quale un
+fusibile, un interruttore o un interruttore
+di dispersione a terra, entra in funzione
+frequentemente, o se l'interruttore di
+accensione/spegnimento NON funziona
+in modo corretto.
+Spegnere l'interruttore
+principale.
+Se l'unità perde acqua. Interrompere il
+funzionamento.
+L'interruttore di azionamento NON
+funziona correttamente.
+Disattivare
+l'alimentazione.
+Se la spia di funzionamento lampeggia,
+è possibile controllare il codice di errore
+sull'interfaccia utente. Per visualizzare il
+codice di errore, consultare la guida di
+riferimento per l'utente.
+Informare l'installatore
+specificando il codice di
+errore.
+Se il sistema NON funziona correttamente per motivi diversi da quelli
+sopra indicati e nessuno dei problemi di funzionamento sopra
+indicati risulta evidente, occorre eseguire degli accertamenti nel
+sistema seguendo le procedure precisate sotto.
+INFORMAZIONI
+Per ulteriori suggerimenti per la risoluzione dei problemi,
+consultare la guida di riferimento disponibile all'indirizzo
+http://www.daikineurope.com/support-and-manuals/
+product-information/ .
+Se, una volta controllati tutti i punti di cui sopra, risulta impossibile
+risolvere il problema da soli, rivolgersi all'installatore e segnalare i
+sintomi, il nome completo del modello dell'unità (possibilmente con il
+numero di produzione) e la data di installazione (indicata sul
+certificato di garanzia).
+9 Smaltimento
+NOTA
+NON cercare di smontare il sistema da soli: lo smontaggio
+del sistema, nonché il trattamento del refrigerante, dell'olio
+e di qualsiasi altra parte, DEVONO essere eseguiti in
+conformità alla legislazione applicabile. Le unità DEVONO
+essere trattate presso una struttura specializzata per il
+riutilizzo, il riciclaggio e il recupero dei materiali.
+
+---------------------------------------- [FINE PAGINA 18] ----------------------------------------
+
+
+
+---------------------------------------- [FINE PAGINA 19] ----------------------------------------
+
+DAIKIN ISITMA VE SOĞUTMA SİSTEMLERİ SAN.TİC. A.Ş.
+İSTANBUL / TÜRKİYE 
+Tel: 0216 453 27 00
+Faks: 0216 671 06 00
+Çağrı Merkezi: 444 999 0
+Web: www.daikin.com.tr
+Gülsuyu Mahallesi, Fevzi Çakmak Caddesi, Burçak Sokak, No:20, 34848 Maltepe 
+3P485919-11S 2020.06
+Copyright 2020 Daikin
+Verantwortung für Energie und Umwelt
+
+---------------------------------------- [FINE PAGINA 20] ----------------------------------------
+

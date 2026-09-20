@@ -45,5 +45,23 @@
       "402944_Manutenzione_ESP.10_R2.7.1-IT.pdf",
       "402944_Servizio_ESP.10_R2.7.1-IT.pdf"
     ]
+  }, 
+
+     {
+    "id": "condizionatore_generico",
+    "macchina": "CONDIZIONATORE",
+    "tipo": "generico",
+    "reference_images": [
+      "reference_images/condizionatore_1.jpg",
+      "reference_images/condizionatore_2.jpg",
+      "reference_images/condizionatore_3.jpg",
+      "reference_images/condizionatore_4.jpg",
+      "reference_images/condizionatore_5.jpg",
+      "reference_images/condizionatore_6.jpg",
+      "reference_images/condizionatore_7.jpg"
+    ],
+    "manuali": [
+      "manuale_condizionatore.pdf"
+    ]
   }
 ]
