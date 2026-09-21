@@ -46,8 +46,14 @@ export type AskResult = {
   detail?: string;
 };
 
-export type Chat = { id: number; title: string; knowledge_mode: "base" | "merged" };
-export type CompanyDocument = { id: number; filename: string };
+export type Chat = { id: number; title: string; knowledge_mode: "base" | "merged"; detail?: string };
+export type DocumentStatus = "pending" | "indexed" | "failed";
+export type CompanyDocument = { id: number; filename: string; status?: DocumentStatus; created_at?: string };
 export type ChatMessage = { id: number; role: "user" | "assistant"; content: string };
-export type AuthMode = "login" | "register" | "verify" | "forgot";
+export type AuthMode = "login" | "register" | "verify" | "forgot" | "2fa" | "2fa-recovery";
 export type CurrentUser = { email?: string; company_domain?: string | null };
+
+export type TwoFactorStatus = { enabled: boolean; recovery_codes_remaining: number };
+export type TwoFactorCodeSentResult = { sent: boolean; email?: string };
+export type TwoFactorConfirmResult = { enabled: boolean; recovery_codes: string[] };
+export type TwoFactorRecoveryCodesResult = { recovery_codes: string[] };

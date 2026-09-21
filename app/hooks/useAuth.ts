@@ -20,6 +20,11 @@ export function useAuth() {
   const [resendingVerification, setResendingVerification] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotSubmitting, setForgotSubmitting] = useState(false);
+  const [challengeToken, setChallengeToken] = useState<string | null>(null);
+  const [twoFactorCode, setTwoFactorCode] = useState("");
+  const [recoveryCode, setRecoveryCode] = useState("");
+  const [twoFactorSubmitting, setTwoFactorSubmitting] = useState(false);
+  const [resendingTwoFactor, setResendingTwoFactor] = useState(false);
 
   function persistToken(nextToken: string) {
     window.localStorage.setItem(TOKEN_STORAGE_KEY, nextToken);
@@ -63,6 +68,14 @@ export function useAuth() {
         // stays pending until the confirmation link/token is verified.
         setAuthInfo(response.data.message ?? "Controlla la tua email per confermare l'account.");
         setAuthMode("verify");
+        return null;
+      }
+      if (mode === "login" && response.data.requires_2fa) {
+        setChallengeToken(response.data.challenge_token ?? null);
+        setTwoFactorCode("");
+        setRecoveryCode("");
+        setAuthInfo("Ti abbiamo inviato un codice via email.");
+        setAuthMode("2fa");
         return null;
       }
       if (!response.data.token) {
@@ -116,6 +129,76 @@ export function useAuth() {
     }
   }
 
+  function _applySession(response: { token?: string; company_domain?: string | null }) {
+    if (!response.token) return null;
+    persistToken(response.token);
+    setCompanyDomain(response.company_domain ?? null);
+    return { token: response.token, companyDomain: response.company_domain ?? null };
+  }
+
+  async function verifyTwoFactor() {
+    if (!challengeToken) return null;
+    setAuthError(null);
+    setTwoFactorSubmitting(true);
+    try {
+      const response = await authApi.verify2fa(challengeToken, twoFactorCode.trim());
+      if (!response.ok || !response.data.token) {
+        setAuthError(response.data.detail ?? "Codice non valido.");
+        return null;
+      }
+      const session = _applySession(response.data);
+      setChallengeToken(null);
+      setTwoFactorCode("");
+      return session;
+    } finally {
+      setTwoFactorSubmitting(false);
+    }
+  }
+
+  async function verifyRecoveryCode() {
+    if (!challengeToken) return null;
+    setAuthError(null);
+    setTwoFactorSubmitting(true);
+    try {
+      const response = await authApi.recovery2fa(challengeToken, recoveryCode.trim());
+      if (!response.ok || !response.data.token) {
+        setAuthError(response.data.detail ?? "Codice di recupero non valido.");
+        return null;
+      }
+      const session = _applySession(response.data);
+      setChallengeToken(null);
+      setRecoveryCode("");
+      return session;
+    } finally {
+      setTwoFactorSubmitting(false);
+    }
+  }
+
+  async function resendTwoFactorCode() {
+    if (!challengeToken) return;
+    setAuthError(null);
+    setAuthInfo(null);
+    setResendingTwoFactor(true);
+    try {
+      const response = await authApi.resend2fa(challengeToken);
+      if (!response.ok) {
+        setAuthError(response.data.detail ?? "Impossibile inviare un nuovo codice.");
+        return;
+      }
+      setAuthInfo("Ti abbiamo inviato un nuovo codice via email.");
+    } finally {
+      setResendingTwoFactor(false);
+    }
+  }
+
+  function cancelTwoFactor() {
+    setChallengeToken(null);
+    setTwoFactorCode("");
+    setRecoveryCode("");
+    setAuthError(null);
+    setAuthMode("login");
+  }
+
   async function logout() {
     if (token) {
       await authApi.logout(token).catch(() => {});
@@ -152,6 +235,13 @@ export function useAuth() {
     forgotEmail,
     setForgotEmail,
     forgotSubmitting,
+    challengeToken,
+    twoFactorCode,
+    setTwoFactorCode,
+    recoveryCode,
+    setRecoveryCode,
+    twoFactorSubmitting,
+    resendingTwoFactor,
     restoreSession,
     hydrateProfile,
     clearSession,
@@ -159,6 +249,10 @@ export function useAuth() {
     verifyEmail,
     resendVerification,
     forgotPassword,
+    verifyTwoFactor,
+    verifyRecoveryCode,
+    resendTwoFactorCode,
+    cancelTwoFactor,
     logout,
   };
 }

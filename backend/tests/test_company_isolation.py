@@ -75,6 +75,9 @@ def test_documents_are_isolated_between_two_companies(client, monkeypatch):
         def invalidate_company_rag(self, company_domain: str) -> None:
             pass
 
+        def ensure_company_rag_ready(self, company_domain: str) -> None:
+            pass
+
     monkeypatch.setattr(main_module, "get_assistant", lambda: FakeAssistant())
 
     token_company_a = signup(client, "user@digitalmens.it")

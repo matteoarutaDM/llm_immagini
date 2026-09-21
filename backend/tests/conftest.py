@@ -43,6 +43,11 @@ def isolated_backend_state(tmp_path, monkeypatch):
     main_module._login_limiter.clear()
     main_module._register_limiter.clear()
     main_module._ask_limiter.clear()
+    main_module._2fa_verify_limiter.clear()
+    main_module._2fa_recovery_limiter.clear()
+    main_module._2fa_send_limiter.clear()
+    main_module._forgot_password_ip_limiter.clear()
+    main_module._forgot_password_email_limiter.clear()
     monkeypatch.setattr(main_module, "_assistant", None)
 
     yield db_path

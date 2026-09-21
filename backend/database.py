@@ -48,6 +48,14 @@ AUTH_TOKEN_TTL_SECONDS = int(os.getenv("AUTH_TOKEN_TTL_SECONDS", str(24 * 3600))
 AUTH_MAX_FAILED_ATTEMPTS = int(os.getenv("AUTH_MAX_FAILED_ATTEMPTS", "5"))
 AUTH_LOCKOUT_SECONDS = int(os.getenv("AUTH_LOCKOUT_SECONDS", "900"))
 
+# Short-lived token issued by /api/auth/login when 2FA is required, exchanged
+# for a normal auth token by /api/auth/2fa/verify or /2fa/recovery.
+TWO_FA_CHALLENGE_TTL_SECONDS = int(os.getenv("TWO_FA_CHALLENGE_TTL_SECONDS", "300"))
+PASSWORD_RESET_TOKEN_TTL_SECONDS = int(os.getenv("PASSWORD_RESET_TOKEN_TTL_SECONDS", "1800"))
+# Generous compared to an authenticator-app code, since the user has to wait
+# for an email to arrive rather than reading a code already on screen.
+TWO_FA_EMAIL_CODE_TTL_SECONDS = int(os.getenv("TWO_FA_EMAIL_CODE_TTL_SECONDS", "600"))
+
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -85,6 +93,34 @@ CREATE TABLE IF NOT EXISTS users (
     failed_login_attempts INTEGER NOT NULL DEFAULT 0,
     locked_until TEXT,
     terms_accepted_at TEXT,
+    two_factor_enabled INTEGER NOT NULL DEFAULT 0,
+    two_factor_secret TEXT,
+    two_factor_pending_secret TEXT,
+    two_factor_confirmed_at TEXT,
+    created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS user_recovery_codes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    code_hash TEXT NOT NULL,
+    used_at TEXT,
+    created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token_hash TEXT NOT NULL UNIQUE,
+    expires_at TEXT NOT NULL,
+    used_at TEXT,
+    created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS two_factor_email_codes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    purpose TEXT NOT NULL CHECK(purpose IN ('enable', 'login', 'disable', 'regenerate')),
+    code_hash TEXT NOT NULL,
+    expires_at TEXT NOT NULL,
+    used_at TEXT,
     created_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS chats (
@@ -108,11 +144,15 @@ CREATE TABLE IF NOT EXISTS documents (
     company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     filename TEXT NOT NULL,
     path TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'indexed', 'failed')),
     created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_chats_user_id ON chats(user_id);
 CREATE INDEX IF NOT EXISTS idx_documents_company_id ON documents(company_id);
 CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON messages(chat_id);
+CREATE INDEX IF NOT EXISTS idx_recovery_codes_user_id ON user_recovery_codes(user_id);
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user_id ON password_reset_tokens(user_id);
+CREATE INDEX IF NOT EXISTS idx_two_factor_email_codes_user_id ON two_factor_email_codes(user_id);
 """
 
 
@@ -138,9 +178,15 @@ def init_db() -> None:
 
         connection.executescript(SCHEMA)
 
+        _ensure_column(connection, "documents", "status", "status TEXT NOT NULL DEFAULT 'indexed'")
+
         _ensure_column(connection, "users", "token_version", "token_version INTEGER NOT NULL DEFAULT 0")
         _ensure_column(connection, "users", "failed_login_attempts", "failed_login_attempts INTEGER NOT NULL DEFAULT 0")
         _ensure_column(connection, "users", "locked_until", "locked_until TEXT")
+        _ensure_column(connection, "users", "two_factor_enabled", "two_factor_enabled INTEGER NOT NULL DEFAULT 0")
+        _ensure_column(connection, "users", "two_factor_secret", "two_factor_secret TEXT")
+        _ensure_column(connection, "users", "two_factor_pending_secret", "two_factor_pending_secret TEXT")
+        _ensure_column(connection, "users", "two_factor_confirmed_at", "two_factor_confirmed_at TEXT")
 
         # Accounts created before the terms/privacy checkbox existed could not
         # have accepted it, so we
@@ -192,6 +238,44 @@ def decode_token(token: str) -> dict | None:
         }
     except (ValueError, TypeError):
         return None
+
+
+def make_challenge_token(user_id: int) -> str:
+    """Short-lived token proving "password was correct, 2FA still pending".
+
+    Deliberately NOT decodable by decode_token(): the payload starts with a
+    "2fa" marker instead of the numeric user id decode_token() expects to
+    parse first, so a challenge token can never be accepted as a normal
+    Authorization bearer token on a protected endpoint.
+    """
+    expires_at = _epoch_now() + TWO_FA_CHALLENGE_TTL_SECONDS
+    payload = f"2fa:{user_id}:{expires_at}:{secrets.token_urlsafe(16)}"
+    signature = hmac.new(TOKEN_SECRET, payload.encode(), hashlib.sha256).hexdigest()
+    return f"{payload}.{signature}"
+
+
+def decode_challenge_token(token: str) -> dict | None:
+    try:
+        payload, signature = token.rsplit(".", 1)
+        expected = hmac.new(TOKEN_SECRET, payload.encode(), hashlib.sha256).hexdigest()
+        if not hmac.compare_digest(signature, expected):
+            return None
+        marker, user_id_str, expires_at_str, _nonce = payload.split(":", 3)
+        if marker != "2fa":
+            return None
+        expires_at = int(expires_at_str)
+        if _epoch_now() >= expires_at:
+            return None
+        return {"user_id": int(user_id_str), "expires_at": expires_at}
+    except (ValueError, TypeError):
+        return None
+
+
+def hash_reset_token(token: str) -> str:
+    """Plain SHA-256, no salt: unlike a password, the token already carries
+    ~256 bits of entropy from secrets.token_urlsafe(32), so a fast hash is
+    sufficient and lets the reset-password lookup go straight by hash."""
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
 def bump_token_version(connection: sqlite3.Connection, user_id: int) -> None:

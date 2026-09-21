@@ -129,6 +129,11 @@ class MachineAssistant:
         with self._company_lock(company_domain):
             self._company_rags.pop(company_domain, None)
 
+    def ensure_company_rag_ready(self, company_domain: str) -> None:
+        """Build (or rebuild) the company's RAG index now instead of lazily
+        on the next question, so upload can report whether indexing succeeded."""
+        self._company_rag(company_domain)
+
     def ensure_ready(self) -> None:
         with self._lock:
             if self._ready:

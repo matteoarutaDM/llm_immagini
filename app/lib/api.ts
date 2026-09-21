@@ -1,4 +1,14 @@
-import type { AskResult, Chat, ChatMessage, CompanyDocument, CurrentUser } from "../types";
+import type {
+  AskResult,
+  Chat,
+  ChatMessage,
+  CompanyDocument,
+  CurrentUser,
+  TwoFactorCodeSentResult,
+  TwoFactorConfirmResult,
+  TwoFactorRecoveryCodesResult,
+  TwoFactorStatus,
+} from "../types";
 
 export type ApiResponse<T> = { ok: boolean; status: number; data: T };
 
@@ -18,6 +28,8 @@ export type AuthResponse = {
   company_domain?: string | null;
   message?: string;
   detail?: string;
+  requires_2fa?: boolean;
+  challenge_token?: string;
 };
 
 export type MessageResponse = { message?: string; detail?: string };
@@ -55,12 +67,82 @@ export const authApi = {
     body.append("email", email);
     return request<MessageResponse>("/api/backend/auth/forgot-password", { method: "POST", body });
   },
-  resetPassword: (token: string, password: string) => {
+  resetPassword: (token: string, newPassword: string) => {
     const body = new FormData();
     body.append("token", token);
-    body.append("password", password);
+    body.append("new_password", newPassword);
     return request<MessageResponse>("/api/backend/auth/reset-password", { method: "POST", body });
   },
+  setup2fa: (token: string) =>
+    request<TwoFactorCodeSentResult & { detail?: string }>("/api/backend/auth/2fa/setup", {
+      method: "POST",
+      headers: authHeaders(token),
+    }),
+  confirm2fa: (token: string, code: string) => {
+    const body = new FormData();
+    body.append("code", code);
+    return request<TwoFactorConfirmResult & { detail?: string }>("/api/backend/auth/2fa/confirm", {
+      method: "POST",
+      headers: authHeaders(token),
+      body,
+    });
+  },
+  resend2fa: (challengeToken: string) => {
+    const body = new FormData();
+    body.append("challenge_token", challengeToken);
+    return request<{ sent?: boolean; detail?: string }>("/api/backend/auth/2fa/resend", { method: "POST", body });
+  },
+  verify2fa: (challengeToken: string, code: string) => {
+    const body = new FormData();
+    body.append("challenge_token", challengeToken);
+    body.append("code", code);
+    return request<AuthResponse>("/api/backend/auth/2fa/verify", { method: "POST", body });
+  },
+  recovery2fa: (challengeToken: string, recoveryCode: string) => {
+    const body = new FormData();
+    body.append("challenge_token", challengeToken);
+    body.append("recovery_code", recoveryCode);
+    return request<AuthResponse>("/api/backend/auth/2fa/recovery", { method: "POST", body });
+  },
+  requestDisable2fa: (token: string, password: string) => {
+    const body = new FormData();
+    body.append("password", password);
+    return request<{ sent?: boolean; detail?: string }>("/api/backend/auth/2fa/disable/request-code", {
+      method: "POST",
+      headers: authHeaders(token),
+      body,
+    });
+  },
+  disable2fa: (token: string, password: string, code: string, recoveryCode?: string) => {
+    const body = new FormData();
+    body.append("password", password);
+    if (code) body.append("code", code);
+    if (recoveryCode) body.append("recovery_code", recoveryCode);
+    return request<{ disabled?: boolean; detail?: string }>("/api/backend/auth/2fa/disable", {
+      method: "POST",
+      headers: authHeaders(token),
+      body,
+    });
+  },
+  requestRegenerateRecoveryCodes: (token: string, password: string) => {
+    const body = new FormData();
+    body.append("password", password);
+    return request<{ sent?: boolean; detail?: string }>(
+      "/api/backend/auth/2fa/recovery-codes/regenerate/request-code",
+      { method: "POST", headers: authHeaders(token), body },
+    );
+  },
+  regenerateRecoveryCodes: (token: string, password: string, code: string) => {
+    const body = new FormData();
+    body.append("password", password);
+    body.append("code", code);
+    return request<TwoFactorRecoveryCodesResult & { detail?: string }>(
+      "/api/backend/auth/2fa/recovery-codes/regenerate",
+      { method: "POST", headers: authHeaders(token), body },
+    );
+  },
+  status2fa: (token: string) =>
+    request<TwoFactorStatus>("/api/backend/auth/2fa/status", { headers: authHeaders(token) }),
 };
 
 export const chatsApi = {
@@ -95,6 +177,11 @@ export const documentsApi = {
       body,
     });
   },
+  delete: (token: string, documentId: number) =>
+    request<DeleteResponse>(`/api/backend/company/documents/${documentId}`, {
+      method: "DELETE",
+      headers: authHeaders(token),
+    }),
 };
 
 export const askApi = {

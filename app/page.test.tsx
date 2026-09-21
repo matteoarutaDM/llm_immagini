@@ -81,6 +81,7 @@ describe("flusso di registrazione", () => {
 
     await waitFor(() => expect(screen.getByText("nuovo@digitalmens.it")).toBeInTheDocument());
     expect(window.localStorage.getItem("assistant-token")).toBe("new-user-token");
+    await user.click(screen.getByRole("button", { name: /Nuovo nuovo@digitalmens\.it/i }));
     expect(screen.getByRole("button", { name: "Esci" })).toBeInTheDocument();
   });
 
@@ -181,6 +182,7 @@ describe("logout", () => {
 
     await waitFor(() => expect(screen.getByText("user@digitalmens.it")).toBeInTheDocument());
 
+    await user.click(screen.getByRole("button", { name: /User user@digitalmens\.it/i }));
     await user.click(screen.getByRole("button", { name: "Esci" }));
 
     await waitFor(() =>
@@ -190,15 +192,51 @@ describe("logout", () => {
       ),
     );
     await waitFor(() => expect(window.localStorage.getItem("assistant-token")).toBeNull());
-    expect(await screen.findByText("Assistente macchine")).toBeInTheDocument();
+    expect((await screen.findAllByText(/Assistente Macchine/i)).length).toBeGreaterThan(0);
   });
 });
 
 describe("storico chat", () => {
+  it("rinomina una chat dal dialog personalizzato", async () => {
+    window.localStorage.setItem("assistant-token", "fake-token");
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes("/auth/me")) {
+        return jsonResponse({ email: "user@digitalmens.it", company_domain: "digitalmens.it" });
+      }
+      if (url.endsWith("/api/backend/chats") && (!init?.method || init.method === "GET")) {
+        return jsonResponse([{ id: 2, title: "Chat recente", knowledge_mode: "base" }]);
+      }
+      if (url.includes("/company/documents")) return jsonResponse([]);
+      if (url.endsWith("/chats/2/messages")) return jsonResponse([]);
+      if (url.endsWith("/chats/2") && init?.method === "PATCH") {
+        return jsonResponse({ id: 2, title: "Diagnostica motore", knowledge_mode: "base" });
+      }
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const user = userEvent.setup();
+    render(<Home />);
+
+    await screen.findByRole("button", { name: "Chat recente" });
+    await user.click(screen.getByRole("button", { name: "Rinomina chat Chat recente" }));
+    const dialog = screen.getByRole("dialog", { name: "Rinomina chat" });
+    expect(dialog).toBeInTheDocument();
+    const input = screen.getByRole("textbox", { name: "Nome della chat" });
+    await user.clear(input);
+    await user.type(input, "Diagnostica motore");
+    await user.click(screen.getByRole("button", { name: "Salva nome" }));
+
+    await screen.findByRole("button", { name: "Diagnostica motore" });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/backend/chats/2",
+      expect.objectContaining({ method: "PATCH", headers: { Authorization: "Bearer fake-token" } }),
+    );
+  });
+
   it("elimina una chat e seleziona automaticamente la successiva", async () => {
     window.localStorage.setItem("assistant-token", "fake-token");
-    vi.spyOn(window, "confirm").mockReturnValue(true);
-
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
       if (url.includes("/auth/me")) {
@@ -221,14 +259,144 @@ describe("storico chat", () => {
     const user = userEvent.setup();
     render(<Home />);
 
-    await screen.findByText("Chat recente");
+    await screen.findByRole("button", { name: "Chat recente" });
     await user.click(screen.getByRole("button", { name: "Elimina chat Chat recente" }));
+    expect(screen.getByRole("dialog", { name: "Elimina chat" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Elimina definitivamente" }));
 
     await waitFor(() => expect(screen.queryByText("Chat recente")).not.toBeInTheDocument());
-    expect(screen.getByText("Chat precedente").closest("button")).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "Chat precedente" })).toHaveAttribute("aria-current", "page");
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/backend/chats/2",
       expect.objectContaining({ method: "DELETE", headers: { Authorization: "Bearer fake-token" } }),
     );
+  });
+});
+
+describe("login con 2FA", () => {
+  it("mostra la schermata di verifica e completa il login con il codice via email", async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("/auth/login")) {
+        return jsonResponse({ requires_2fa: true, challenge_token: "chal-123" });
+      }
+      if (url.includes("/auth/2fa/verify")) {
+        return jsonResponse({ token: "verified-token", email: "user@digitalmens.it", company_domain: "digitalmens.it" });
+      }
+      if (url.includes("/auth/me")) {
+        return jsonResponse({ email: "user@digitalmens.it", company_domain: "digitalmens.it" });
+      }
+      if (url.includes("/chats") || url.includes("/company/documents")) return jsonResponse([]);
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const user = userEvent.setup();
+    render(<Home />);
+
+    await user.type(screen.getByPlaceholderText("Email"), "user@digitalmens.it");
+    await user.type(screen.getByPlaceholderText("Password (almeno 8 caratteri)"), "SuperSecret123");
+    await user.click(screen.getByRole("button", { name: "Accedi" }));
+
+    await screen.findByText("Ti abbiamo inviato un codice via email. Inseriscilo qui sotto.");
+    await user.type(screen.getByPlaceholderText("000000"), "123456");
+    await user.click(screen.getByRole("button", { name: "Verifica" }));
+
+    await waitFor(() => expect(screen.getByText("user@digitalmens.it")).toBeInTheDocument());
+    expect(window.localStorage.getItem("assistant-token")).toBe("verified-token");
+  });
+
+  it("permette di accedere con un codice di recupero", async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("/auth/login")) {
+        return jsonResponse({ requires_2fa: true, challenge_token: "chal-456" });
+      }
+      if (url.includes("/auth/2fa/recovery")) {
+        return jsonResponse({ token: "recovery-token", email: "user@digitalmens.it", company_domain: null });
+      }
+      if (url.includes("/auth/me")) {
+        return jsonResponse({ email: "user@digitalmens.it", company_domain: null });
+      }
+      if (url.includes("/chats") || url.includes("/company/documents")) return jsonResponse([]);
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const user = userEvent.setup();
+    render(<Home />);
+
+    await user.type(screen.getByPlaceholderText("Email"), "user@digitalmens.it");
+    await user.type(screen.getByPlaceholderText("Password (almeno 8 caratteri)"), "SuperSecret123");
+    await user.click(screen.getByRole("button", { name: "Accedi" }));
+
+    await screen.findByText("Ti abbiamo inviato un codice via email. Inseriscilo qui sotto.");
+    await user.click(screen.getByRole("button", { name: "Usa un codice di recupero" }));
+
+    await screen.findByPlaceholderText("XXXXX-XXXXX");
+    await user.type(screen.getByPlaceholderText("XXXXX-XXXXX"), "ABCDE-12345");
+    await user.click(screen.getByRole("button", { name: "Accedi con codice di recupero" }));
+
+    await waitFor(() => expect(screen.getByText("user@digitalmens.it")).toBeInTheDocument());
+    expect(window.localStorage.getItem("assistant-token")).toBe("recovery-token");
+  });
+});
+
+describe("password dimenticata", () => {
+  it("mostra sempre lo stesso messaggio generico dopo l'invio", async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("/auth/forgot-password")) {
+        return jsonResponse({
+          message: "Se esiste un account associato a questa email, riceverai le istruzioni per reimpostare la password.",
+        });
+      }
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const user = userEvent.setup();
+    render(<Home />);
+
+    await user.click(screen.getByRole("button", { name: "Password dimenticata?" }));
+    await user.type(screen.getByPlaceholderText("Email"), "chiunque@example.com");
+    await user.click(screen.getByRole("button", { name: "Invia istruzioni" }));
+
+    await screen.findByText(/Se esiste un account associato a questa email/);
+  });
+});
+
+describe("documenti aziendali", () => {
+  it("mostra una notifica quando il PDF è indicizzato", async () => {
+    window.localStorage.setItem("assistant-token", "fake-token");
+    const indexedDocument = { id: 7, filename: "manuale-linea.pdf", status: "indexed" };
+    let documentListRequests = 0;
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes("/auth/me")) {
+        return jsonResponse({ email: "user@digitalmens.it", company_domain: "digitalmens.it" });
+      }
+      if (url.endsWith("/api/backend/chats")) return jsonResponse([]);
+      if (url.endsWith("/api/backend/company/documents") && init?.method === "POST") {
+        return jsonResponse(indexedDocument);
+      }
+      if (url.endsWith("/api/backend/company/documents")) {
+        documentListRequests += 1;
+        return jsonResponse(documentListRequests > 1 ? [indexedDocument] : []);
+      }
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const user = userEvent.setup();
+    render(<Home />);
+
+    await screen.findByRole("button", { name: "Documenti aziendali 0/0" });
+    await user.click(screen.getByRole("button", { name: "Documenti aziendali 0/0" }));
+    const input = screen.getByLabelText("Carica documento PDF aziendale");
+    await user.upload(input, new File(["%PDF-test"], "manuale-linea.pdf", { type: "application/pdf" }));
+
+    expect(await screen.findByText("Documento indicizzato")).toBeInTheDocument();
+    expect(screen.getAllByText("manuale-linea.pdf").length).toBeGreaterThan(0);
   });
 });

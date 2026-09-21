@@ -9,15 +9,22 @@ PDF_BYTES = b"%PDF-1.4\n%fake pdf content for tests\n%%EOF"
 
 
 class FakeAssistant:
-    def __init__(self) -> None:
+    def __init__(self, *, fail_indexing: bool = False) -> None:
         self.invalidated: list[str] = []
+        self.indexed: list[str] = []
+        self.fail_indexing = fail_indexing
 
     def invalidate_company_rag(self, company_domain: str) -> None:
         self.invalidated.append(company_domain)
 
+    def ensure_company_rag_ready(self, company_domain: str) -> None:
+        if self.fail_indexing:
+            raise RuntimeError("indexing failed")
+        self.indexed.append(company_domain)
 
-def _fake_assistant(monkeypatch) -> FakeAssistant:
-    fake = FakeAssistant()
+
+def _fake_assistant(monkeypatch, *, fail_indexing: bool = False) -> FakeAssistant:
+    fake = FakeAssistant(fail_indexing=fail_indexing)
     monkeypatch.setattr(main_module, "get_assistant", lambda: fake)
     return fake
 
@@ -42,7 +49,23 @@ def test_company_user_can_upload_valid_pdf(client, monkeypatch):
     response = _upload(client, token)
     assert response.status_code == 200
     assert response.json()["filename"] == "manuale.pdf"
+    assert response.json()["status"] == "indexed"
     assert fake.invalidated == ["digitalmens.it"]
+    assert fake.indexed == ["digitalmens.it"]
+
+    docs = client.get("/api/company/documents", headers=auth_headers(token)).json()
+    assert docs[0]["status"] == "indexed"
+
+
+def test_upload_marks_document_failed_when_indexing_raises(client, monkeypatch):
+    _fake_assistant(monkeypatch, fail_indexing=True)
+    token = signup(client, "user@digitalmens.it")
+    response = _upload(client, token)
+    assert response.status_code == 200
+    assert response.json()["status"] == "failed"
+
+    docs = client.get("/api/company/documents", headers=auth_headers(token)).json()
+    assert docs[0]["status"] == "failed"
 
 
 def test_upload_rejects_wrong_content_type(client, monkeypatch):

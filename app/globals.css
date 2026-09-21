@@ -1,39 +1,74 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafaf9;
-  --foreground: #0a0a0a;
+  color-scheme: dark;
+  --background: #080a09;
+  --surface: #101311;
+  --surface-raised: #151917;
+  --surface-hover: #1a201d;
+  --foreground: #f4f6f5;
+  --secondary: #a1aaa5;
+  --muted: #737d77;
+  --accent: #32d583;
+  --accent-bright: #54e49a;
+  --accent-soft: rgba(50, 213, 131, 0.1);
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.12);
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --info: #60a5fa;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #fafaf9;
-  }
+@theme inline {
+  --color-app-bg: var(--background);
+  --color-app-surface: var(--surface);
+  --color-app-raised: var(--surface-raised);
+  --color-app-hover: var(--surface-hover);
+  --color-app-text: var(--foreground);
+  --color-app-secondary: var(--secondary);
+  --color-app-muted: var(--muted);
+  --color-app-accent: var(--accent);
+  --color-app-accent-bright: var(--accent-bright);
+  --color-app-accent-soft: var(--accent-soft);
+  --color-app-border: var(--border);
+  --color-app-border-strong: var(--border-strong);
 }
 
 * {
   box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-hover) transparent;
+}
+
+html {
+  background: var(--background);
 }
 
 body {
   min-height: 100vh;
-  background: var(--background);
-  background-image: radial-gradient(ellipse 1200px 600px at 50% -10%, rgba(4, 120, 87, 0.07), transparent 60%);
-  background-attachment: fixed;
+  margin: 0;
+  overflow-x: hidden;
+  background:
+    radial-gradient(ellipse 70% 45% at 70% -10%, rgba(50, 213, 131, 0.07), transparent 62%),
+    var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+  font-family: var(--font-sans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif);
+  text-rendering: optimizeLegibility;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-image: radial-gradient(ellipse 1200px 600px at 50% -10%, rgba(16, 185, 129, 0.09), transparent 60%);
-  }
+::selection {
+  background: rgba(50, 213, 131, 0.22);
+  color: var(--foreground);
 }
 
 .font-display {
   font-family: var(--font-display, var(--font-sans, ui-sans-serif, system-ui, sans-serif));
-  letter-spacing: -0.015em;
+  letter-spacing: -0.025em;
+}
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
 }
 
 button,
@@ -43,10 +78,28 @@ select {
   font: inherit;
 }
 
+button,
+label,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@keyframes indeterminate {
+  0% { transform: translateX(-110%); }
+  50% { transform: translateX(105%); }
+  100% { transform: translateX(310%); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
+    scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
