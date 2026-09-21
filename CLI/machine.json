@@ -63,5 +63,23 @@
     "manuali": [
       "manuale_condizionatore.pdf"
     ]
+  },
+   {
+    "id": "stampante-3D",
+    "macchina": "STAMPANTE 3D",
+    "tipo": "generico",
+    "reference_images": [
+      "reference_images/stampante3D-1.jpg",
+      "reference_images/stampante3D-2.jpg",
+      "reference_images/stampante3D-3.jpg",
+      "reference_images/stampante3D-4.jpg",
+      "reference_images/stampante3D-5.jpg",
+      "reference_images/stampante3D-6.jpg",
+      "reference_images/stampante3D-7.jpg",
+      "reference_images/stampante3D-8.jpg"
+    ],
+    "manuali": [
+      "768_Elite_Service_Guide.pdf"
+    ]
   }
 ]
