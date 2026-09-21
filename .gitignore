@@ -11,5 +11,6 @@ __pycache__
 uploads
 data/*.db
 data/*.db-*
+data/companies/
 *.tsbuildinfo
 .claude/
