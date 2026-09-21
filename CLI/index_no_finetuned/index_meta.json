@@ -1,5 +1,5 @@
 {
-  "n_chunks": 4110,
+  "n_chunks": 5231,
   "model": "sentence-transformers/all-MiniLM-L6-v2",
   "dim": 384,
   "pdf_dir": "/Users/mac/Documents/LAVORO/llm_immagini-main/CLI/pdf_immagini",
@@ -15,6 +15,11 @@
       "mtime_ns": 1789978261000000000
     },
     {
+      "path": "768_Elite_Service_Guide.pdf",
+      "size": 13238025,
+      "mtime_ns": 1789982241621078443
+    },
+    {
       "path": "CVS F500 manuale U&M completo.pdf",
       "size": 78636714,
       "mtime_ns": 1789978261000000000
@@ -23,6 +28,11 @@
       "path": "F19 - SY753757_SDCY90K7G5_Operation & Maint. Manual_IT.pdf",
       "size": 59214911,
       "mtime_ns": 1789978261000000000
+    },
+    {
+      "path": "Hercules_20_User_Manual_v4.1.pdf",
+      "size": 6638095,
+      "mtime_ns": 1789987784659233204
     },
     {
       "path": "RS - SRSC45G5 Uso e Manutenzione Italiano - R33-R34.pdf",
@@ -35,5 +45,5 @@
       "mtime_ns": 1789978261000000000
     }
   ],
-  "corpus_signature": "8168a1920315dd9f997f678a06af9178c97b37c8296cc7b07ae5a9c16e4786f1"
+  "corpus_signature": "22c7937c001ea869a90238975688efab36aec8c170c062a969730ae56d22953e"
 }

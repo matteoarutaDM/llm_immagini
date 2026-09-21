@@ -81,5 +81,38 @@
     "manuali": [
       "768_Elite_Service_Guide.pdf"
     ]
+  },
+  {
+    "id": "drone",
+    "macchina": "DRONE",
+    "tipo": "generico",
+    "reference_images": [
+      " reference_images/drone-1.jpg",
+      " reference_images/drone-2.jpg",
+      " reference_images/drone-3.jpg",
+      " reference_images/drone-4.jpg",
+      " reference_images/drone-5.jpg",
+      " reference_images/drone-6.jpg",
+      " reference_images/drone-7.jpg",
+      " reference_images/drone-8.jpg",
+      " reference_images/drone-9.jpg",
+      " reference_images/drone-10.jpg",
+      " reference_images/drone-11.jpg",
+      " reference_images/drone-12.jpg",
+      " reference_images/drone-13.jpg",
+      " reference_images/drone-14.jpg",
+      " reference_images/drone-15.jpg",
+      " reference_images/drone-16.jpg",
+      " reference_images/drone-17.jpg",
+      " reference_images/drone-18.jpg",
+      " reference_images/drone-19.jpg",
+      " reference_images/drone-20.jpg",
+      " reference_images/drone-21.jpg",
+      " reference_images/drone-22.jpg",
+      " reference_images/drone-23.jpg"
+    ],
+    "manuali": [
+      "Hercules_20_User_Manual_v4.1.pdf"
+    ]
   }
 ]

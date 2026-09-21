@@ -1,0 +1,2896 @@
+© 2025 DRONE VOLT – All rights reserved 
+H20
+ v.1.5 
+U
+ser Guide 
+V4.1 (01/01/2025) 
+ENGLISH
+
+---------------------------------------- [FINE PAGINA 1] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+1 
+V4.1 01/01/2025 
+ 
+This page was intentionally left blank
+
+---------------------------------------- [FINE PAGINA 2] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+2 
+ © 2025 DRONE VOLT – All rights reserved 
+Revisions 
+Version Rev. Date Author Approval Changes 
+3.1 01 12/06-2023 VKT Original version. 
+3.1 02 12/06-2023 Romain CHARRIER Document modification 
+4.0 09/01-2024 Pascal BOISSÉ Recast and reorganized edition 
+4.1 12/01-2024 Pascal BOISSÉ Modifications – Revised checklist Section 
+ 
+ 
+ 
+ 
+Using this guide 
+ 
+ 
+Legend 
+ 
+Warning! 
+ 
+Information Tips & Tricks Reference 
+ 
+ 
+When you read this user manual in its digital form (PDF), you can search for keywords by 
+pressing CTRL+F (Windows) or COMMAND+F (Mac) in Adobe Reader. 
+By reading this manual digitally (PDF), you can also access the contents list to quickly access 
+topics of interest. 
+This document uses QR codes for digital references. Scan them using your smartphone to 
+access links or additional information.
+
+---------------------------------------- [FINE PAGINA 3] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+3 
+V4.1 01/01/2025 
+ 
+Acronyms / Definitions 
+Here is a list of abbreviations and acronyms used in this manual: 
+ Definition 
+AGL Above Ground Level 
+ANSP Air Navigation Service Provider 
+BeiDou BeiDou Navigation Satellite System (China based GNSS) 
+BEW Basic Empty Weight 
+BMS Battery Management System 
+BVLOS Beyond Visual Line-of-sight 
+C2 link Command and Control Data Link 
+CAA Civil Aviation Authority 
+CG Center of Gravity / Center of Mass 
+DGPS Differential GPS 
+EGNOS European Geostationary Navigation Overlay Service 
+EKF Extended Kalman Filter 
+ESC Electronic Speed Controller 
+FMU Flight Management Unit 
+FPV First person view 
+FTS Flight Termination System 
+Galileo Global Navigation Satellite System (Europe based GNSS) 
+GCS Ground Control Station 
+GLONASS GLObal NAvigation Satellite System (Russia based GNSS) 
+GNSS Global Navigation Satellite Systems 
+GPS Global Positioning System (US based GNSS) 
+HDOP Horizontal Dilution of Precision 
+ICAO International Civil Aviation Organization 
+IMU Inertial Measurement Unit 
+Kp Index Measure of solar particle radiation causing Earth magnetic field disruptions 
+LCD Liquid Crystal Display 
+LED Light-Emitting Diode 
+LiDAR Light Detection and Ranging 
+Li-ion Lithium-ion 
+LiPo Lithium-polymer 
+MTOW Maximum Takeoff Weight 
+NOTAM Notice to Airmen 
+OW Operating Weight 
+PWM Pulse Width Modulation 
+RC Radio Controller / Remote Control 
+RMA Return Merchandise Authorization 
+RPA / RPAS Remotely Piloted Aircraft / Remotely Piloted Aircraft System 
+RPM Revolutions Per Minute 
+RSSI Received Signal Strength Indicator 
+RTL Return to Launch 
+SAT Satellites 
+SBAS Satellite Based Augmentation System 
+UA / UAV / UAS Unmanned Aircraft = RPA / Unmanned Aerial Vehicle = RPA / Unmanned Aircraft System = RPAS 
+VLOS Visual Line-of-sight 
+VMC Visual Meteorological Conditions 
+WAAS Wide Area Augmentation System (Same as SBAS) 
+Wi-Fi Wireless network protocols based on the IEEE 802.11x standards
+
+---------------------------------------- [FINE PAGINA 4] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+4 
+ © 2025 DRONE VOLT – All rights reserved 
+TABLE OF CONTENTS 
+REVISIONS .................................................................................................................................................................................... 2 
+USING THIS GUIDE .......................................................................................................................................................................... 2 
+LEGEND ....................................................................................................................................................................................... 2 
+ACRONYMS / DEFINITIONS............................................................................................................................................................... 3 
+TABLE OF CONTENTS ............................................................................................................................................................................... 4 
+PREAMBLE ................................................................................................................................................................................................... 6 
+1. TERMS AND CONDITIONS ............................................................................................................................................................... 7 
+1.1 WARRANTY ....................................................................................................................................................................... 7 
+1.2 REQUEST FOR WARRANTY COVERAGE ...................................................................................................................................... 8 
+1.3 WARRANTY EXCLUSIONS ...................................................................................................................................................... 8 
+1.4 LIMITATIONS AND RESPONSIBILITIES ..................................................................................................................................... 10 
+1.5 OPERATING CONDITIONS .................................................................................................................................................... 11 
+2. INTRODUCTION TO HERCULES 20 .............................................................................................................................................. 13 
+2.1 DESCRIPTION OF USE ......................................................................................................................................................... 13 
+2.2 HERCULES 20 SPECIFICATIONS ............................................................................................................................................. 13 
+2.3 HERCULES 20 MECHANICAL DRAWINGS ................................................................................................................................. 15 
+2.3.1 Mechanical overview .............................................................................................................................................................. 15 
+2.4 BATTERIES ...................................................................................................................................................................... 19 
+2.4.1 Installing the battery in the HERCULES 20................................................................................................................................. 20 
+2.5 BATTERY CHARGING SYSTEM ............................................................................................................................................... 22 
+2.5.1 Charge preset ......................................................................................................................................................................... 23 
+2.5.2 Fast charge preset .................................................................................................................................................................. 23 
+2.6 BATTERY HANDLING AND STORAGE INSTRUCTIONS ................................................................................................................... 24 
+2.6.1 Storage preset ........................................................................................................................................................................ 25 
+2.7 SYSTEM ACCESSORIES ........................................................................................................................................................ 26 
+3. HERELINK RADIO CONTROLLER ................................................................................................................................................. 27 
+3.1 HERELINK HANDHELD INTERFACE .......................................................................................................................................... 27 
+3.2 RADIO SPECIFICATIONS ...................................................................................................................................................... 27 
+3.3 ANTENNAS INSTALLATION THE HERELINK ............................................................................................................................... 28 
+3.4 HERELINK CONTROL BUTTONS ............................................................................................................................................. 29 
+3.5 CONTROLLER JOYSTICKS ..................................................................................................................................................... 30 
+3.6 STARTING THE HERELINK CONTROLLER .................................................................................................................................. 31 
+3.7 HERELINK MAIN SCREEN ..................................................................................................................................................... 32 
+3.8 DRONE VOLT CONTROL........................................................................................................................................................... 33 
+3.8.1 DRONE VOLT CONTROL summary tab .......................................................................................................................................... 34 
+3.8.2 Radio settings tab................................................................................................................................................................... 35 
+3.8.3 Flight modes tab ..................................................................................................................................................................... 36 
+3.8.4 Failsafe systems ..................................................................................................................................................................... 37 
+3.8.5 Sensors tab ............................................................................................................................................................................. 38 
+3.8.6 Motors tab ............................................................................................................................................................................. 41 
+3.8.7 Safety setup tab ..................................................................................................................................................................... 43 
+3.8.8 Mission Planning .................................................................................................................................................................... 45 
+3.8.9 Drone Volt Control App Settings ............................................................................................................................................. 46 
+3.8.10 Adjusting Telemetry display data and switching video streams ........................................................................................ 47 
+3.8.11 Herelink Satellite Reception Icon ....................................................................................................................................... 49
+
+---------------------------------------- [FINE PAGINA 5] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+5 
+V4.1 01/01/2025 
+4. OPERATIONAL INSTRUCTIONS ................................................................................................................................................... 50 
+4.1 CREW HEALTH & SAFETY PRECAUTIONS ................................................................................................................................ 50 
+4.2 AIRCRAFT ASSEMBLY ......................................................................................................................................................... 51 
+4.2.1 Installing the landing gear ..................................................................................................................................................... 51 
+4.2.2 Assembling and connecting the Aircraft's arms ..................................................................................................................... 52 
+4.3 PROPELLER INSTALLATION .................................................................................................................................................. 53 
+4.4 GROUND HANDLING ......................................................................................................................................................... 55 
+4.4.1 Drone Status Indicator ........................................................................................................................................................... 55 
+4.4.2 Parameters Status Validation................................................................................................................................................. 57 
+4.5 PREFLIGHT OPERATIONS AND VERIFICATIONS .......................................................................................................................... 58 
+4.5.1 Visual inspection instructions ................................................................................................................................................. 59 
+4.5.2 Operation planning procedures .............................................................................................................................................. 60 
+4.5.3 Off-site checklist ..................................................................................................................................................................... 61 
+4.5.4 On-site preparation procedures ............................................................................................................................................. 62 
+4.5.5 On-site checklist ..................................................................................................................................................................... 64 
+4.5.6 Direct RemoteID procedures .................................................................................................................................................. 65 
+4.6 FLIGHT OPERATIONS ......................................................................................................................................................... 66 
+4.6.1 Preflight procedures ............................................................................................................................................................... 67 
+4.6.2 Takeoff checklist ..................................................................................................................................................................... 68 
+4.6.3 Airworthiness assessment procedures ................................................................................................................................... 69 
+4.6.4 Landing and post flight procedures ........................................................................................................................................ 70 
+4.6.5 Post flight checklist ................................................................................................................................................................. 71 
+4.7 EMERGENCY SHUT DOWN PROCEDURE ................................................................................................................................. 72 
+5. MAINTENANCE PROCEDURES .................................................................................................................................................... 73 
+5.1 PERIODIC INSPECTIONS: .............................................................................................................................................. 73 
+5.1.1 Introduction ........................................................................................................................................................................... 73 
+5.1.2 Problematic / extreme conditions .......................................................................................................................................... 73 
+5.1.3 Inspection intervals ................................................................................................................................................................ 73 
+5.2 REPLACEMENT SCHEDULE ................................................................................................................................................... 74 
+5.3 SCHEDULED MAINTENANCE CHECKS ..................................................................................................................................... 75 
+5.3.1 Authorization to perform ....................................................................................................................................................... 75 
+5.3.2 Light maintenance .................................................................................................................................................................. 75 
+5.3.3 Heavy maintenance ................................................................................................................................................................ 76 
+5.4 INSPECTION GUIDELINES .................................................................................................................................................... 76 
+5.4.1 Movable parts ........................................................................................................................................................................ 76 
+5.4.2 Airframe structural components ............................................................................................................................................ 76 
+5.4.3 Structural fasteners ................................................................................................................................................................ 76 
+5.4.4 Wiring ..................................................................................................................................................................................... 76 
+5.5 INSPECTION PROCEDURE .................................................................................................................................................... 77 
+5.5.1 Complete Inspection ............................................................................................................................................................... 77 
+6. APPENDIX ........................................................................................................................................................................................ 78 
+6.1 C3 CERTIFICATION ............................................................................................................................................................ 78 
+6.2 DESCRIPTION OF THE ZÉPHYR CC FTS (V 2.0) ......................................................................................................................... 78 
+6.3 REMOTE PILOTS AND CREW QUALIFICATIONS .......................................................................................................................... 79 
+6.4 HIGH-DRA PAYLOAD ......................................................................................................................................................... 81 
+6.4.1 High-Dra payload operational concerns ................................................................................................................................. 81 
+6.4.2 Potential safety benefits......................................................................................................................................................... 84 
+6.4.3 Mounting the Sprayer Lance Payload & Preparing for Spraying Operation ........................................................................... 84 
+6.5 CONNECTION TO MISSION PLANNER ..................................................................................................................................... 85 
+7. CONTACT INFORMATION ............................................................................................................................................................. 88
+
+---------------------------------------- [FINE PAGINA 6] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+6 
+ © 2025 DRONE VOLT – All rights reserved 
+ 
+PREAMBLE 
+The purpose of this manual is to: 
+• Provide technical information about the aircraft, its accessories, and its remote-control system. 
+• Provide the HERCULES 20 operation procedures and maintenance procedures. 
+• Provide key information and procedures for troubleshooting. 
+• Serve as a refresher guide – following a long hiatus in aircraft operations. 
+ 
+ FOR SAFETY REASONS, IT IS IMPORTANT TO READ THE ENTIRE USER GUIDE 
+ 
+Do not hesitate to consult this guide frequently as a refresher and as an essential reference when in doubt or after 
+a long period without operating the aircraft. This, to make sure the fundamentals are covered and ensure the safe 
+operation of the HERCULES 20. 
+Flying a drone requires regular flight training outside of technical missions for the pilots and ground crew . When 
+required, DRONE VOLT offers single-day, or more, refresher training packages.
+
+---------------------------------------- [FINE PAGINA 7] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+7 
+V4.1 01/01/2025 
+ 
+1. TERMS AND CONDITIONS 
+ 
+1.1 Warranty 
+By using DRONE VOLT's products, software, and systems, the OWNER/OPERATOR fully and unreservedly agrees 
+to the warranty and liability conditions stated below and to all other general conditions agreed upon 
+between the OWNER/OPERATOR and DRONE VOLT. 
+The manufacturer guarantees that this product is free from any manufacturing and material defects under 
+normal conditions of use for a period of on e (1) year from the date of the initial invoice. Shipping and 
+handling costs are the responsibility of the customer. At its discretion during the warranty period, the 
+manufacturer undertakes to repair any material or manufacturing defects , or to provide a repaired or 
+refurbished product of equal value in exchange, at no cost (excluding shipping, handling, packaging, return 
+postage, and insurance costs, which will be borne by the customer). This repair or replacement is subject 
+to verification of the defect or malfunction and proof of purchase, confirmed by the presentation of the 
+serial number on the dated original invoice. 
+Any attempt to partially or completely modify the aircraft and/or system components, whether through 
+hardware or by modifying the software or firmware, will result in immediate termination of the warranty. 
+The manufacturer guarantees the aircraft main structure ( chassis) against manufacturing and material 
+defects for one (1) year. The manufacturer also guarantees the integrity of the firmware for one year. 
+ 
+ 
+* The term "OWNER/OPERATOR" used in this text and in the following pages refers to any company that 
+purchased the HERCULES 20 aircraft, or individual person working for the purchasing entity that either plan 
+operations for this aircraft, or is responsible for managing the operations, the safety, the maintenance, the 
+training, or the piloting of the aircraft.
+
+---------------------------------------- [FINE PAGINA 8] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+8 
+ © 2025 DRONE VOLT – All rights reserved 
+1.2 Request for warranty coverage 
+All warranty claims must be filed with DRONE VOLT (or its local commercial representative) by the 
+OWNER/OPERATOR of this product regarding any returns or warranty replacements. P roper transaction and 
+delivery documents will be required to initiate the claim. Please keep these documents for at least 1 year. 
+Claim Procedure: 
+• Warranty claims for malfunctions must be made within one (1) year from the date of invoicing and must be 
+authorized for return with a Return Merchandise Authorization (RMA), simply calling Drone Volt (or the local 
+commercial representative in charge of the customer), or emailing DRONE VOLT directly at: 
+aftersales@dronevolt.com. 
+• Claims for missing parts must be made within 60 calendar days of receiving the goods. In the case of on-site 
+equipment pick-up, a technical receipt and a detailed list of delivered items are prepared and signed by the 
+customer and the local commercial representative on behalf of DRONE VOLT. 
+• Any defective or malfunctioning merchandise must be returned in its original packaging. DRONE VOLT reserves 
+the right to specify that items must be returned to the original warehouse for inspection or be inspected by 
+our representative in the field. 
+• Proper documentation of the issue(s) or faulty components must be provided (photos, videos, screen 
+captures) to initiate a claim for defective merchandise, along with a copy of the original invoice. If the claim 
+is deemed justified by DRONE VOLT, the item(s) or parts will be repaired or replaced, or a credit note will be 
+issued. DRONE VOLT’s policy is to replace parts whenever possible. 
+This warranty gives you specific legal rights. 
+ 
+ 
+ 
+ 
+1.3 Warranty exclusions 
+ 
+ THIS WARRANTY DOES NOT COVER: 
+1. Damages incurred when the user is intoxicated, under the influence of drugs, under the effect of 
+medical anesthesia, experiencing dizziness, fatigue, nausea, or any other condition, whether 
+physical or mental, that may affect their ability to operate the drone safely. 
+2. Damages caused by improper use (i.e. Not compliant with the original use case the system was for, 
+or operations requiring flight characteristics outside or the designed flight envelope). 
+3. Damages caused by not following the manufacturer’s assembly instructions. Or by conducting 
+incomplete or inadequate assembly procedures before operating the system. 
+4. Damages caused by retrofitting or replacing parts , accessories, components, or payloads that are 
+not officially supplied, supported or approved by DRONE VOLT.
+
+---------------------------------------- [FINE PAGINA 9] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+9 
+V4.1 01/01/2025 
+5. Any damage resulting from an attempt to modify the system, or to perform unauthorized maintenance 
+procedures, of the aircraft or any system components, whether hardware, software, or firmware: 
+• Performing any hardware, software or firmware updates that are not approved by D RONE VOLT. 
+Also, having these updates conducted by unqualified technicians, or technicians not approved by 
+DRONE VOLT, or failure to send back the equipment to DRONE VOLT when it is specifically mandated. 
+• Failure to perform in a timely manner any mandatory hardware or software / firmware verification, 
+modification or updates, duly required by DRONE VOLT, while pursuing flight operations. 
+6. Damages caused by use with a faulty or non-functional data connection. 
+7. Damages caused by knowingly operating with damaged or otherwise malfunctioning system 
+component(s). Or when system components -hardware or software- exhibit obvious defects, faulty 
+elements, or have parts missing. 
+8. Damages caused by the improper use of the batteries or battery chargers provided by DRONE VOLT. 
+9. Damages when the system is operated in adverse conditions such as : earthquake, landslide, land 
+subsidence, debris flow, tsunamis, ice jam, avalanche, fire, explosion, etc. 
+10. Damages caused by operating the system in weather conditions outside the flight envelope, such 
+as heavy rain or excessive winds, tornadoes, hurricanes, thunderstorms, snow, hail or icy rain , 
+volcanic activity, solar storm causing significant geomagnetic interference, etc. 
+11. Damages caused by flying in situations such as: 
+• A magnetic interference zone. 
+• A radio interference zone. 
+• Near / above an important source of heat, or electromagnetic/nuclear radiation. 
+• Near the exploitation of explosives or pyrotechnics. 
+• In close proximity of any other type of aircraft (manned or not). 
+• Without authorization where/when it is mandatory. 
+• Prohibited / Controlled airspace (without proper flight approval by regulatory body) 
+• Close to any natural catastrophe, accident site or conflict zone, or anywhere an emergency crew is 
+deployed. 
+12. Damages caused by operating the system without applying effective mitigation measures in 
+challenging conditions, such as: 
+• The presence of projected contaminants, such as water, oil, dirt, sand, and any other unspecified 
+matter, able to leach in and degrade performance, or render inoperative, any system components. 
+• The p resence of projected contaminants, such as water, oil, dirt, sand, and other unspecified 
+matter, able to cover flight- critical surfaces and degrade performance, endurance, or 
+maneuverability / stability of the aircraft. 
+• Weather conditions that would impair or degrade the batteries’ capacity and power delivery. 
+13. Not having a clear line of sight towards the aircraft’s entire flight zone, due to low , limited or poor 
+visibility, obstructed view, or unsuitable ground station location, and other conditions that would 
+prevent the safe operation of the device. 
+14. Damages caused by negligent maintenance and failure keep the aircraft in an airworthy condition. 
+15. Damages caused by extending flight operations beyond the low voltage protection alert is triggered.
+
+---------------------------------------- [FINE PAGINA 10] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+10 
+ © 2025 DRONE VOLT – All rights reserved 
+1.4 Limitations and responsibilities 
+Please carefully read this disclaimer before using the H ERCULES 20 drone. By operating the aircraft, the 
+OWNER/OPERATOR acknowledges and agrees with the terms of this disclaimer. 
+By operating the aircraft , the OWNER/OPERATOR certifies that this User Guide ( and any other technical 
+documents or manuals supplied by D RONE VOLT) has been read and fully understood by their personnel 
+responsible for managing the operations, the safety, the maintenance, the training, and the piloting of the 
+aircraft. Should any questions arise, please contact D RONE VOLT's support service before the first flight : 
+Contact details are provided at the end of this document. 
+Whilst reading and understanding the content of this User Guide and annexed documents is essential. All 
+personnel involved in the operation or maintenance of the aircraft must be duly qualified and certified to 
+be in full compliance with the applicable aviation regulations of their country and/or the country(ies) the 
+aircraft is operated in. By operating the aircraft, the OWNER/OPERATOR attests that the aforementioned 
+personnel possess the required qualifications, authorizations, and necessary airspace access to operate a 
+drone such as the HERCULES 20. 
+By operating the aircraft, the O WNER/OPERATOR certifies that all applicable safety measures have been 
+implemented and agrees they are solely responsible for their actions in the operation of this aircraft, and 
+for any direct or indirect consequences that may arise. 
+By operating the aircraft, the OWNER/OPERATOR confirms that this aircraft will solely be operated for the 
+type of tasks / mission scenarios it has been designed -and sold- for. 
+ 
+The HERCULES 20 is not a recreational drone and must be handled with great care and caution. 
+Inappropriate use can result in damage to the aircraft, or severe injuries to the crew or bystanders, that 
+could even lead to fatality. Th is aircraft should only be operated by professional pilots that have 
+successfully completed the required specific training , prescribed and provided by D RONE VOLT, before 
+attempting any type of operation.
+
+---------------------------------------- [FINE PAGINA 11] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+11 
+V4.1 01/01/2025 
+ 
+1.5 Operating conditions 
+Reminder: Current regulations do not allow flying over people or gatherings of people unless specifically 
+authorized by the competent authority , either national Civil Aviation Authority (CAA) or Air Navigation 
+Service Provider (ANSP). 
+DRONE VOLT aircraft have been designed, engineered and manufactured to be compliant with the regulatory 
+frameworks in all the jurisdictions they are sold in. It is therefore implied that the O WNER/OPERATOR must 
+follow and respect the laws and rules of the country in which they fly , as well as have the necessary 
+authorizations for the flight mission. Compliance of a ll planning and flight operations is the sole 
+responsibility of the O WNER/OPERATORS, considering they will be held responsible for any wrongdoing or 
+damages caused to other aircraft, or to people and property on the ground. 
+Before any mission, good practice demands that the crew appropriately mark out the aircraft’s projected 
+operating area on the ground (third party exclusion zone) and constantly control the access to this area 
+before, during, and after the flight operations. This is to avoid potential accidents, but also to prevent any 
+damage to the aircraft. 
+The operator and flight crew should, in conjunction with local regulations, determine and enforce the safe 
+distances required between pilot/crew and the drone, and the safe distance to be maintained between the 
+drone and any third-party: 
+• Typically, the pilot should not be within 10 meters of the aircraft when the propellers are (or will 
+start) spinning. 
+• Also, any other person not involved in the operation of the drone should typically stand at least 30 
+meters away from the aircraft when it takes off or lands. 
+• Proper safety perimeters should be established according to national regulations. 
+ 
+The HERCULES 20 has been designed to fly under visual line -of-sight (VLOS) protocols and under visual 
+meteorological conditions (VMC). DRONE VOLT will never approve, allow or condone operating the HERCULES 
+20 in beyond visual line-of-sight mission scenarios. 
+Before each flight, the OWNER/OPERATOR’s crew must ensure the proper functioning of the aircraft and 
+should be aware of the local weather conditions, at takeoff time but also for the duration of the mission 
+and beyond. The atmospheric conditions should be constantly monitored, in case of sudden changes or 
+discrepancies with the weather forecast. Flight operations must be halted or cancelled when any observed 
+weather conditions have the potential to infringe on safe flight parameters. 
+The HERCULES 20 is not designed to fly in heavy rain, however moderate rain is accepted. Nor is it designed 
+to fly in strong winds (refer to the Technical Specification of the aircraft). Please check the local weather 
+forecast and wind estimation near the flight area. Also note that the wind is usually stronger at high 
+altitude; wind velocity at ground level is not always a good indication of wind conditions 100 meters above 
+ground. 
+Please also be aware of the Kp index (geomagnetic disruption forecast) and act accordingly. Many 
+applications are available to monitor this crucial parameter.
+
+---------------------------------------- [FINE PAGINA 12] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+12 
+ © 2025 DRONE VOLT – All rights reserved 
+Do not fly when the minimal technical conditions are not met (weak satellite reception, electromagnetic 
+disturbances, weak batteries, unstable magnetic compass, insufficient maintenance, and general condition 
+of the device, etc.). The OWNER/OPERATOR’s pilot is ultimately responsible for flight safety and for the 
+decision to fly regardless of any third-party pressure. 
+Keep a safe distance from any telecom communication towers and antennas, as well as high-voltage power 
+lines. They could degrade the reception of satellite signals, affect the on- board magnetic compass and 
+cause electromagnetic interference with the command link. The proximity of these hazards could result in 
+poor positioning of the aircraft in the flight space, failure to adhere to a virtual barrier (geofencing) and a 
+reduction of stability, which could result in a crash. 
+The proximity of large metallic objects and structures that can cause electromagnetic interference, which 
+in turn can affect on-board compass readings and drone performance, should be avoided. 
+Furthermore, tall buildings may pose a threat: their reflective surface may disrupt satellite signals and thus 
+disrupt the GNSS positioning of the aircraft. Also, working between tall buildings can abruptly cut the GNSS 
+positioning as well , when satellites moving in the sky above are suddenly occult ed, passing behind tall 
+structures. Induced turbulence due to wind swirling around the buildings can slightly disturb the barometer 
+and locally degrade altitude hold and stabilization. It is therefore recommended not to approach less than 
+2 meters from the surface of any building. 
+Knowledge of any concurrent activity in the vicinity (aerial or on the ground) is an important parameter to 
+account for when carrying out a drone operation. Consult the locally applicable NOTAMs , and any other 
+relevant documents, apps or websites to properly assess the safety of the area . Validate this information 
+by performing a thorough site survey to identify any potentially conflicting activities or safety hazards.
+
+---------------------------------------- [FINE PAGINA 13] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+13 
+V4.1 01/01/2025 
+ 
+2. INTRODUCTION TO HERCULES 20 
+ 
+2.1 Description of use 
+The HERCULES 20 is part of a range of drones engineered and manufactured by the DRONE VOLT GROUP. It is 
+designed for different professional applications within the fields of agriculture, construction, pressure 
+washing of roofs, walls and photovoltaic panels, transportation of goods, and many others. 
+Aircraft Type: Octocopter, X8 configuration (four arms, each fitted with two contrarotating motors). 
+ 
+2.2 H ERCULES 20 Specifications 
+ 
+Weight Capacity Empty Weight (excl. battery): 11 kg 
+Empty Weight (incl. 4 batteries): 19 kg 
+Payload Capacity: 5,9 kg 
+MTOW (Maximum Takeoff Weight): 24,9 kg 
+Maximum Capacity Max Payload Capacity: 15 kg 
+MTOW with Max Payload: 35 kg 
+The maximum capacity of the aircraft exceeds the 25 kg MTOW limit imposed in most 
+jurisdictions. Flying payloads heavier than 5,9 kg will require special safety measures and 
+flight approval by national CAA.
+
+---------------------------------------- [FINE PAGINA 14] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+14 
+ © 2025 DRONE VOLT – All rights reserved 
+Dimensions (L x W x H) 
+Diagonal (excl. props): 
+Diagonal (incl. props): 
+1538 x 1538 x 607 mm 
+1243 mm 
+1903 mm 
+Battery System 4 x LiPo 6S 16000 mAh 30C 
+(In a series and parallel configuration) 
+Weight: 2 kg each 
+Flight Controller PIXHAWK | CubePilot Cube ORANGE+ 
+GNSS (Single Antenna configuration) or (Dual Antenna Configuration) 
+HEXe Here3 GPS Ublox F9P, Moving baseline 
+ GPS, GLONASS BeiDou, Galileo 
+Hovering flight accuracy Vertical: ± 0.5 m (±1.6 ft) 
+Horizontal: ±1.5 m (±4.9 ft) 
+Maximum Altitude Default: 120 m / 400 ft AGL 
+(Can be configured to exceed normal operational ceiling for UAV up to 300 m / 1000 ft AGL 
+with special safety measures and flight permission from ANSP/CAA.) 
+Maximum Speed 48.5 knots (90 km/h / 56 mph) 
+IP Rating IP54 
+Wind Resistance 27 knots wind gusts (50 km/h 31 mph) 
+Endurance 
+(According to payload) 
+40 minutes empty (no payload) 
+30 minutes with a 5kg payload 
+20 minutes with a 9kg payload 
+Propellers 8 x T-MOTOR Carbon 26" (Ø) x 8.5" (pitch). (4 CW and 4 CCW) 
+Motor System 8 x T-MOTOR MN701S 
+Operating frequencies HERELINK: 2412MHz to 2472MHz / 13 Channels / Bandwidth: 20MHz 
+Remote ID / Beacon: 2402MHz to 2480MHz / 79 Channels / Bandwidth: 1 MHz 
+Zéphyr CC FTS: SRD860 with encrypted key / 869 MHz 
+Maximum power output under 20 dBm (100mW) on all frequencies 
+RC / C2 Link 
+Transmission Distances 
+HERELINK: FCC: 3,5 km (2.17 miles) 
+CE: 2 km (1.3 miles) 
+AES-128 Encryption 
+Maximum Transmission Distances 
+Line of Sight (LOS) 
+Up to 12 km 
+Vertical speed (Climb) 3 m/s 
+Vertical speed (Descent) 3 m/s 
+Descent speed in LAND/RTL mode 1.5 m/s above 10 m altitude 
+0.5 m/s in LAND mode below 10m altitude 
+RTL Height parameters 15 m altitude by default (user configurable) 
+If below 15m, the drone climbs to 15m during an RTL 
+If above 15m the drone maintains its altitude during the RTL 
+C2 Link Loss Default: After 5 seconds  RTL 
+Operating temperature range -20◦C à 45◦C (-4◦F à 113◦F ) 
+Production Material Carbon fiber composites 
+Machined aluminum 
+Plastics / reinforced plastics
+
+---------------------------------------- [FINE PAGINA 15] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+15 
+V4.1 01/01/2025 
+ 
+2.3 H ERCULES 20 mechanical drawings 
+ 
+2.3.1 Mechanical overview 
+The following illustrations present the external components of the HERCULES 20. This is followed by a set of 
+technical drawings showing the main dimensions of the aircraft. The measuring unit used is millimeters. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+1 Arms 
+2 FPV Camera 
+3 Main housing 
+4 LED for Conspicuity 
+5 Landing gear 
+6 Crossbar 
+1 
+ 2 
+ 3 
+4 
+5 
+6
+
+---------------------------------------- [FINE PAGINA 16] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+16 
+ © 2025 DRONE VOLT – All rights reserved 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+1 External Battery Compartment 
+2 GNSS Module 
+3 HERELINK Antenna 
+4 Landing Gear Fixation Latch 
+5 Arm Lock, mechanical and electrical connection 
+6 Status LED (see description in Section 4.4.1) 
+7 Internal Battery Compartment 
+1 
+5 
+3 
+4 
+6 
+ 7 
+2
+
+---------------------------------------- [FINE PAGINA 17] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+17 
+V4.1 01/01/2025
+
+---------------------------------------- [FINE PAGINA 18] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+18 
+ © 2025 DRONE VOLT – All rights reserved
+
+---------------------------------------- [FINE PAGINA 19] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+19 
+V4.1 01/01/2025 
+ 
+2.4 Batteries 
+ 
+Battery Specifications 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Cell voltage Approx. Battery % Global Voltage for 12 cells 
+4.2 V 100 % 50.4 V 
+4.0 V 75 % 48 V 
+3.85 V 
+(Storage voltage) 50 % 46 V 
+3.58 V 30 % 43 V  1ST ALARM  RTL 
+3.41 V 25 % 41 V  2ND ALARM  LAND 
+ 
+ 
+Type LiPo 
+Capacity 16 000 mAh 
+Cells 6S 
+Continuous Discharge 15C 
+Peak Discharge 30C 
+Charge 1C 
+Energy & Energy Density 355.2 Wh 
+179.9 Wh/kg 
+Weight 1974 g 
+Dimensions (L x W x H) 190 x 76 x 65 mm 
+Temperature Conditions Charge: 0°C - 45°C 
+Discharge: -10°C - 55°C 
+Battery / balancing connector(s) AS150 / JST-XHR
+
+---------------------------------------- [FINE PAGINA 20] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+20 
+ © 2025 DRONE VOLT – All rights reserved 
+2.4.1 Installing the battery in the HERCULES 20 
+The HERCULES 20 is operated with four batteries matched in two pairs: left and right sides of the aircraft. 
+The HERCULES 20 will not start nor fly if just a single pair of batteries is installed inside the main body cavity; 
+Likewise, if only the sidepod trays are used. While the drone will power up with a single set installed (a 
+battery in one of the two internal bays and another battery in the same -side sidepod tray), this 
+configuration should only be used on the ground for setup and testing as it would severely affect stability 
+in flight. 
+To ensure the stability and proper balance of the Hercules 20, always take off with four batteries onboard. 
+To avoid sparks while connecting, is recommended to hook up the black connectors before the red ones. 
+The procedure for installing the batteries into the HERCULES 20 aircraft is as follows: 
+1. The HERELINK remote controller must be turned on prior to connecting the aircraft batteries. (See 
+Section3) 
+2. Check the health status of each battery with the battery tester supplied with the HERCULES 20. 
+a. Check each battery’s voltage and ensure that it is equivalent for all batteries. 
+b. Look for anomalies by checking individual cell voltages in each battery. 
+c. The battery-checker displays the following information when a battery is connected to it: 
+3. Attach two batteries to the external battery trays: fit the black connector first, then the red one. 
+4. Insert the two internal batteries and attach only the black connector(s). 
+5. When ready to power on the aircraft , connect the remaining red connectors in the internal battery 
+compartment. When this is done, an LED status indicator will light up and the built -in beeper will 
+sound to signal the start of the initialization phase of the aircraft.
+
+---------------------------------------- [FINE PAGINA 21] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+21 
+V4.1 01/01/2025 
+ 
+ 
+ 
+ 
+ 
+ 
+Note: During the initialization phase beeps, when the status LED (as well as the GPS 
+module LED) flashes blue and red, the gyroscopes are initializing; You must not move 
+the body of the drone at this time. 
+ 
+ 
+ 
+For further information on the BG-8S Battery Go unit and its 
+updates please check this link: 
+https://www.isdt.co/down/pdf/BG-8S_en.pdf 
+or scan the QR code
+
+---------------------------------------- [FINE PAGINA 22] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+22 
+ © 2025 DRONE VOLT – All rights reserved 
+2.5 Battery charging system 
+The "SKYRC PC1080" charger comes bundled with the HERCULES 20.
+
+---------------------------------------- [FINE PAGINA 23] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+23 
+V4.1 01/01/2025 
+ 
+ 
+To configure this charger, the user is required to first create presets corresponding to the characteristics of 
+the HERCULES 20 battery type. Before first time use, it is necessary to create specific presets for Charge, Fast 
+charge, and Storage (see Section 2.6.1) according to the following instructions. 
+ 
+2.5.1 Charge preset 
+Task Charge 
+Chemistry LiPo 
+Balance On 
+Cells 6S (22.2V) 
+Current 16.0 A 
+Condition 4.20 V 
+ 
+ 
+2.5.2 Fast charge preset 
+Task Discharge 
+Chemistry LiPo 
+Balance On 
+Cells 6S (22.2V) 
+Current 20.0 A 
+Condition 3.50 V 
+ 
+ 
+ 
+For further information on the SKYRC PC1080 charger, to download 
+PDF manuals and firmware updates, please check this link: 
+https://www.skyrc.com/PC1080_Charger#tab-download 
+or scan the QR code
+
+---------------------------------------- [FINE PAGINA 24] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+24 
+ © 2025 DRONE VOLT – All rights reserved 
+2.6 Battery handling and storage instructions 
+Lithium polymer batteries should always be considered dangerous items. Care should be given to their 
+handling: 
+• LiPo batteries are flammable and sensitive to shocks. 
+• Store and transport with care, in dry, temperate conditions. 
+• The voltage read at the end of a flight goes up by ≈2V once the drone has landed. 
+• It considered is normal when batteries heat up moderately in flight. When a single cell -or the whole battery- 
+is unusually hot at the end of a flight, that battery needs to be discarded. 
+• In cold weather, the range may be greatly reduced. To minimize this the batteries should be kept at a 
+moderate temperature before being installed on the aircraft shortly before flight. 
+ BELOW 3.6 V PER CELL (43 V), THE VOLTAGE WILL DROP VERY QUICKLY 
+• No sharp object should be allowed to touch the batteries at any time. 
+• Do not store LiPo batteries fully charged for more than 20 days, as they may swell. For long term storage, 
+batteries should be discharged to 3.7 V per cell and stored in a strong fireproof case. This will significantly 
+increase the batteries’ lifespan. 
+• Charge at the recommended amperage of 16A or less. 
+• Charging should be performed with the batteries put inside a "LiPo bag", a fire-retardant pouch, which allows 
+the user to move a potentially problematic /failing battery without touching it. This bag will allow enough 
+time to carry the batteries to a safe location should they fail while charging. 
+• While charging, LiPo batteries must be monitored at all times. 
+ NEVER LEAVE AN OPERATING CHARGER UNATTENDED! 
+• Never attempt to recharge or use a damaged, swollen or dented battery. 
+A failing battery will usually show gradual signs of deterioration, long before any catastrophic occurrence. 
+It will start taking longer to charge, it will likely not match the charging rate, nor time, of its partner 
+(batteries should always be charged in pairs). Using the battery checker will reveal significant differences 
+in cell voltage and resistance within the battery. If these signs go unnoticed, or worse, if the battery has 
+suffered piercing damage, it can fail catastrophically, this usually occurs immediately on damaging the 
+battery or during the charge cycle. The manner of failure will depend on the current state of charge of the 
+battery, becoming more dramatic with increasing levels of battery charge. A catastrophic failure will usually 
+follow this pattern: 
+• A cell within the battery will begin to swell 
+• It will emit a hissing sound and start releasing toxic smoke with a pungent smell. 
+• The cell will eventually rupture, release more toxic smoke, and then ignite loudly. 
+• When a first cell ignites, the other cells will shortly follow in cascad ing order along the same catastrophic 
+failure pattern. Do not approach a battery that has begun this process; it is not safe until all cells have burned 
+through or have been extinguished.
+
+---------------------------------------- [FINE PAGINA 25] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+25 
+V4.1 01/01/2025 
+ 
+ NOTE: A discharged battery is unlikely to fail catastrophically, even when 
+pierced. This is a strong incentive to discharge batteries for storage in addition 
+to maximizing their lifespan. 
+ 
+ 
+2.6.1 Storage preset 
+To achieve storage voltage levels, select the profile shown below: 
+Task Storage 
+Chemistry LiPo 
+Balance On 
+Cells 6S (22.2V) 
+Current 16.0 A 
+Condition 3.70 V 
+Safety Timer 120 minutes 
+For safety reasons, the “Safety Timer” located in the charger parameters must be activated and set to 120 
+minutes. 
+ 
+ CAUTION! IN ORDER TO STAY WITHIN THE BATTERIES ’ SAFE PARAMETERS , ALWAYS 
+RIGOROUSLY FOLLOW ALL THE S AFETY INSTRUCTIONS AND PROCEDURES ISSUED IN YOUR 
+CHARGER’S USER MANUAL.
+
+---------------------------------------- [FINE PAGINA 26] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+26 
+ © 2025 DRONE VOLT – All rights reserved 
+2.7 System accessories 
+The HERCULES 20 is delivered with the following accessories: 
+Battery tester: 
+Displayed information: 
+● Percentage of the battery 
+● Battery voltage 
+● Cell voltage 
+ 
+Micro USB cable: 
+HERELINK charging cable 
+ 
+Mini USB cable: 
+HERCULES 20 data cable: 
+● Diagnostics 
+● Log download 
+ 
+Charging cables (charger): 
+Balance cables (charger): 
+Toolbox: 
+External Flight Termination System: 
+OPTIONAL EQUIPMENT: 
+Only supplied where it is mandatory 
+Usage directives provided in Appendix 6.2
+
+---------------------------------------- [FINE PAGINA 27] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+27 
+V4.1 01/01/2025 
+ 
+3. HERELINK RADIO CONTROLLER 
+The HERCULES 20 comes equipped with the C UBEPILOT HERELINK C2 link system. This section describes this 
+system’s technical specifications, characteristics, settings and operation procedures. 
+3.1 H ERELINK handheld interface 
+ 
+3.2 Radio specifications 
+Maximum Transmission Distances 
+Line of Sight (LOS) 
+FCC: 20 km (12.4 miles) USA 
+CE: 12 km (7.5 miles) EU 
+Transmission Frequency 2.4 GHz ISM (2412 MHz to 2472 MHz / 13 channels / Bandwidth: 20 MHz) 
+Maximum power output: 100 mW 
+Wireless Communication Bluetooth 
+Wi-Fi 
+Screen Resolution & Brightness 16x9 Aspect Ratio, 1080p 
+1000 nit 
+Interface Micro USB 
+MicroSD (up to 64Gb) 
+Dimensions (L x W x H) 217mm x 106.5mm x 31mm excluding antennas and joysticks 
+Weight 536 g 
+Battery 4950 mAh 
+Charging through Micro USB, 5V 2A 
+Expected use of a charged battery Up to 3 hours 
+Video sharing locally RTSP Stream over Wi-Fi hotspot, USB Connection, 
+or Wi-Fi local network 
+Indicator Light (for feedback) Tricolor LEDs Upper right and left corner 
+Wheel 
+Joystick 
+Buttons 
+Screen 
+Antennas
+
+---------------------------------------- [FINE PAGINA 28] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+28 
+ © 2025 DRONE VOLT – All rights reserved 
+3.3 Antennas installation the HERELINK 
+ 
+ 
+ MAKE SURE TO ATTACH THE ANTENNAS ON THE REMOTE CONTROL BEFORE 
+TURNING ON THE HERELINK TRANSMITTER! 
+ 
+To attach the antennas, insert the antenna into the RC case receptacle, and then turn it a quarter turn 
+clockwise. Once attached, they should bend towards the operator when looking at the controller face. 
+The long omnidirectional antenna is attached near the scroll wheel and should generally be perpendicular 
+to the drone (it should not point towards the drone). The mushroom- shaped patch antenna (directional) 
+attaches on the right, near the top button, and should have its flat top aimed at the drone flight zone as far 
+as possible. 
+ 
+ 
+ 
+Patch antenna 
+(directional) 
+Omni-directional 
+antenna
+
+---------------------------------------- [FINE PAGINA 29] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+29 
+V4.1 01/01/2025 
+ 
+3.4 H ERELINK control buttons 
+ 
+ 
+ 
+ 
+ 
+1 Upper-left Wheel Wheel 
+2 Upper-right Button Trigger 
+3 A - Button ATI / Altitude Hold Mode 
+4 B - Button LOITER Mode 
+5 Power Button ON / OFF (Long Press) 
+6 Home Button RTL / Return to Launch 
+7 C - Button User Programmable 
+8 D - Button Kill switch 
+1 
+ 2 
+5 
+4 
+ 6 
+ 7 
+ 8 
+3
+
+---------------------------------------- [FINE PAGINA 30] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+30 
+ © 2025 DRONE VOLT – All rights reserved 
+3.5 Controller joysticks 
+Flight controls are set by default in " Mode 2 ". This has been the predominant configuration for radio -
+controlled aircraft for decades and is also the default setting for gaming consoles. In this configuration, the 
+left joystick controls the THROTTLE and YAW (RUDDER on winged aircraft) , while the ROLL and PITCH (AILERONS 
+and ELEVATOR on a winged aircraft) are controlled with the right joystick. 
+ 
+ 
+ 
+ 
+YAW 
+ ROLL 
+THROTTLE 
+ PITCH
+
+---------------------------------------- [FINE PAGINA 31] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+31 
+V4.1 01/01/2025 
+ 
+How to arm and disarm the HERCULES 20 in Mode 2. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Wait for “DISARMED” sound signal confirmation. 
+ 
+ 
+ 
+3.6 Starting the HERELINK controller 
+Charge the HERELINK controller with the included Micro USB cable. Charge the H ERCULES 20 batteries in 
+accordance with the procedures detailed in Section 2.5 and 2.6 of this USER GUIDE. The Radio Controller is 
+fully charged when the LED is shining solid green. 
+Power on the Radio Controller with a long press on the POWER button. 
+When the H ERELINK and HERCULES 20 are powered 
+on, a green status bar (“Downloading Parameters”) 
+will be shown across the top of the HERELINK screen. 
+The green color will gra dually fill the top of the 
+screen from left to right. Once this operation is 
+completed this status bar will disappear when the 
+controller is fully synched to the aircraft. 
+ 
+ 
+ 
+ 
+ 
+ 
+ARMING 
+ DISARMING 
+DISARMED!
+
+---------------------------------------- [FINE PAGINA 32] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+32 
+ © 2025 DRONE VOLT – All rights reserved 
+3.7 H ERELINK main screen 
+When turning on the HERELINK the operator first sees the main screen, as illustrated above. This picture 
+shows the basic overview of the different components. The explanations of each of these functions will be 
+detailed in the following sections. 
+1 DRONE VOLT CONTROL app settings 
+2 HERCULES 20 drone parameters Opens multiple tabs. See SECTIONS 3.8.1 TO 3.8.7 
+3 Mission planning Opens the waypoint and flight plan programming 
+4 Main flight screen Displays screen and video feed 
+5 Notifications Signals important notifications 
+6 GNSS fix, Satellites count and HDOP Displays the GNSS parameters 
+7 C2 link received signal strength indicator (RSSI) Indicates the intensity of the received signal 
+8 HERCULES 20 battery voltage percentage Displays drone batteries status 
+9 Flight mode Displays selected flight mode 
+10 Armed/Disarm Displays drone status 
+11 Horizon gauge 
+12 Compass heading 
+13 Radio Controller battery indicator Displays Radio Controller battery status 
+14 Flight map To swap from camera to flight map view 
+15 Telemetry data settings Selecting displayed operation parameters 
+16 Telemetry display panel Display the selected operation parameters 
+17 Video stream parameters Select video source and video settings 
+10 
+ 13 
+12 
+11 
+1 
+ 2 
+ 3 
+ 4 
+ 5 
+ 6 
+ 7 
+ 8 
+ 9 
+14 
+ 17 
+15 
+ 16
+
+---------------------------------------- [FINE PAGINA 33] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+33 
+V4.1 01/01/2025 
+ 
+ 
+Pressing in the area at the bottom left of the main screen allows to swap between the 
+camera and the flight map view. 
+ 
+A double tap in the middle of the screen will switch the display to "full screen" mode, 
+removing the right telemetry panels. Another double tap will bring them back. 
+ 
+ 
+3.8 DRONE VOLT CONTROL 
+The HERELINK Radio Controller is supplied with a built-in application, DRONE VOLT CONTROL, designed for the 
+HERCULES 20. The following subsections explain how to navigate in the DRONE VOLT CONTROL application. 
+The HERCULES 20 configuration menus are accessible by clicking on the gear icon ( ). 
+This icon will deploy the main settings tabs. SUMMARY, SENSORS, and SAFETY settings are the three m ost 
+commonly used tabs for aircraft setup.
+
+---------------------------------------- [FINE PAGINA 34] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+34 
+ © 2025 DRONE VOLT – All rights reserved 
+3.8.1 D RONE VOLT CONTROL summary tab 
+By clicking on the DRONE VOLT CONTROL settings button, a new screen will display the general configuration 
+of the HERCULES 20. If a sensor, flight mode, radio or similar are faulty in any way, it will be shown here with 
+a red indicator. See illustration below for reference. 
+ 
+ 
+ 
+ 
+ 
+Submenu tabs 
+ Fault indicators
+
+---------------------------------------- [FINE PAGINA 35] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+35 
+V4.1 01/01/2025 
+ 
+3.8.2 Radio s ettings tab 
+The Radio tab allows the operator to control the assignment of stick controls and their directions. It should 
+be noted that, by default, the PITCH axis is reversed on the HERCULES 20 as on most multirotor drones 
+operating in Mode 2. This means that when the right joystick is pushed forward (increasing the pitch of the 
+aircraft and propelling it forward), the PITCH slider in this interface will move to the left. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ CAUTION! THE OPERATOR IS ADVISED NOT TO CHANGE THE STANDARD SETTINGS OF THE RADIO 
+CONTROLS, UNLESS DULY INSTRUCTED TO DO SO BY DRONE VOLT. 
+ 
+ 
+Attitude Controls 
+Roll 
+ 
+Pitch 
+ 
+Yaw 
+ 
+Throttle 
+ 
+ 
+ 
+ 
+Roll to the LEFT Roll to the RIGHT 
+PUSH to pitch forward PULL to pitch rearward 
+Spin to the LEFT Spin to the RIGHT 
+PULL to lower power PUSH to increase power
+
+---------------------------------------- [FINE PAGINA 36] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+36 
+ © 2025 DRONE VOLT – All rights reserved 
+3.8.3 Flight modes tab 
+The HERCULES 20 can use the following approved flight modes: 
+ 
+During a mission, the most common and recommended flight mode for use in standard flight conditions is 
+LOITER. In the event of a magnetometer failure, or GNSS reception problems, A TI mode should be used for 
+a safe piloted landing. 
+The A and C buttons on the Radio Controller are configurable. Initially, by default, the A-Button is assigned 
+to the ATI mode, and the C-Button is not assigned (LAND is recommended). The available flight modes and 
+their button mapping can be found and configured through the Flight Modes Setup tab. 
+ATI 
+A - Button 
+Altitude Hold With control joysticks in neutral after takeoff, the drone maintains its 
+altitude but drifts with the wind. The maximum speed is higher than in 
+LOITER mode. 
+LOITER 
+B - Button 
+Altitude Hold & 
+Position Hold 
+With control joysticks in neutral after takeoff, the drone’s position is 
+maintained by GNSS coordinates. 
+AUTO Preprogrammed Flight The aircraft follows the preprogrammed waypoints sequence and 
+waypoint actions. 
+GUIDED Allows use of pre-programmed coordinates to which it must go. Used 
+with Mission Planner software running on a linked GCS computer. 
+CIRCLE The drone will start to circle around a coordinate point located 10 
+meters ahead of it when this flight mode is triggered 
+While in CIRCLE mode, moving the right joystick forward/backwards will 
+increase/decrease the diameter of the circle. Left/right movements 
+will alter the orbiting velocity and direction. 
+POSHOLD Equivalent of LOITER mode, with higher maximal speed and braking 
+distance. 
+BRAKE BRAKE will stop the drone. Useful in case of emergency.
+
+---------------------------------------- [FINE PAGINA 37] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+37 
+V4.1 01/01/2025 
+ 
+3.8.4 Failsafe systems 
+As standard the HERCULES 20 employs two automatic failsafe actions and a manually triggered kill switch. 
+1. RETURN TO LAUNCH (RTL): triggered by C2 link loss or HOME/RTL command from the HERELINK 
+controller. This will cause the aircraft to travel vertically to the preset RTL altitude (configurable 
+in the SAFETY tab) and then return to hover briefly over the launch location before descending 
+to land. 
+2. LAND: triggered by critically low battery. This will cause the aircraft to descend slowly (up to 
+3m/s) while ROLL, PITCH and YAW remain under the operator’s control during descent. 
+3. Kill: triggered by the kill switch on the HERELINK controller (long press of "D" button). This serves 
+as an emergency stop: It will halt all the motors’ rotation regardless of current state. 
+ WARNING: USING THE KILL SWITCH IN FLIGHT WILL CAUSE THE AIRCRAFT TO FALL! 
+PLEASE BE AWARE OF CURRENT MOMENTUM, WIND, POTENTIAL TRAJECTORY AND 
+LIKELY IMPACT ZONE BEFORE ACTIVATING. 
+The optional Z ÉPHYR CC (v 2.0) flight termination system bring s redundance to the kill switch. 
+This device is described in Appendix 6.2. 
+ 
+ 
+ 
+RTL 
+ 
+HOME 
+Button 
+Return to Launch Return to take-off position. 
+(RTL altitude configurable in the SAFETY tab) 
+LAND 
+ 
+ At the end of an RTL, or in battery failsafe (critical action), the drone 
+descends slowly (up to 3m/s). 
+During the descent, you can correct the landing point with the ROLL 
+and PITCH sticks, and also control the heading of the drone with the 
+YAW stick. 
+KILL SWITCH 
+D - Button 
+ Emergency stop of all motors regardless of current state. 
+Long press of the D-button required to enact and again to remove 
+afterwards.
+
+---------------------------------------- [FINE PAGINA 38] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+38 
+ © 2025 DRONE VOLT – All rights reserved 
+3.8.5 Sensors tab 
+The SENSOR tab allows the operator to perform the COMPASS and ACCELEROMETER calibrations. 
+ 
+NOTE: THE NEWER VERSIONS OF THE HERCULES 20, EQUIPPED WITH A DUAL-ANTENNA 
+GNSS MODULE, WILL PRACTICALLY NEVER REQUIRE ANY KIND OF COMPASS OR 
+ACCELEROMETER CALIBRATION. 
+Any type of calibration is achieved with the batteries plugged in and secured. To facilitate the procedure, 
+the calibrations can be completed with only the main body out of the box; before attaching the arms and 
+landing gear or installing any payload to the HERCULES 20. 
+The operator is responsible for the proper execution of these calibration procedures when they need to be 
+performed on a mission site. Avoiding any accidental breakage of aircraft components is paramount. The 
+operator is therefore responsible for any damage caused to the aircraft in the event of a mishandled drone 
+(dropped or damaged by grabbing fragile components while executing the procedure).
+
+---------------------------------------- [FINE PAGINA 39] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+39 
+V4.1 01/01/2025 
+ 
+ 
+Compass calibration 
+ 
+ Before starting the compass calibration, make sure that the HERCULES 20 is at a good distance from 
+any metallic mass or structure which could affect the compass. 
+ Switch on the drone by plugging and securing the batteries. 
+In normal conditions with a single GNSS antenna aircraft, only the compass should 
+require regular calibration. This procedure ensures a good alignment of the 
+compass with the magnetic North.
+
+---------------------------------------- [FINE PAGINA 40] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+40 
+ © 2025 DRONE VOLT – All rights reserved 
+ Click on COMPASS, then on OK on the right to start the calibration process. 
+ Follow the steps by turning the drone around (at least one full rotation) on every axis: horizontal, left 
+side, right side, front side, back side and upside down. 
+ During the operation a progress bar is visible, indicating the status of the calibration. 
+If not done correctly, or in suboptimal conditions, the compass calibration can fail, which will be indicated 
+by the cursor towards the red zone of the status bar. A partly successful albeit inaccurate calibration will 
+be signaled by the cursor remaining below the center of the yellow area of the status bar. In both cases, 
+the calibration process needs to be performed once again, until the cursor moves to the left, away from 
+the center of the yellow area and towards the green section of the status bar. 
+ 
+ 
+ 
+ 
+ 
+ 
+ONCE THE CALIBRATION IS SUCCESSFUL, WHICH IS CONFIRMED BY THE CURSOR ENTERING THE 
+GREEN SECTION OF THE STATUS BAR, YOU CAN EITHER CLICK ON REBOOT TO SAVE THE NEW 
+CALIBRATION SETTINGS, OR YOU CAN UNPLUG AND PLUG BACK THE BATTERIES TO ACHIEVE THE 
+SAME RESULT. 
+Accelerometers calibration 
+In some very specific circumstances with a single GNSS antenna aircraft (hardly ever with the dual-antenna 
+version of the HERCULES 20), it may be required to calibrate the accelerometers. This calibration procedure 
+can be done by following steps that will be detailed on screen. The operator will be prompted to place the 
+drone in different positions: horizontal, on its left side, right side, front side, back side, or upside down. 
+ 
+ 
+Acceptable 
+ Repeat calibration
+
+---------------------------------------- [FINE PAGINA 41] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+41 
+V4.1 01/01/2025 
+ 
+3.8.6 Motors tab 
+The MOTORS tab allows the operator to test the HERCULES 20’s motors individually, by making them turn at 
+up to 10% of their maximum RPM. Make sure the HERCULES 20 structure is fully assembled, and all 
+connectors are secured before using these test functions. The Motor Setup test can be used with or without 
+the propellers mounted on. It is very important to perform this test procedure after the assembly of the 
+drone, and prior to each flight session. 
+ 
+ 
+ 
+To enable that function, the operator will need to toggle right the slider at the bottom of the screen. After 
+that, the vertical cursors can be moved up or down to test each motor. Refer to Sections 4.3 or Section 5.3.2 
+for motor numbering. 
+This tab allows testing of: 
+ The proper assembly and connection of the drone’s arms. If a motor does not spin, investigate the 
+root cause. 
+ The proper functioning of the motors. Check for unusual noises or irregular rotation. 
+ Each propeller’s spin and orientation. It is paramount to validate that the correct propeller is fitted to 
+the correct motor, and that no propeller has been installed upside down. Each propeller’s spin should 
+direct the downwash towards the ground when tested.
+
+---------------------------------------- [FINE PAGINA 42] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+42 
+ © 2025 DRONE VOLT – All rights reserved 
+ 
+ NOTE: Any unusual air sound (turbulence / cavitation) or shimmy is the structure 
+while testing on the ground could be valuable cues something is wrong with 
+the propellers’ installation. Stop the motors and check the layout again! 
+ 
+ CAUTION! WHEN PERFORMED WITH THE PROPELLERS MOUNTED ON THE MOTORS, THE OPERATOR 
+NEEDS TO ENFORCE A SAFETY PERIMETER OF AT LEAST 2 METERS AROUND THE DRONE. THIS TO 
+PROTECT ANYONE FROM THE ROTATING PROPELLERS.
+
+---------------------------------------- [FINE PAGINA 43] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+43 
+V4.1 01/01/2025 
+ 
+3.8.7 Safety setup tab 
+The SAFETY tab is used to define battery alarm thresholds and the actions to be taken with each alarm level. 
+ 
+This tab can also be used to set the FAILSAFE actions (i.e. actions in the event of critical battery or loss of 
+radio signal), the GEOFENCE (the parameters limiting the flight zone) and the RTL (return to launch) altitude 
+values. 
+Low voltage thresholds for the battery alarms need to be initially configured: 
+ At 43 V (low voltage threshold) the drone engages RTL mode. 
+For obvious safety reasons, it is highly recommended to initiate a controlled landing procedure before the 
+activation of the 43 V alarm. In some specific conditions or flight environment, the operator may choose 
+to disable the RTL action linked to this alarm by selecting NONE, for instance. The alarm beeps will still be 
+audible, and it will be visible on the R adio Controller. However, the drone will continue to fly normally , 
+therefore transferring the responsibility to the pilot to swiftly initiate the appropriate measures to ensure 
+the safety of the operation. 
+ At 41 V (critical voltage threshold) the drone engages a LAND procedure. 
+Failsafe Triggers 
+The "GENERAL FAILSAFE TRIGGERS" section allows selection of the actions to be undertaken automatically by 
+the airborne drone when the C2 link radio signal is lost. 
+The usual default setting for signal loss is RTL. In some very specific cases (automatic missions outside of 
+radio range, small or crowded airspace, etc.) this setting can be changed to either LAND or CONTINUE MISSION 
+(this setting is not recommended for standard flight operations).
+
+---------------------------------------- [FINE PAGINA 44] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+44 
+ © 2025 DRONE VOLT – All rights reserved 
+PWM Threshold 
+Although the "GENERAL FAILSAFE TRIGGERS" menu allows the operator to modify the PWM threshold, DRONE 
+VOLT highly recommends leaving this parameter’s value to its factory setting of "975". This parameter 
+governs the sensitivity of the aircraft at detecting the loss of C2 link and subsequently, triggering the 
+appropriate Failsafe actions. 
+Geofence 
+Scrolling down on the S AFETY tab, we find t he GEOFENCE settings that will enable a virtual circular fence 
+around the take off point that the drone will not be able to cross. This virtual fence can also be capped by 
+a maximum altitude parameter, hence defining with GNSS coordinates a cylindrical volume from which the 
+drone cannot escape. 
+ 
+ 
+Return to launch 
+The RETURN TO LAUNCH (RTL) settings give the user the possibility to set different scenarios for the RTL action. 
+You can set a fixed RTL altitude (by default 15m) , or let the drone execute the maneuver at the current 
+altitude it’s flying when the RTL is triggered. 
+In specific conditions, it may be advisable to increase the RTL altitude to avoid obstacles, such as structures 
+or trees, that would be in the way when the aircraft automatically returns to its takeoff point. There is a 
+caveat to this approach however: setting the RTL altitude too high may be counterproductive since climbing 
+will deplete the batteries further and potentially prevent the aircraft completing the trip back to the 
+launchpad.
+
+---------------------------------------- [FINE PAGINA 45] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+45 
+V4.1 01/01/2025 
+ 
+3.8.8 Mission Planning 
+To access the Mission planning page on D RONE VOLT CONTROL the operator must click on the “A- to-B” icon 
+next to the gear icon in the top left corner of the screen. This icon will open the waypoint and flight plan 
+programming. 
+ 
+ 
+ 
+The Mission Planning page allows the user to prepare missions (autonomous flights) through waypoints or 
+flight patterns. The waypoints require different parameters to be set, such as altitude, speed, actions, etc. 
+The feature shall be considered advanced, and its use should be restricted to trained and experienced users. 
+Specific training is required before attempting to use Mission Planning functions for flight missions. Please 
+contact DRONE VOLT for further training about this activity. 
+ 
+ WARNING! EXTREME CAUTION MUST BE TAKEN WHEN ENTERING DATA IN THIS INTERFACE. ANY 
+WAYPOINTS ENTERED COULD RESULT IN INEXPERIENCED OPERATORS TRIGGERING AUTONOMOUS 
+FLIGHT MODE, SUDDENLY DEPRIVING THE PILOT OF ANY CONTROL OVER THE FLIGHT TRAJECTORY.
+
+---------------------------------------- [FINE PAGINA 46] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+46 
+ © 2025 DRONE VOLT – All rights reserved 
+3.8.9 Drone Volt Control App Settings 
+The scroll-down menus on this page gives the possibility to the operator to set the application’s parameters. 
+It can be accessed by clicking on the DRONE VOLT logo at the top left corner of the screen. 
+ 
+Here, the operator can modify different settings such as: 
+ Measurement units (metric / imperial) 
+ Radio mode (CE for Europe / FCC for North America) 
+ Wi-Fi settings 
+It is also possible to silence temporarily the audio announcements and warnings from the radio by clicking 
+on "Mute". For instance, while configuring the parameters indoors in the workshop, where the drone does 
+not pick up GNSS signal it will constantly broadcast a warning. 
+ 
+ CAUTION! THE AUDIO WARNINGS SHOULD NEVER BE MUTED WHEN THEY ARE CRITICAL TO FLIGHT 
+SAFETY! 
+ 
+Appendix 6.5 explain the connections procedures to link the HERCULES 20 to the Mission planner software.
+
+---------------------------------------- [FINE PAGINA 47] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+47 
+V4.1 01/01/2025 
+ 
+3.8.10 Adjusting Telemetry display data and switching video streams 
+Depending on the type of mission , or the customary practices of the operator, the Telemetry display can 
+be customized to show the desired/relevant information. The operator can select the displayed information 
+by clicking on the gear icon at the top left of the flight parameters box: 
+ 
+The operator can then toggle the information they wish to see displayed. 
+ 
+To the right of the gear icon, a down-arrow can be used to switch between the Telemetry data and the 
+Video Stream parameters:
+
+---------------------------------------- [FINE PAGINA 48] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+48 
+ © 2025 DRONE VOLT – All rights reserved 
+ 
+The Video Stream parameters allow the operator to select the desired Video source (FPV camera or HDMI 
+connector) when a second camera has been installed on the aircraft (the HERELINK has two HDMI sockets). 
+This menu is also used to toggle the grid display, or change the image ratio.
+
+---------------------------------------- [FINE PAGINA 49] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+49 
+V4.1 01/01/2025 
+ 
+3.8.11 H erelink Satellite Reception Icon 
+ 
+ 
+This icon indicates the number of satellites from which the HERELINK is currently receiving signal. 
+For instance, in the image above, the number of satellites the HERELINK is receiving is "0". In such a case, it 
+is likely that the drone is indoors, in a location where there is no satellite coverage, or the antenna 
+connection is faulty. This situation can also occur when the aircraft is surrounded by large obstacles or tall 
+buildings nearby, or if it’s set to operate in very poor meteorological conditions. 
+To maintain proper GNSS positioning, the minimum number of satellites required to fly safely is 6. But, to 
+fly the drone in optimal conditions, this value shall at least be 10. 
+The number of satellites notwithstanding, the second number, the horizontal dilution of precision (or 
+HDOP), is the most important parameter to help assess the robustness of the GNSS coverage and ensure 
+the safety of a flight. Again, in the image above, we see a value of "100" for the HDOP. This number’s value 
+should be less than 1 to fly safely. The closer this value is to 1, the more likely it is to get inaccurate compass 
+readings. Hence, in this example, it would not be safe to fly the HERCULES 20; The operator would have to 
+wait until the minimum numbers of satellite is attained and HDOP is in the safe range.
+
+---------------------------------------- [FINE PAGINA 50] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+50 
+ © 2025 DRONE VOLT – All rights reserved 
+4. OPERATIONAL INSTRUCTIONS 
+This section details the procedures to assemble, start and operate the DRONE VOLT HERCULES 20 aircraft. 
+ 
+4.1 Crew Health & Safety Precautions 
+As stipulated in Section 1.5 - Operating conditions of this Guide, in order to operate the HERCULES 20, remote 
+pilots and their crew need to be compliant with all the applicable local UAS regulations enforced by their 
+national Civil Aviation Authority (CAA) or Air Navigation Service Provider (ANSP), both in terms of 
+certification and securing the access to the intended operation ar ea. Furthermore, t hey must also be 
+knowledgeable about the laws, regulations and bylaws from any other relevant government agency 
+regulating aircraft use, airspace access and any other aspect of drone operation that could infringe on 
+existing rules such as: 
+ Civil responsibility and negligent behavior offences. 
+ Radio frequency spectrum allocation, power regulations and usage. 
+ Handling and transportation of dangerous goods. 
+ Rights of land, trespass rules and privacy laws. 
+ Relevant dispositions of the applicable criminal code. 
+ Territorial limitations, borders control, customs & immigration, and national security laws. 
+ Applicable occupational health & safety regulations for the operation team, but also for bystanders, 
+as well as product safety legislation that may apply. 
+The OWNER/OPERATOR’s pilot and crew need to be capable of operating the system, which implies that their 
+knowledge, their training and flight experience must be current . It is the responsibility of the 
+OWNER/OPERATOR to ensure their operational personnel’s skills and knowledge are current. 
+The crew, and especially the pilot , must be fit to operate a remotely piloted aircraft such as the H ERCULES 
+20. The IMSAFEE framework provides valuable guidelines to evaluate the fitness of flight personnel. It 
+stands for: 
+ I – Illness  Any symptoms of a health condition? 
+ M – Medication  Any side effects of a medication (or lack thereof)? 
+ S – Stress  Any stress induced by job, finances, health or family issues, etc. ? 
+ A – Alcohol  Any alcohol consumption in the last 12 hours? Hangover symptoms? 
+ F – Fatigue  Not enough or poor sleep? Jet lagged? Overworked? 
+ E – Emotion  Anxiety? Sadness or anger? Any condition that may affect judgement? 
+ E – Eating  Any food-related issue? Digestion and proper hydration?
+
+---------------------------------------- [FINE PAGINA 51] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+51 
+V4.1 01/01/2025 
+The IMSAFEE framework is used as a self-check tool to ensure that the crew is as ready to fly as the drone 
+is. Ultimately, the safety level of a flight operation can never be more robust than its weakest link. Every 
+year, a significant number of drone accidents are caused by pilot error. This evaluation procedure is aimed 
+at assessing that the crew members are physically and mentally fit to fly. 
+Being aware of these aggravating factors is the first step. Then, appropriate action must be taken to reduce 
+the risks of accidents caused by pilot error. That may mean cancelling the mission, or postponing it until 
+the problematic situation is resolved, or finding qualified (and fit) substitute personnel to conduct the flight. 
+Priority should always be given to flight safety by constantly scrutinizing the system’s weaker elements for 
+potential hazards, and then finding effective mitigation strategies. At all times, the crew’s health and well-
+being should come first to ensure a safe flight and the safety of all. 
+ 
+4.2 Aircraft Assembly 
+ 
+4.2.1 Installing the landing gear 
+ Insert both landing gear sets, aligning them with the tube brackets at the bottom of the main housing, 
+ Then, lock the gear tubes in with the twist locks on one side. 
+ Insert the cross bars into the locked gear set first and then finish the assembly by inserting them in 
+the second gear set. 
+ Lock the second gear set in place with the twist locks. 
+ 
+The illustration below highlights the sequence with numbers: 
+ 
+ 
+ 
+ 
+1 
+2 
+4 
+5 
+3 
+6
+
+---------------------------------------- [FINE PAGINA 52] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+52 
+ © 2025 DRONE VOLT – All rights reserved 
+4.2.2 Assembling and connecting the Aircraft's arms 
+Insert the correct arm into the correct socket extending from the drone’s main by matching the labels ’ 
+numbers on each side of the connection. The arms’ labels should be facing up. The motor-numbering labels 
+on both the arms and sockets correspond to the motors fitted on each arm (e.g. "47" implies that motors 
+#4 and #7 are fitted on this arm). First insert the arms in the corresponding socket and tighten the threaded 
+rings to secure them. Then insert the arm’s power connectors to their corresponding fittings on the main 
+body side (a “click” should be felt). The mounting procedure shown below should be followed: 
+ 
+ 
+ 
+ 
+ 
+1 
+ 2
+
+---------------------------------------- [FINE PAGINA 53] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+53 
+V4.1 01/01/2025 
+BABORD 
+ TRIBORD 
+FRONT 
+ 
+4.3 Propeller installation 
+ 
+ CAUTION! MAKE SURE ALL THE BATTERIES ARE REMOVED FROM THE HERCULES 20 BEFORE 
+ATTEMPTING TO REMOVE OR INSTALL PROPELLERS. 
+ 
+The HERCULES 20 is an octocopter which means that it has 8 motors driving 8 propellers whose rotations are 
+configured as follows: 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+PORT 
+ STARBOARD
+
+---------------------------------------- [FINE PAGINA 54] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+54 
+ © 2025 DRONE VOLT – All rights reserved 
+There are two types of motor rotation: clockwise (green) and counterclockwise (blue). To help differentiate 
+between the two arms that have a clockwise motor in top position and a counterclockwise motor in the 
+lower position, and the two other arms that have that in reverse order, a " C" (for clockwise) or " CC" (for 
+counterclockwise) symbols is stamped on the interface parts near the threaded ring connector. The arms 
+should be attached so their "C" or "CC" markings face up and match those of the mounting socket, just the 
+same as the motor-numbering labels that must also be matched and visible from the top of the aircraft. 
+Arm label Motor # Location Rotation 
+16 1 Front Starboard Top Counterclockwise 
+16 6 Front Starboard Bottom Clockwise 
+25 2 Front Port Top Clockwise 
+25 5 Font Port Bottom Counterclockwise 
+38 3 Rear Port Top Counterclockwise 
+38 8 Rear Port Bottom Clockwise 
+47 4 Rear Starboard Top Clockwise 
+47 7 Rear Starboard Bottom Counterclockwise
+
+---------------------------------------- [FINE PAGINA 55] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+55 
+V4.1 01/01/2025 
+ 
+4.4 Ground Handling 
+When ready, start the drone ( as described in Section 2.4.1). During the initialization , audible beeps are 
+produced, and the status LED (as well as the LED on the G NSS module) will flash red and blue, the 
+gyroscopes calibrate: the body of the drone should not be moved at this time. 
+ 
+ 
+4.4.1 Drone Status Indicator 
+ 
+LED Status Descriptions 
+Flashing 
+Alternating RED and BLUE 
+ 
+Initializing the gyroscopes. Keep the aircraft still, stable and level while it 
+boots the various sensors. 
+Flashing BLUE 
+ 
+Disarmed, no GNSS lock found. Autopilot modes such as L OITER and RTL 
+require GNSS lock. 
+Solid BLUE 
+ 
+Armed without a GNSS lock. It is not recommended to operate under this 
+condition. 
+Flashing GREEN 
+ 
+Disarmed (ready to arm), GNSS lock acquired - HDOP is OK. 
+Rapid double tone when disarming from an armed state. 
+Rapid GREEN flashing 
+ 
+Armed, but the GNSS system is relying on SBAS to improve the accuracy 
+and reliability of GNSS positioning. 
+Steady GREEN 
+ 
+Armed - GPS lock acquired - Ready for take-off! 
+A single long tone on arming. 
+Double flashing YELLOW 
+ 
+Pre-arm checks fail (system is not able to arm). 
+Probable cause: low voltage, minimum number of GPS (>7) not reached, 
+HDOP too high (>1), incorrect radio control calibration, incorrect ESC 
+calibration, etc.
+
+---------------------------------------- [FINE PAGINA 56] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+56 
+ © 2025 DRONE VOLT – All rights reserved 
+Single flashing YELLOW 
+ 
+Radio Controller failsafe activated. 
+Radio Controller off, or not paired, or out of range , or app lication 
+swapped in controller device. 
+Flashing YELLOW 
+With rapid beep 
+ 
+Failsafe low battery voltage. 
+Check battery voltage 
+Flashing 
+Alternating BLUE and YELLOW 
+With high-high-high-low tone 
+sequence 
+ 
+GPS failure or GPS failsafe activated 
+Flashing 
+RED and YELLOW 
+With rising tone 
+ 
+EKF or IMU failure (Inertial Measurement Unit) 
+Flashing 
+PURPLE and YELLOW 
+ 
+Barometer problem 
+Steady RED 
+ 
+Error (maintenance return)
+
+---------------------------------------- [FINE PAGINA 57] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+57 
+V4.1 01/01/2025 
+ 
+4.4.2 Parameters Status Validation 
+ WARNING! NEVER ATTEMPT TO FLY THE HERCULES 20 UNLESS YOU VALIDATED THAT THE 
+RADIO CONTROLLER BATTERY AND DRONE BATTERIES ARE FULLY CHARGED. 
+ 
+When all categories present a green icon as shown below, it tells the operator that all systems are go and 
+the drone is ready to fly.
+
+---------------------------------------- [FINE PAGINA 58] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+58 
+ © 2025 DRONE VOLT – All rights reserved 
+4.5 Preflight operations and verifications 
+The following sections describe and list the best practices and safety procedures recommended by DRONE 
+VOLT for flying the HERCULES 20. The included checklists shall be used at key moments in the operation. All 
+the procedures described in these sections represent the baseline to ensure the basic safety requirements 
+are met. Every OWNER/OPERATOR has the duty to supplement these procedures, to adapt them to their 
+specific types of operations while implementing their local regulations’ requirements. 
+The different procedures and checklists must be used at each step of a mission: from planning to bringi ng 
+the aircraft back to its storage location at the end of the day . The chart below references the different 
+subsections in a chronological order: 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Operation planning 
+Procedures 
+( Sections 1.5 & 4.5.2) 
+ 
+On-site preparation 
+Procedures 
+( Section 4.5.4) 
+ 
+Remote ID 
+Procedures 
+( Section 4.5.6) 
+ 
+Preflight 
+Procedures 
+( Section 4.6.1) 
+ 
+Airworthiness assessment 
+Procedures 
+( Section 4.6.3) 
+ 
+Landing & post flight 
+Procedures 
+( Section 4.6.4) 
+ 
+Off-site 
+Checklist 
+( Section 4.5.3) 
+Takeoff 
+Checklist 
+( Section 4.6.2) 
+Post flight 
+Checklist 
+( Section 4.6.5) 
+Emergency Shut Down (Kill switch) 
+Procedures 
+( Section 4.7 & Appendix 6.2) 
+ 
+On-site 
+Checklist 
+( Section 4.5.5) 
+Aircraft visual inspection 
+Instructions 
+( Section 4.5.1)
+
+---------------------------------------- [FINE PAGINA 59] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+59 
+V4.1 01/01/2025 
+ 
+4.5.1 Visual inspection instructions 
+The table below details the typical visual inspection checklist which must be perform ed by the 
+OWNER/OPERATOR frequently during an operation: after the drone has been reassembled, when the crew 
+has been away from the standing aircraft, before every flight, and after the mission is completed. 
+Any damaged or unsafe item(s) should be repaired or replaced before operating the drone. The 
+OWNER/OPERATOR’s pilot is responsible for ensuring the airworthiness and safety of the complete aircraft 
+system. Flight operations must be stopped if anything is found by the crew, that may compromise the safe 
+operation of the system. 
+Number Inspection Item Complete 
+ 1.0 Main Body 
+1.1 Check the main body of the drone for any crack, damage, missing or loose 
+fastener. 
+ 
+1.2 Inspect the battery door and side battery covers to ensure they close properly, 
+and the springs secure the covers. 
+ 
+1.3 Inspect the battery connectors for damage or debris inside the connector. 
+1.4 Check the first-person view (FPV) camera and flight controller LED light for 
+condition and attachment. 
+ 
+1.5 Inspect the canopy and HERELINK antenna attachment for condition, damage, or 
+cracks. 
+ 
+1.6 Inspect the GNSS antennas to ensure they are secured with no visible damage. 
+1.7 Inspect the bottom payload attachment, leg attachment and red levers for any 
+crack, damage, missing or loose fastener. 
+ 
+ 2.0 Landing gear 
+2.1 Visually inspect the legs for any fatigue crack, scratch, surface finish condition, or 
+any other kind of damage. 
+ 
+2.2 Look for any loose fastener and ensure the red caps on the legs face forward. 
+ 3.0 Arms and Motors 
+3.1 Visually inspect the arms for any loose fasteners, fatigue cracks, scratch, surface 
+finish condition or any other kind of damage. 
+ 
+3.2 Ensure the motors are tightly secured. 
+3.3 Inspect the motors to check for scratches, dents, and any signs of damage. 
+3.4 Check that all motors spin freely (no abnormal sound or foreign contaminants). 
+3.5 Inspect the conspicuity lights on the motor housings for condition and damage. 
+3.6 C/CC markings and motors numbering labels match and face up. 
+3.7 Inspect the arm’s mounting sockets rings and ensure they are properly tightened. 
+3.8 Inspect the power connectors next to the arm’s mounting sockets. 
+ 4.0 Propellers 
+4.1 Inspect the overall condition of the propeller blades. The leading and trailing 
+edges should be smooth, free of damage, such as nicks, bends, or cracks. 
+ 
+4.2 Inspect the propeller’s fasteners and ensure they are tightly secured. 
+4.3 Ensure propellors are fitted in the correct orientation (see Sections 4.3 or 5.3.2).
+
+---------------------------------------- [FINE PAGINA 60] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+60 
+ © 2025 DRONE VOLT – All rights reserved 
+4.5.2 Operation planning procedures 
+The OWNER/OPERATORS must define concepts of operations (CONOPs) that are compliant with their national 
+and local regulations and bylaws. After the airspace type has been determined and the operation has been 
+deemed possible and legit, the land and airspace access procedures must be m ade so all required 
+authorizations and supporting documents must be obtained or delivered before the scheduled date of the 
+operation. 
+The scope of the operation must be defined taking in account required safety perimeter, and its 
+configuration at the specific operation site considered , to establish the safe distances required between 
+pilot/crew and the drone, and the safe distance to be maintained between the drone and any third- party 
+according to national regulations and CONOP. The operation site’s specific and critical characteristics must 
+be identified and analyzed: obstacles, GNSS coverage constraints, wind direction, sun orientation and 
+location at the time of the operation, the possible presence of aircraft in the airspace above, activities on 
+the ground in the vicinity, or any other types of safety hazards. This analysis will help determine the safety 
+measures to be deployed, such as the use (or not) and parameters of a geofence. 
+The weather forecast for the planned day, time and specific location of the operation must be checked: not 
+only the temperature and precipitations, but also wind velocity, and direction. Forecasts for atmospheric 
+visibility should also be checked, as well as the Kp index since geomagnetic disturbances could have a direct 
+impact on the operation’s safety. Consult the locally applicable NOTAMs, and any other relevant 
+documents, apps or websites to properly assess the safety conditions of the area at the specific time of the 
+operation. 
+When the planning phase is complete, all the selected equipment must be gathered, inspected and tested. 
+All the batteries must be checked and fully charged. Not only the drone’s batteries, but also any battery 
+used to power the other components of the system. Recharge or replace any battery to ensure every piece 
+of equipment can perform flawlessly. 
+At this stage, perform the first section of the off -site checklist ( Section 4.5.3) : “Before packing the 
+equipment”. 
+Then, put all the components in their respective protective cases and verify they are properly located and 
+secured in their allocated space. Check that nothing is loose. Any loose piece of equipment could be 
+damaged, or cause damage to other equipment during transport. Also verify the structural integrity of all 
+transport cases and take some pictures if a third-party transporter is to be involved. In such a case, also put 
+all the relevant transport labels on the cases , lock them and then, if necessary, apply a seal (using a piece 
+of adhesive tape bridging the joint between the lid and body of the case) to detect possible tampering with 
+the equipment during transport. 
+When everything is ready to ship, t he second section of the off -site checklist ( Section 4.5.3) can be 
+performed. 
+Load the equipment in the transport vehicle… and check that nothing has been left behind
+
+---------------------------------------- [FINE PAGINA 61] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+61 
+V4.1 01/01/2025 
+ 
+4.5.3 Off-site checklist 
+This off-site preflight checklist is used to validate every component of the system is operational and 
+properly charged, and it has been adequately prepared and packed for transport to the mission site. 
+ 
+ 
+ 
+ 
+ 
+Number Inspection Item Complete 
+ 1 Before packing the equipment: 
+ 
+1.1 Flight location and scope of operation are well established 
+ 
+1.2 All applicable safety measures have been defined and documented 
+ 
+1.3 Flight authorizations demands have been filed 
+ 
+1.4 Weather forecasts allow for the safe conduct of the operation 
+ 
+1.5 All crew members are available and in good physical and mental conditions 
+ 
+1.5 All batteries are fully charged and checked 
+(radio controller, drone, payload, computer, video, tools, accessories, etc.) 
+ 
+1.6 Visual inspection of the drone and components is complete ( Section 4.5.1) 
+ 
+1.7 All the necessary equipment was inspected, and functionalities have been tested 
+ 
+ 2 After packing the equipment: 
+ 
+2.1 Structural integrity of protective transport cases has been checked 
+ 
+2.2 Every component has been properly packed and secured 
+ 
+2.3 Protective cases are closed (and labelled if required) 
+ 
+2.4 Protective cases are locked and sealed (when required)
+
+---------------------------------------- [FINE PAGINA 62] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+62 
+ © 2025 DRONE VOLT – All rights reserved 
+4.5.4 On-site preparation procedures 
+Operation feasibility 
+Before deploying the crew on the site, ensure that all the paperwork is in order and that all required 
+authorizations. Also check that all the concerned services and agencies have been duly notified. 
+Survey the operation site to confirm the situation there does not reveal any problematic elements that may 
+have been missed at the planning stage: 
+• Obstacles in the flight zone such as trees, lamp posts or suspended cables. 
+• Possible sources of interference: cellular antenna, radar, or large metallic objects and structures 
+• The configuration of surrounding buildings that could bounce or disrupt GNSS signal. 
+• Human activities in the vicinity such as a gathering of people or a construction zone. 
+Assess the weather and verify there are no discrepancies with the forecasted atmospheric conditions. If 
+unexpected and sudden changes in atmospheric conditions are observed, the f light operations must be 
+postponed or cancelled. Bad weather conditions can compromise flight safety or impair the quality of the 
+expected outcome of the operation. 
+In short, make sure the planned operation is technically feasible at that time on this site. 
+ WARNING: THE OWNER/OPERATOR’S PILOT IS RESPONSIBLE FOR FLIGHT SAFETY AND 
+SOLELY RESPONSIBLE FOR THE FINAL DECISION TO FLY . THIS, REGARDLESS OF ANY THIRD -
+PARTY’S IMPERATIVES OR THE PRESSURE THEY MAY EXERT. 
+Site configuration 
+Delineate the projected safe operating area on the ground as well as the clearance zones to exclude third 
+parties. If required or planned, i nstall the crowd control apparatus aimed at limiting access around the 
+drone, close to the launch area, or under the flight zone. This , to avoid potential accidents, but also to 
+prevent any damage to the aircraft and to the equipment. 
+ 
+CAUTION: SAFETY CLEARANCES MAY BE DEFINED BY NATIONAL REGULATIONS. TYPICALLY, 
+THE PILOT SHOULD NOT STAND CLOSER THAN 10 METERS OF THE AIRCRAFT WHEN THE 
+MOTORS AND PROPELLERS SPIN. ALSO, ANY PERSON NOT DIRECTLY INVOLVED IN THE 
+OPERATION SHOULD REMAIN AT A SAFE DISTANCE OF AT LEAST 30 METERS FROM THE 
+AIRCRAFT DURING TAKEOFF AND LANDING PROCEDURES. 
+Unpacking and system assembly 
+Once unloaded at the designated location at the operation site, ideally on a flat, dry and clean place near 
+the launch pad, the system components must be unpacked, and the aircraft must be assembled. But first, 
+an assessment of the carrying cases must be made: does any dent or traces of impact appear on their sides?
+
+---------------------------------------- [FINE PAGINA 63] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+63 
+V4.1 01/01/2025 
+ 
+If any, did the observed damage to the case ha ve any consequence to its content? Had the seals (if used) 
+been tampered with? If so, is anything missing? These verifications are critical if the equipment was 
+transported by air and/or delivered on site by a third party. 
+Unpack the equipment and verify the condition of each component one-by-one. If the operation involves 
+many flights, set up a charging station for the batteries. If using a generator as the source of power, locate 
+it away from the main area so the fumes and sound do not compromise safety or communications. 
+Assemble the aircraft and place it on a flat and level surface , away from any large metal objects or metal 
+structures (including vehicles), within the secure perimeter. Install the 4 arms with propellers giving special 
+attention to the proper securing of the mounting sockets’ rings and electrical connectors . Indeed, the 
+yellow connectors, at the end of the arms close to the main body, should emit a perceptible “click” when 
+they engage and skip over the small ridges molded in the plastic. Earing or feeling this “click” is critical since 
+it means the plugs are well seated and cannot come off due to vibration or movements in flight. 
+Perform a visual inspection of the drone and its components ( Section 4.5.1). 
+Testing 
+Test all the batteries and check their charge level (this must also be done for the R adio Controller and 
+accessories). 
+Attach the payload and verify it is properly secured and connected. 
+Switch on the Radio Controller, then install the 4 batteries in the drone and connect them : connect the 
+black cables (-) first, then the red cables (+); This will power up the aircraft. Confirm the pairing with the 
+radio controller and do the following configurations or verifications: 
+1. In the SAFETY tab: check the battery alarm voltages (43V: RTL and 41V: LAND by default). 
+2. If planned or required: configure the Geofence’s max horizontal distance and max altitude. 
+3. Configure RTL altitude (current or specified altitude) according to the site’s specific obstacles. 
+4. Check the consistency of the compass heading. Compare with the reading of another compass. A 
+compass calibration is required when t he drone compass heading value and the reading from a 
+hand-compass differ by more than 10°. If so, perform a compass calibration (in the SENSOR tab). 
+5. Check the GNSS signal and HDOP parameter. The number of satellites should exceed 10 and HDOP 
+value should be lower than 1 ( ideally less than 0.8) . When armed, the drone status LED will fast-
+flash green instead of steady green if GNSS coverage is poor. Assuming the drone is not under a 
+roof or indoors, a GNSS satellites count showing “0” means there is a connection problem with the 
+antennas: cancel the operation and inspect the aircraft to identify the malfunction. 
+6. Perform a motor test for each motor (MOTORS tab) to check that the arms are connected and that 
+the propellers are turning in the right direction. 
+7. Check that the drone is set in LOITER mode (B-button). 
+8. Arm the drone then test the kill switch function by pressing the D-button for 2 seconds. Ensure the 
+propellers stop spinning. Clear the kill switch mode by long-pressing again on the D-button. 
+When the system is fully assembled, conduct the On-site checklist ( Section 4.5.5)
+
+---------------------------------------- [FINE PAGINA 64] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+64 
+ © 2025 DRONE VOLT – All rights reserved 
+4.5.5 On-site checklist 
+Once on-site, after unpacking and assembling the equipment, use this checklist to confirm that all systems 
+are flight-ready and correctly set up so the crew can proceed with the operation. 
+ 
+ 
+ 
+Number Inspection Item Complete 
+1 Authorizations and paperwork in order. Notifications done. 
+2 Drone is placed on flat and secure ground, away from large structures 
+3 Visual inspection of drone and components is complete ( Section 4.5.1) 
+3a Drone and its accessories are clean (motors, cameras, sensors) 
+3b Arms firmly attached and secured / yellow plugs properly connected 
+3c Landing gear and payload securely attached 
+3d Motors and propellers direction-of-rotation checked 
+3e Propellers properly attached; Fasteners remain tight 
+4 Battery charge checked for drone 
+5 Battery charge checked for system components (radio, payload, FTS, etc.) 
+Power up the radio controller and then connect the drone's batteries 
+6 Radio controller’s telemetry is active, and parameters download is completed 
+7 Video feed on HERELINK acquired 
+8 Drone battery voltage is displayed on screen 
+9 Low batteries voltage alarms set (43V for RTL and 41V for LAND) 
+10 RTL altitude configuration is set (default or site specific) 
+11 Joysticks’ movements corresponds to Mode 2 (Radio tab) 
+12 Static compass heading consistency with the site is checked 
+13 CRITICAL: Minimum GNSS satellites coverage checked 
+14 CRITICAL: HDOP value in the safe range 
+15 CRITICAL: LOITER mode (B-button) is selected. 
+16 Payload functionalities checked 
+Arm the drone 
+17 Motor’s rotation re-checked in motion; All propellers turn in the right direction 
+18 Kill switch function tested (D-button pressed for 2 seconds) then reset 
+Disarm the drone 
+19 Batteries are unplugged (and may be removed from the aircraft and safely stored) 
+20 Radio controller is turned off
+
+---------------------------------------- [FINE PAGINA 65] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+65 
+V4.1 01/01/2025 
+4.5.6 Direct RemoteID procedures 
+For the countries and/or specific airspace class where a RemoteID is mandatory for remotely piloted aircraft 
+this parameter needs to be set before takeoff. 
+In accordance with ASD-STAN 4709:002 the direct RemoteID specifications are: 
+• Transmission Type  WiFi Beacon 
+Method for uploading the UAS Operator Registration Number to the drone: 
+• Navigate to DRONE VOLT CONTROL  Direct RemoteID tab 
+ → UAS Operator ID 
+ → Type in UAS Operator Registration Number
+
+---------------------------------------- [FINE PAGINA 66] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+66 
+ © 2025 DRONE VOLT – All rights reserved 
+4.6 Flight Operations 
+This section describes the procedures and verifications to be used and implemented when the aircraft has 
+been brought to operation site , thoroughly checked, and the crew is ready to proceed with their flight 
+operation using a HERCULES 20. All systems are GO! 
+ 
+ 
+WARNING: IF THE OWNER/OPERATOR’S CREW HAS LEFT THEIR EQUIPMENT OF AIRCRAFT 
+OUT OF SIGHT FOR A WHILE , THE DRONE MUST BE VISUALLY INSPECTED (4.5.1) AGAIN. 
+ADDITIONALLY, ALL THE VERIFICATIONS DESCRIBED IN THE ON-SITE PREPARATION 
+PROCEDURES’ TESTING PARAGRAPH (4.5.4) MUST REPEATED, FOLLOWED BY THE ON-SITE 
+CHECKLIST (4.5.5). NEVER LEAVE THE AIRCRAFT AND EQUIPMENT UNATTENDED!
+
+---------------------------------------- [FINE PAGINA 67] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+67 
+V4.1 01/01/2025 
+ 
+4.6.1 Preflight procedures 
+At this stage, the aircraft and its components have been unpacked, inspected, assembled and deemed 
+airworthy and flight ready. The crew is complete, and the site has been surveyed, inspected, cleared and 
+secured. To ensure the pilot and crew are ready to launch the aircraft on its planned mission, the following 
+procedures should be applied: 
+1. Verify everyone involved is in good physical and mental condition to perform their duties. Use the 
+IAMSAFEE framework ( Section 4.1) 
+2. Check that e very person involved has the proper gear and equipment required to perform their 
+duties and compose with the weather conditions. They shall also have access to the mandatory 
+safety and emergency equipment and supplies. 
+3. Hold a safety briefing where potential hazards are identified, and crucial topics are covered: 
+ Mission objectives: clearly defined and understood. 
+ Locate protected landing area and flight crew position 
+ Define mission flight area specificities and limits. 
+ Site configuration: identify issues and obstacles in flight area. 
+ Define clearance zone for emergency landing. 
+ Explain hazard prevention and emergency plan for all third parties. 
+ Establish deployment positions and role of each flight operation crew member. 
+ Local weather forecast: temperature, possible precipitations, wind and visibility. 
+4. Deploy the crew and security personnel to their designated positions 
+5. Make sure the launch pad, its vicinity, and airspace above are clear. 
+6. Switch to LOITER mode (B-button) and check you have a flashing green LED that confirms the aircraft 
+is ready but still disarmed. 
+7. Issue a verbal announcement of intention to take off. 
+8. Perform the TAKEOFF CHECKLIST ( Section 4.6.2) 
+9. Arm the motors: the propellers will start spinning and the LED will become steady green. 
+10. Apply gradual but firm throttle to take off. Lift the aircraft a few meters above its launch pad. 
+11. Before proceeding with the planned operation, check the command’s response by performing the 
+AIRWORTHINESS ASSESSMENT PROCEDURE (Section 4.6.3)
+
+---------------------------------------- [FINE PAGINA 68] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+68 
+ © 2025 DRONE VOLT – All rights reserved 
+4.6.2 Takeoff checklist 
+Right before each flight, before arming the Hercules 20, the OWNER/OPERATOR’s pilot must ensure the 
+proper functioning of the aircraft with this checklist: 
+ 
+Arm the drone and announce “TAKEOFF!” 
+ 
+ 
+WARNING: THE MOTORS AND PROPELLERS OF AN UNLADEN HERCULES 20 HAVE SIGNIFICANTLY 
+MORE THRUST CAPABILITIES THAN MOST OFF-THE-SHELF DRONES. ALSO, PLEASE BE AWARE OF 
+THE EFFECTS OF VORTEXING AIR, PARTICULARLY WHEN DESCENDING WHILE CARRYING A HEAVY 
+PAYLOAD. 
+ 
+ 
+ 
+ 
+ 
+ 
+Number Inspection Item Complete 
+1 Airspace above launch site is clear of birds or inbound aircraft 
+2 Flight operation crew briefed and ready in position 
+3 Takeoff area is clear (third parties at a safe distance) 
+4 Radio controller is ON 
+5 Drone batteries are connected 
+6 LED status light flashing green 
+7 Telemetry is active and parameters download is completed 
+8 Video feed on HERELINK is acquired 
+9 Drone battery voltage is displayed on screen 
+10 Compass heading is stable and consistent with the orientation on site 
+11 CRITICAL: Minimum GNSS satellites coverage checked 
+12 CRITICAL: HDOP value in the safe range 
+13 CRITICAL: LOITER mode (B-button) is selected. 
+DO NOT ARM IF INSUFFICIENT SATELLITE COUNT OR SUBOPTIMAL HDOP
+
+---------------------------------------- [FINE PAGINA 69] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+69 
+V4.1 01/01/2025 
+ 
+4.6.3 Airworthiness assessment procedures 
+Just after takeoff, perform the following: 
+1. At takeoff, check that expected drone battery voltage drop is within ≈1.5 V 
+(If the drop is more than 2 V: land and verify battery connections and condition) 
+2. Stabilize the aircraft and hover about 2 meters from the ground above the launch pad. 
+3. Hover check: test the drone’s response to commands in pitch, roll and yaw axis with light inputs on 
+the joysticks. 
+4. Check compass stability and consistency by performing a few translations and yaw rotations. 
+5. Re-check GNSS satellite coverage and HDOP. 
+ If everything is normal, proceed with the mission. 
+During the flight, conduct regular validations of the following: 
+1. Check the battery voltage level regularly. 
+ REMINDER: RTL mode activates automatically when voltage reaches 43 Volts, 
+or according to the settings of the SAFETY tab. 
+ 
+ WARNING! LAND MODE IS ACTIVATED WHEN 41 VOLTS REMAIN IN THE HERCULES 20'S 
+BATTERIES! 
+ 
+2. Ensure the aircraft is flown within authorized altitude and distance range. 
+3. Regularly check that the satellites count remains in the safe range and HDOP is below 0.8 when 
+close to buildings. Re-check this parameter if the aircraft becomes unstable, or if it start s swaying 
+or flying in concentric circles when it should’ve remained static (the so-called “toilet bowl” spin). If 
+the parameters are outside the safe range or if anything feels unusual, land immediately. 
+4. Always listen and scan the airspace for incoming aircraft at conflicting altitude, or birds. 
+5. Keep watching out for possible intrusions by vehicles or pedestrians in the overflight zone. 
+6. Ensure that third parties involved in the mission always stay clear of the takeoff and landing zone.
+
+---------------------------------------- [FINE PAGINA 70] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+70 
+ © 2025 DRONE VOLT – All rights reserved 
+4.6.4 Landing and post flight procedures 
+While still airborne upon returning from a flight , make sure the designated landing pad (or any place you 
+would choose to land the drone for that matter) is clear . Assuming this is a normal flight, and no failsafe 
+has been activated, make a verbal announcement of imminent landing and, when it is safe to do so, land 
+the aircraft. After the drone touches the ground and is stable on its landing gear: 
+1. Disarm the drone by lowering the throttle joystick to its minimum . The status LED should start 
+flashing green to confirm disarmament. 
+ 
+CAUTION! DO NOT CROSS STICKS TO DISARM! 
+ 
+2. Remove the batteries from the drone. Then, either place them back on the charger, if other flights 
+are planned, or safely store them away in a protective container. 
+3. Switch off the Radio controller and other accessories or payload 
+4. Clean the drone and system components if necessary 
+5. Process the payload data (if required) 
+6. Perform a POST FLIGHT CHECKLIST ( Section 4.6.5) 
+7. Write down all the information about the operation in your flight logbook. This document is 
+compulsory and helps plan the maintenance that must be carried out after every 200 hours of 
+flight. Any problem, deficiency or damage that was detected after the flight must be reported in 
+the logbook. 
+ 
+WARNING! WHEN/IF A DRONE IS OPERATED IN EXTREME ENVIRONMENTAL CONDITIONS OR 
+PROBLEMATIC SITUATIONS (AS DESCRIBED IN SECTION 1.3 OF THIS GUIDE IN ARTICLES 8, 9, 
+10 & 11), ACCIDENTALLY OR NOT, DRONE VOLT MUST BE NOTIFIED IMMEDIATELY AND ITS 
+AIRWORTHINESS MUST BE ASSESSED BEFORE RESUMING FLIGHT OPERATIONS. 
+ 
+8. When the operation is complete d, the drone is dismantled, and all the system components are 
+placed back in their transport cases. 
+After returning to the OWNER/OPERATOR’s facility, the batteries must be checked again and stored in a cool, 
+well-ventilated place. Do not store them for more than a few days when they are fully charged: t his may 
+damage them or decrease their capacity. The recommended storage voltage should be set be tween 3.8 
+and 3.9 V per cell. Use the charger to lower and adjust the batteries’ voltage for long-term storage.
+
+---------------------------------------- [FINE PAGINA 71] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+71 
+V4.1 01/01/2025 
+ 
+4.6.5 Post flight checklist 
+ 
+ 
+ 
+Number Inspection Item Complete 
+1 Motors are disarmed 
+(confirmed by double tone flashing green LED) 
+ 
+2 Payload is switched off and removed (if necessary) 
+ 
+3 Batteries are disconnected and removed from the drone 
+ 
+4 HERELINK Radio Controller is switched off 
+ 
+5 Batteries are put on the charger or safely stored 
+ 
+5 Payload is removed from the drone. Attachment points are inspected. 
+ 
+6 Payload data (or data support) has been processed 
+ 
+7 The drone, payload and system components are clean 
+ 
+8 Visual inspection of the drone and components is complete ( Section 4.5.1) 
+(report any anomalies, malfunctions, defects or damage in the logbook)
+
+---------------------------------------- [FINE PAGINA 72] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+72 
+ © 2025 DRONE VOLT – All rights reserved 
+4.7 Emergency Shut Down Procedure 
+The HERCULES 20 is equipped with an emergency "Kill Switch" function that will stop all motors in case of 
+extreme necessity: 
+ 
+ 
+ 
+ Long-press the "D" button to shut down all motors. 
+ 
+Note: To rearm the H ERCULES 20, you need to long -press the "D" button once again to 
+disable the emergency shutdown function. 
+ 
+ WARNING! THE KILL SWITCH WILL SHUT DOWN THE MOTORS EVEN IF THE HERCULES 20 IS 
+IN FLIGHT. ACTIVATING THE KILL SWITCH WHILE FLYING WILL CAUSE THE HERCULES 20 TO 
+SHUT OFF ALL MOTORS AND CRASH! 
+ 
+In most European countries, it is mandatory to install a fully independent Flight Termination System (FTS) 
+to comply with the regulations and achieve the proper safety level. When built to operate in those 
+countries, the HERCULES 20, is delivered with the ZÉPHYR CC FTS (v 2.0) manufactured by Dronavia. This device 
+will act as the integrated kill switch by cutting off the power to the motors. The important difference resides 
+in the fact that the ZÉPHYR CC FTS power interruption is hardware and not software. In emergency situations, 
+even if the flight controller is frozen or unresponsive, or if the C2 link has been lost, the fully independent 
+ZÉPHYR CC FTS will allow the pilot to bring down the drone (with the same issues and consequences as if 
+done was brought down through the Radio Controller’s kill switch function). 
+See Appendix 6.2 for more information about the Zéphyr CC FTS.
+
+---------------------------------------- [FINE PAGINA 73] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+73 
+V4.1 01/01/2025 
+ 
+5. MAINTENANCE PROCEDURES 
+5.1 PERIODIC INSPECTIONS: 
+ 
+5.1.1 Introduction 
+This section includes DRONE VOLT’s recommended time intervals, maintenance checks and inspections (both 
+scheduled and unscheduled). 
+Recommended inspection intervals are based on normal usage, under average environmental conditions. 
+It is the OWNER/OPERATOR’s responsibility to maintain accurate flight records. In a situation where this data 
+would be lost or unavailable, please note that the aircraft flight hours can be retrieved from the internal 
+flight parameters stored in the PIXHAWK flight controller unit. 
+ 
+ 
+5.1.2 Problematic / extreme conditions 
+All inspection intervals for scheduled maintenance, replacement and overhaul, and special inspections are 
+based on a predictable operating environment. However, operations in difficult conditions or weather 
+(extreme humidity, cold, heat, dust, salt water, contaminants, etc.) may require a reduction in the 
+maintenance interval and more frequent inspections. 
+ 
+WARNING! WHEN/IF A DRONE IS OPERATED IN EXTREME ENVIRONMENTAL CONDITIONS OR 
+PROBLEMATIC SITUATIONS (AS DESCRIBED IN SECTION 1.3 OF THIS GUIDE IN ARTICLES 8, 9, 10 & 
+11), ACCIDENTALLY OR NOT, DRONE VOLT MUST BE NOTIFIED IMMEDIATELY AS THE AIRCRAFT 
+MUST BE SENT BACK TO THE MANUFACTURER FOR UNSCHEDULED INSPECTION AND /OR 
+MAINTENANCE TO ENSURE ITS AIRWORTHINESS BEFORE RESUMING FLIGHT OPERATIONS. 
+ 
+ 
+5.1.3 Inspection intervals 
+The inspection program is based on the number of flight hours and operating hours of the motors. The 
+method for recording flight hours and operating hours of the motors remains consistent throughout the 
+life of the aircraft. 
+The OWNER/OPERATOR of the aircraft must record the number of flight hours, operating hours of the motors 
+and time of operation used for the purpose of conforming to the inspection intervals schedule.
+
+---------------------------------------- [FINE PAGINA 74] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+74 
+ © 2025 DRONE VOLT – All rights reserved 
+When submitted to normal usage under average environmental conditions , the system’s components are 
+to be inspected according to the following inspection intervals: 
+• A visual inspection of the aircraft must be performed by the owner or operator before and after every flight. 
+• A complete inspection of the aircraft must be performed every 200 flight hours by the aircraft manufacturer 
+or a qualified technician trained to maintain DRONE VOLT products. 
+The maximum tolerance is ± 10 hours. If a 200- hour inspection is scheduled, it must be performed at any 
+time between 190 and 210 hours. 
+ 
+ CAUTION! DO NOT EXCEED THE MAXIMUM TOLERANCE PRESCRIBED. 
+ 
+ 
+5.2 Replacement schedule 
+The table below lists the recommended component replacement interval. However, these items may need 
+to be replaced sooner if they become damaged, worn, inoperative, inaccurate, or are not repairable 
+through regular maintenance practices. 
+Parts replacement schedule 
+ 
+ 
+Note: The above time intervals are recommendations only and do not guarantee the 
+items will reach the indicated service life. 
+ 
+ 
+ 
+Serial # Item Replacement 
+1 Propellers 1000 hours 
+2 Batteries 300 cycles, 
+or abnormal capacity drop observed during flight whichever comes first 
+ 
+4 Motors 1000 hours
+
+---------------------------------------- [FINE PAGINA 75] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+75 
+V4.1 01/01/2025 
+ 
+5.3 Scheduled Maintenance Checks 
+ 
+ CAUTION! THE RECOMMENDED MAINTENANCE INTERVALS DO NOT CONSTITUTE A GUARANTEE 
+THE ITEM WILL REACH THIS SERVICE LIFE WITHOUT MALFUNCTION. REGULAR INSPECTION AND 
+MONITORING IS ALWAYS REQUIRED. 
+ 
+5.3.1 Authorization to perform 
+Section 5.3.2 and 5.3.3 below establish levels of authorization to perform the maintenance on the drone . 
+Light maintenance and daily inspections are usually performed by the OWNER/OPERATOR since it does not 
+affect the structural integrity or the airworthiness of the aircraft. 
+ 
+5.3.2 Light maintenance 
+The OWNER/OPERATOR is authorized to perform light maintenance on the drone as per the guidelines of the 
+manufacturer. The O WNER/OPERATOR is responsible for maintaining the drone in an airworthy condition, 
+which includes compliance with all applicable regulations requiring to follow the directives and procedures 
+issued by the manufacturer . The OWNER/OPERATOR must also ensure th at only qualified personnel will do 
+the maintenance work. The OWNER/OPERATOR should ensure that the technician or crew member inspecting 
+the aircraft has access to all necessary manuals and training. 
+ 
+Light maintenance is defined as follows: 
+• To perform a visual inspection of the aircraft as defined in this User Guide in Section 4.5.1 – Visual 
+Inspection. and in Section 5.4 below. 
+• To r eplace the propellers as per the 
+guidelines and table in Section 4.3 – 
+Propeller installation and instructions 
+below. 
+The propellers must be arranged as in the 
+diagram on the right, and with the markings 
+facing upwards. The propellers’ securing 
+fasteners must be regularly checked for an 
+optimal torque setting of 0.9 Nm ( 8 lbf-in). 
+This value should not be exceeded since the 
+compressible core of the propellers is made 
+of foam. 
+A proper "Motor Test" ( Section 3.8.6) must be performed after any propeller replacement, and before 
+returning any aircraft to flight duty. It cannot be stressed enough how properly secured and installed 
+propellers (rotation type and orientation) are critical to flight safety.
+
+---------------------------------------- [FINE PAGINA 76] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+76 
+ © 2025 DRONE VOLT – All rights reserved 
+5.3.3 Heavy maintenance 
+Any repairs or maintenance other than the light maintenance must be performed by D RONE VOLT or at a 
+repair facility authorized by the drone manufacturer. 
+ 
+ 
+WARNING! MAINTENANCE TASKS SHALL BE PERFORMED BY QUALIFIED TECHNICIANS CERTIFIED 
+BY DRONE VOLT. APART FROM DAMAGE TO THE DRONE OR OTHER PROPERTY , ATTEMPTING 
+ANY MAINTENANCE WITHOUT PROPER QUALIFICATIONS CONSTITUTE A SERIOUS NEGLIGENCE 
+THAT CAN RESULT IN SEVERE INJURIES TO THE CREW OR BYSTANDERS, THAT COULD EVEN LEAD 
+TO FATALITY. 
+ 
+ 
+5.4 I nspection Guidelines 
+ 
+5.4.1 Movable parts 
+Inspect to assess the proper functioning, cleanliness and level of maintenance of the joints and their 
+lubrication. But also, to detect excessive wear, deformation or corrosion when applicable. 
+ 
+5.4.2 Airframe structural components 
+The HERCULES 20’s structure consists of carbon fiber parts and profiles combined with aluminum and plastic 
+components. All the structural parts of the aircraft must be inspected for scratches, fatigue cracks, 
+deterioration, condition of surface finish (on painted parts), especially the arms and landing gear legs. Any 
+type of apparent damage needs to be investigated to determine the root cause and rule out potential 
+structural issues. 
+All assembly devices and joints require the same level of inspection. 
+ 
+5.4.3 Structural fasteners 
+Inspect for wear or any type of damage. A loose fastener (or worse, a missing one) constitutes a problem 
+that requires to be addressed before resuming flight operations. 
+ 
+5.4.4 Wiring 
+Inspect for chafing, defective insulation, loose and broken terminals, heat deterioration, terminal damage, 
+and any other apparent damage.
+
+---------------------------------------- [FINE PAGINA 77] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+77 
+V4.1 01/01/2025 
+ 
+5.5 I nspection procedure 
+ 
+5.5.1 Complete Inspection 
+A complete inspection is based on the condition of the drone when br ought back to the manufacturer, or 
+authorized maintenance facility. The table below is a high-level checklist, and the technician should refer 
+to the manufacturing assembly document for pictures and details for each part. 
+ WARNING! THIS SECTION MUST BE PERFORMED ONLY BY DRONE VOLT TECHNICIANS. THIS 
+CHECKLIST IS ONLY PUBLISHED HERE SO THE OWNER/OPERATOR CAN DEVISE THEIR OWN 
+PREVENTIVE MAINTENANCE PROCEDURES. 
+ 
+Complete inspection procedures 
+ 
+ 
+ 
+Item # Part Initials 
+1 Open the canopy and check the GNSS fastener to ensure the GNSS is properly 
+secured (single-antenna version only) 
+ 
+2 Look for any debris and safely open the main body. 
+Note: the screws are secured with non-permanent thread locker (Loctite™). 
+ 
+3 Perform a detailed visual inspection of each layer. 
+4 Visually inspect all wiring for chafing, defective insulation, loose and broken 
+terminals, heat deterioration, terminal damage, and any other apparent damage. 
+ 
+5 Check the AS120 connectors for condition and damage 
+6 Check the carbon fiber connectors for any fatigue cracks, scratches, and any other 
+apparent damage. 
+ 
+7 Visually inspect the battery parts for any heat damage. 
+8 Perform an inspection on all the fasteners inside the drone and ensure they are 
+tightly secured. 
+ 
+9 Once approved, reapply non-permanent thread locker (Loctite™) on the outer 
+screws and securely place the outer shell. 
+ 
+10 Connect the motors to the test bench and perform a motor test for condition, spin 
+check and inspect for any other damage or unusual noise. 
+ 
+11 Once all the above requirements are met proceed with pre-dispatch checklist
+
+---------------------------------------- [FINE PAGINA 78] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+78 
+ © 2025 DRONE VOLT – All rights reserved 
+6. APPENDIX 
+6.1 C3 Certification 
+<PENDING> 
+6.2 Description of the Zéphyr CC FTS (v 2.0) 
+Depending on the configuration of the H ERCULES 20, it can be delivered with the Z ÉPHYR CC Flight 
+Termination System (FTS) manufactured by DRONAVIA. 
+The ZÉPHYR CC FTS (v 2.0) adds another layer of safety. It is used to shut down the motors in flight when 
+activated by an independent remote control. This type of device may be used where local regulation and/or 
+flight operation type makes it mandatory. 
+When its use is not compulsory, it may remain turned off and the drone will operate as usual. 
+If the HERCULES 20 system is supplied with a pre-installed ZÉPHYR CC FTS, its User Manual will be provided 
+along with the HERCULES 20’s User Guide. 
+Summary of the Zéphyr CC FTS User Manual: 
+ Check that the FTS Zéphyr CC is charged (Micro USB cable supplied). 
+ Press and hold the button on the top of the device to switch it on. 
+ Switch on the drone and the HERELINK Radio Controller: when the FTS flashes green, it is ready to 
+operate. 
+ <ONLY IF REQUIRED> A long press on the triangular main button switches off the motors. 
+It is recommended to test the FTS prior to the flight. To do so, it is necessary to arm the motors and trigger 
+the FTS triangular button with the drone still on the ground. 
+Once the FTS is triggered the drone must be powered off , and then back on to reset the FTS and perform 
+the flight. 
+ 
+ 
+Dronavia provides instructions for 
+both their FTS system and the Klick 
+portable remote control. 
+https://www.dronavia.com/
+
+---------------------------------------- [FINE PAGINA 79] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+79 
+V4.1 01/01/2025 
+ 
+6.3 R EMOTE PILOTS AND CREW QUALIFICATIONS 
+All countries have their own regulations about access to airspace, as well as a framework defining the 
+required qualifications of drone pilots and their flight crews. Furthermore, some countries may soon adopt 
+certification standards for maintenance technicians. Most countries follow the general guidelines put 
+forward by the International Civil Aviation Organization (ICAO) but each sovereign country is free to adapt 
+their local regulations to suit their specific context. Contact your national CAA for further information and 
+guidance on these matters. 
+ 
+International Civil Aviation Organization (ICAO ) 
+ 
+European Union 
+ 
+United States 
+ 
+ 
+To learn about your country’s specific regulations, or those of a 
+country you plan to operate the HERCULES 20 in, please visit the 
+“current State regulations” page on the ICAO website. This page 
+collects links about drone regulations from most of the 193 
+member states. 
+https://www.icao.int/safety/UA/UASToolkit/Pages/State-Regulations.aspx 
+ 
+EASA is t he European Union Aviation Safety Agency. As an 
+agency of the European Commission, its role is to ensure safety 
+and environmental protection in civil aviation in Europe . It also 
+defines the general rules for drone safety in the European 
+Union. 
+https://www.easa.europa.eu/en/domains/civil-drones 
+ 
+In the USA, the Federal Aviation Administration of the US 
+Department of Transportation defines the rules for UAS flight 
+and pilot qualifications. 
+https://www.faa.gov/uas
+
+---------------------------------------- [FINE PAGINA 80] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+80 
+ © 2025 DRONE VOLT – All rights reserved 
+ 
+Canada 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Refer to Part IX of the Canadian Aviation Regulations (SOR/96-
+433) for detailed information and requirements for operators. 
+Or refer to the current edition of Transport Canada Aeronautical 
+Information Manual (TC AIM) for an easy-to-read consolidated 
+format on the operation of remotely piloted unmanned aircraft. 
+https://tc.canada.ca/en/corporate-services/acts-regulations/list-regulations/canadian-
+aviation-regulations-sor-96-433 
+https://tc.canada.ca/en/aviation/publications/transport-canada-aeronautical-
+information-manual-tc-aim-tp-14371
+
+---------------------------------------- [FINE PAGINA 81] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+81 
+V4.1 01/01/2025 
+ 
+6.4 H IGH-DRA payload 
+The HIGH-DRA variant of the HERCULES 20 aircraft is fitted with mounting points on the underside of the main 
+chassis for attaching the lance of a high-pressure fluid spraying system. 
+ 
+ 
+ 
+With appropriate selection of pump, hose, spraying lance and nozzle, the ensemble presents a stable, 
+accurate and highly maneuverable aerial spraying system for multiple spray-based use cases. 
+ 
+ 
+ 
+6.4.1 High- Dra payload operational concerns 
+Operating a UAV with a high- pressure fluid spraying system attached brings additional concerns for the 
+flight crew. These are summarized below along with an additional safety benefit associated with most high-
+pressure fluid pumps. 
+1. Reaction thrust. When high pressure fluid is projected from the aircraft, consideration must be given to 
+the resultant forces exerted in flight. Directing the fluid vertically (up/down) when output from the lance 
+nozzle can hinder and limit aircraft maneuverability. The nozzle should be as close to horizontal as possible 
+when the lance is extended out from the aircraft body. If the operator wishes to direct water vertically 
+downward the lance nozzle should be as close to the aircraft center-of-mass as possible, thus, minimizing 
+the lever arm from reaction forces which could cause the aircraft to pitch. The aircraft will automatically 
+manage horizontal components of the resultant force induced by the thrust produced by water jetting out 
+horizontally. E ven at 3500 psi, t he impact of this recoil may only alter the drone’s position by a few 
+centimeters.
+
+---------------------------------------- [FINE PAGINA 82] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+82 
+ © 2025 DRONE VOLT – All rights reserved 
+2. Hose management. The high-pressure hose should be managed during flight; it is important to reduce any 
+tugs and lateral forces on the aircraft from the hose. Please ensure there is sufficient unspooled, untangled 
+hose arranged below the intended work area available for e asy uptake as the aircraft moves. When 
+landing, ensure no hose buckles under the aircraft, hence preventing proper level contact with the ground; 
+a kinked hose caught under the landing-gear could cause a pitch or roll bringing spinning propellors into 
+contact with the ground. Similarly, a kinked hose could interfere with the propellors. 
+3. Additional mass of the lance, hose and water. The total suspended mass is slightly offset by the high -
+pressure water flow and the ≈ 90° deflection before entering the lance. However, for the purpose of safety 
+risk mitigation, it is necessary to assume the full mass of lance, nozzle, hose -aloft and water -aloft are 
+carried by the aircraft as payload. For reference, the mass of one meter of ¼" [≈6mm] bore high-pressure 
+fiber-sheathed hose filled with water is ≈133g. Consequently, in the imperial system, a foot of this same 
+water filled hose will weigh ≈ 1.42oz (0.09lb). 
+4. Moisture build-up. Depending on the weather and choice of nozzle, fluid may gather on external surfaces 
+of the aircraft during normal operation. Please inspect and evaluate the aircraft during each power-cycle. 
+Mop up and dry any locations where fluid could conceivably penetrate and threaten aircraft functionality. 
+Note the H ERCULES 20 has an IP54 rating and thus is considered protected from water splashes from all 
+directions including the use of a water spray without shield. 
+ 
+ 
+ 
+5. Safe working distance. It is acknowledged that flying close to surfaces is an unavoidable hazard when 
+operating an aerial sprayer UAV system. However, despite a dual GNSS configuration that is increasing the 
+stability of the aircraft avionics and thrust system, the pilot must remain vigilant for turbulent air streams 
+around building edges, or vortexing over roofs, and GNSS conflicted/denied areas. To support this, DRONE 
+VOLT prescribes minimum safe distances of 2m from the sprayed workface in flight, and a takeoff zone that 
+shall be no less than 4m from any building facade. To ensure safe operation and adequate GNSS coverage, 
+the designated takeoff area should also allow for at least 50% of the sky to be visible.
+
+---------------------------------------- [FINE PAGINA 83] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+83 
+V4.1 01/01/2025 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+More than 90° 
+ 
+or at least 50% visible 
+4m 
+minimum 
+4m 
+minimum
+
+---------------------------------------- [FINE PAGINA 84] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+84 
+ © 2025 DRONE VOLT – All rights reserved 
+6.4.2 Potential safety benefits 
+If using a pump with powered hose retraction, an additional safety benefit should be realized on- site. 
+Positioning the pump such that hose retraction (reel-in) results in a pull toward an area of safety – usually 
+away from the workface or away from public, provides a method of pulling the aircraft away from 
+dangerous situations. This can be employed as an additional risk mitigation in emergency situations. 
+ 
+ 
+ 
+ 
+6.4.3 Mounting the Sprayer Lance Payload & Preparing for Spraying Operation 
+Re-locate the pump away from the workface, or structure to be cleaned, and towards a safe zone. In case 
+of emergency, the cable reel-in function can be used to haul the drone away from a potentially hazardous 
+situation. 
+Remove the spraying lance from the pump unit and fit it to the HERCULES 20 HIGH-DRA. Feed the lance and 
+hose through the drone’s undercarriage , ensuring the hose is free to hang vertically once the aircraft is 
+airborne. Affix using clamps and thumb screws on the underside of the aircraft chassis. 
+Select the appropriate nozzle for the spraying task (see data sheet) and fit it to the lance. 
+Ensure the neck of the lance bows down minimally from horizontal – severe angles (>10°) can negatively 
+affect aircraft stability when the lance is extends beyond the aircraft main body. 
+Re-locate the HERCULES 20 HIGH-DRA and high-pressure pump around the work site based on the task at hand 
+and safe hose spooling management. 
+Pull out sufficient hose from the pump and arrange it in a serpentine pattern below intended work area. 
+Prepare the HERCULES 20 HIGH-DRA system for flight (controller, ground station, batteries etc.)
+
+---------------------------------------- [FINE PAGINA 85] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+85 
+V4.1 01/01/2025 
+ 
+6.5 Connection to Mission Planner 
+Activating the Hotspot 
+Configuring a Hotspot allows to connect a computer to the drone via Wi -Fi. Using the Mission Planner 
+software, it will be possible to download the drone's flight logs, or to program automatic flight missions. 
+To activate the Hotspot on the HERELINK, swipe down from the top of the screen and activate the icon circled 
+in red: 
+ 
+ 
+ 
+ 
+Connecting Mission Planner to the HERCULES 20 
+First, install the “Mission Planner” software on the designated PC. 
+ 
+ 
+ CAUTION! ONLY EXPERT AND EXPERIENCED USERS SHOULD BE ALLOWED TO USE MISSION 
+PLANNER. THEY MUST ALSO GET THE RECOMMENDED TRAINING BEFORE ATTEMPTING ANY 
+ACTIONS OR CONFIGURATIONS WITH THIS SOFTWARE. 
+ 
+ 
+• Option 1: Wi-Fi connection 
+Activate the Hotspot on the R adio Controller. The computer should then be visible on the Wi -Fi 
+network with its name displayed (for example, H20- 23-04). The initial default password will be 
+123456789.
+
+---------------------------------------- [FINE PAGINA 86] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+86 
+ © 2025 DRONE VOLT – All rights reserved 
+ 
+Drone connection to Mission Planner is automatic in Wi -Fi mode. Or else, it is possible to connect 
+manually the top right portion of the display. The communication port shall be “UDP” and the 
+connection rate should be set at “115 000 bauds”. 
+Distance between components is critical with Wi -Fi connections. While using Wi-Fi, the computer 
+should remain close enough to the drone: never more than 10 meters from it. It should be noted 
+that the Hotspot mode is depleting the Radio Controller’s battery substantially faster than when it 
+is not activated. Activate this function only if required. 
+ 
+• Option 2: USB Connection 
+Using the supplied Mini -USB cable, connect the drone directly to the computer. Use the capped 
+connector on the drone’s main body.
+
+---------------------------------------- [FINE PAGINA 87] ----------------------------------------
+
+DRONE VOLT Hercules 20 – User Guide 
+87 
+V4.1 01/01/2025 
+Launch Mission Planner and select “ COMX Cube Orange Mavlink ” with a communication rate of 
+115 200 bauds. Then, click on “Connect”: the logo showing two electric plugs in the top right corner 
+should change from red to green, thus confirming the connection has been activated. 
+ 
+ 
+Downloading logs 
+Select the “Dataflash Logs” thumbnail, then click on “Download DataFlash Log Via Mavlink”. 
+It is then possible to select specific logs and then click on “Download selected Logs”. 
+The downloaded logs can then be found in: C:\Users\ <NAME> \Documents\Mission Planner\logs\.
+
+---------------------------------------- [FINE PAGINA 88] ----------------------------------------
+
+Hercules 20 – User Guide 
+ 
+88 
+ © 2025 DRONE VOLT – All rights reserved 
+ 
+7. CONTACT INFORMATION 
+ 
+DRONE VOLT FRANCE 
+ 
+14 rue de la Perdrix - Lot 201 
+93420 Villepinte, France 
+ 
+Phone: +33 (0) 1 80 89 44 44 
+contact@dronevolt.com 
+www.dronevolt.com 
+ 
+ 
+ 
+ 
+DRONE VOLT SCANDINAVIA 
+ 
+ApS – Park Allé 380 
+2625 Vallensbæk, Denmark 
+Phone: +45 70 70 72 23 
+kontakt@dronevolt.com 
+www.dronevolt.dk 
+ 
+DRONE VOLT BELGIUM 
+ 
+Excelsiorlaan 57 
+B-1930 Zaventem, Belgium 
+ 
+Phone: +32 (0)2 725 89 56 
+contact.be@dronevolt.com 
+www.dronevolt.be 
+ 
+ 
+ 
+ 
+DRONE VOLT NETHERLANDS 
+ 
+Marinevliegkamp 356 
+2236ZZ Valkenburg 
+ 
+Phone: +31(0) 10 808 1952 
+info@dronevolt.nl 
+www.dronevolt.nl 
+ 
+DRONE VOLT CANADA / USA 
+ 
+275 Avenue Liberté, suite 103, 
+Candiac QC Canada J5R 3X8 
+ 
+Phone: +1 450-688-8200 
+canada@dronevolt.com 
+www.dronevolt.ca 
+ 
+ 
+ 
+ 
+DRONE VOLT SWITZERLAND 
+ 
+Phone: +33 (0) 1 80 89 44 44 
+swiss@dronevolt.com 
+www.dronevolt.com
+
+---------------------------------------- [FINE PAGINA 89] ----------------------------------------
+
