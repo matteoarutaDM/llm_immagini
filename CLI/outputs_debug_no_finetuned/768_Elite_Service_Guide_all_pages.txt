@@ -50,7 +50,12 @@ The following conventions are used in this guide:
 heading, or page number.
 • When you see text in Bold, it indicates important information that needs to be empha-
 sized.
+<<<<<<< HEAD
 • Text representing Interface Messages that appear on the display panel are presented in a 
+=======
+• Text representing 
+Interface Messages that appear on the display panel are presented in a 
+>>>>>>> e79fa7c0 (Le mie modifiche)
 bold font.
 
 ---------------------------------------- [FINE PAGINA 3] ----------------------------------------
@@ -432,7 +437,12 @@ Workstation
 Compatibility
 Windows 7, Windows Vista, Windows XP 32 and 64 Bit, Windows 2000, Windows 
 NT - service pack 4 or higher.
+<<<<<<< HEAD
 Support Structures Any necessary support structures are automatically created within CatalystEx software. 
+=======
+Support Structures
+Any necessary support structures are automatically created within CatalystEx software. 
+>>>>>>> e79fa7c0 (Le mie modifiche)
 Break-away Support System (BASSTM) allows for easy support removal. Dimension SST uses 
 Soluble Support Technology (SST), which allows supports to be washed away with a 
 water-based solution. 
@@ -2068,7 +2078,12 @@ Installing system software:
 4. Select Load Upgrade from the display menu.
 5. Insert the Dimension controller softwa re CD into the workstation CD drive.
 6. Open CatalystEX on the workstation.
+<<<<<<< HEAD
 7. Click on the Printer Services tab.
+=======
+7. Click on the 
+Printer Services tab.
+>>>>>>> e79fa7c0 (Le mie modifiche)
 8. Click on the Update Software button.
 9. Once the upgrade window opens select Browse and navigate to the CD ROM drive.
 10. Select the Upgrade.upg file and click OK. 
@@ -3304,8 +3319,12 @@ Code Description Corrective Actions
 20,02 Timeout period expired waiting 
 for head to stop.
 1. Check door latch solenoid wiring.
+<<<<<<< HEAD
 2. Check ability of door to latch
 Code Description Co rrective Actions
+=======
+2. Check ability of door to latchCode Description Co rrective Actions
+>>>>>>> e79fa7c0 (Le mie modifiche)
 22,01 FC_SERVICE event not 
 received.
 22,02 Insufficient material to com-
@@ -3423,8 +3442,12 @@ wheel?
 3. Filament Present but 
 Won't Extrude
 Enter head maintenance and try 
+<<<<<<< HEAD
 to extrude
 Did both filaments 
+=======
+to extrudeDid both filaments 
+>>>>>>> e79fa7c0 (Le mie modifiche)
 extrude?
 Is there excess 
 material inside the 
@@ -5123,7 +5146,12 @@ Installing the Display Panel:
 1. Reconnect the J405 cable by pushing into place.
 2. Reconnect the J404 ribbon cable by pushing into place.
 3. Align the 2 display panel mounting screws with the mounting holes and push into place.
+<<<<<<< HEAD
 4. Using an 11⁄32” nut driver or box wrench, reinstall the 2 display panel mounting nuts. 
+=======
+4. Using an 
+11⁄32” nut driver or box wrench, reinstall the 2 display panel mounting nuts. 
+>>>>>>> e79fa7c0 (Le mie modifiche)
 5. Reinstall the front bezel. See “Installing the Front Bezel:” on page 5-20.
 6. Install the side panels. See “Side Panels” on page 5-11.
 7. Install the rear door. See “Installing the Rear Door:” on page 5-10.
@@ -7727,11 +7755,21 @@ bracket.
 5. Reconnect J1A, J1B, GNDA and GNDB to the dual 48 VDC power supplies.
 6. Slide the dual 48 VDC power supplies mounting bracket into the slot on the back of the 
 electronics bay.
+<<<<<<< HEAD
 7. Using a 1⁄4” nut driver or standard screwdriver, reinstall the dual 48 VDC power supplies 
 mounting bracket mounting screw.
 8. Reconnect C63 to the power distribution board.
 9. Place the C63 wire into the wire clip and close the wire clip.
 10. Using a 5⁄64” allen wrench, reinstall the upper electronics bay cooling fan and fan guard 
+=======
+7. Using a 
+1⁄4” nut driver or standard screwdriver, reinstall the dual 48 VDC power supplies 
+mounting bracket mounting screw.
+8. Reconnect C63 to the power distribution board.
+9. Place the C63 wire into the wire clip and close the wire clip.
+10. Using a 
+5⁄64” allen wrench, reinstall the upper electronics bay cooling fan and fan guard 
+>>>>>>> e79fa7c0 (Le mie modifiche)
 with the airflow in the proper direction.
 11. Reconnect the upper electronics bay cooling fan cable.
 12. Reinstall the rear door. See “Installing the Rear Door:” on page 5-10.
@@ -8347,7 +8385,12 @@ Installing the BST Swivel Head:
 8. Reconnect the support motor cabl e by pushing into the connector.
 9. Reinstall the support motor wire clip.
 10. Close the head and use a phillips screwdrive r to tighten the 2 self retaining screws.
+<<<<<<< HEAD
 11. Using a 1⁄4” nut driver or standard screwdriver, reinstall the ground wire to the front right 
+=======
+11. Using a 
+1⁄4” nut driver or standard screwdriver, reinstall the ground wire to the front right 
+>>>>>>> e79fa7c0 (Le mie modifiche)
 side of the head.
 12. Reinstall the side panels. See “Side Panels” on page 5-11.
 13. Reinstall the rear door. See “Installing the Rear Door:” on page 5-10.
@@ -8465,7 +8508,12 @@ into place.
 9. Reconnect the support motor cabl e by pushing into the connector.
 10. Reinstall the support motor wire clip.
 11. Close the head and use a phillips screwdrive r to tighten the 2 self retaining screws.
+<<<<<<< HEAD
 12. Using a 1⁄4” nut driver or standard screwdriver, reinstall the ground wire to the front right 
+=======
+12. Using a 
+1⁄4” nut driver or standard screwdriver, reinstall the ground wire to the front right 
+>>>>>>> e79fa7c0 (Le mie modifiche)
 side of the head.
 13. Reinstall the side panels. See “Side Panels” on page 5-11.
 14. Reinstall the rear door. See “Installing the Rear Door:” on page 5-10.
@@ -8827,7 +8875,12 @@ mounting nut and bushing.
 8. Reinstall the wire tie around the umbilical ca ble and umbilical hose. Head cable should fol-
 low the umbilical tube with no binding, tightness, or excess slack. If needed, loosen the 
 strain relief bushings and adjust cable length. 
+<<<<<<< HEAD
 9. Reattach the ground wire to the ba ck of the electronics bay and use a 1⁄4” nut driver or stan-
+=======
+9. Reattach the ground wire to the ba ck of the electronics bay and use a 
+1⁄4” nut driver or stan-
+>>>>>>> e79fa7c0 (Le mie modifiche)
 dard screwdriver to reinstall the mounting screw.
 10. Reconnect the following:
 a. For Gen 1 electronics:
@@ -8946,7 +8999,12 @@ Required Tools
 • 1⁄4” nut driver
 • 5⁄16” nut driver
 • Standard screw driver
+<<<<<<< HEAD
 • 3⁄32” allen wrench
+=======
+• 
+3⁄32” allen wrench
+>>>>>>> e79fa7c0 (Le mie modifiche)
 Removing the Chamber Thermal Snap Switch for Cable Drive XY Table:
 1. Power down the system using the power-down switch. Once the system is powered down, 
 switch the circuit breaker to the off position.
@@ -9717,7 +9775,12 @@ Installing the X Motor Belt:
 5. Insert the XY motor belt tension tool between the X motor pulley and the X drive pulley by 
 squeezing the tension tool and releasing pressure when in place. See Figure 325.
 Figure 325: XY belt tension tool placement
+<<<<<<< HEAD
 6. Using a 9⁄64” allen wrench, completely tighten the 3 X motor mounting screws.
+=======
+6. Using a 
+9⁄64” allen wrench, completely tighten the 3 X motor mounting screws.
+>>>>>>> e79fa7c0 (Le mie modifiche)
 7. Remove the belt tension tool.
 8. Insert the belt tension gauge zero block into the belt tension gauge. See Figure 326.
 
@@ -10185,7 +10248,12 @@ Set screwSet screw
 16. Move the head to the rear of the printer.
 17. Place the belt tension gauge on the cent er of the right side Y drive belt. See Figure 363.
 Figure 363: Belt tension gauge location
+<<<<<<< HEAD
 18. Using a 1⁄2” nut driver or box wrench, tighten the right side Y drive belt by turning the 
+=======
+18. Using a 
+1⁄2” nut driver or box wrench, tighten the right side Y drive belt by turning the 
+>>>>>>> e79fa7c0 (Le mie modifiche)
 drive belt tensioning nut clockwise until:
 a. The old dial indicators large hand is between 90 and 20 mils and the small hand is 
 nearly on 1.6. See Figure 364.
@@ -10730,7 +10798,12 @@ Set screw
 20. Move the head to the rear of the printer.
 21. Place the belt tension gauge on the center of the left side Y drive belt. See Figure 409.
 Figure 409: Belt tension gauge location
+<<<<<<< HEAD
 22. Using a 1⁄2” nut driver or box wrench, tighten the left side Y drive belt by turning the drive 
+=======
+22. Using a 
+1⁄2” nut driver or box wrench, tighten the left side Y drive belt by turning the drive 
+>>>>>>> e79fa7c0 (Le mie modifiche)
 belt tensioning nut clockwise until:
 a. The old dial indicators large hand is between 90 and 20 mils and the small hand is 
 nearly on 1.6. See Figure 410.
@@ -10986,7 +11059,12 @@ driver or standard screwdriver to reinstall the 4 mounting screws.
 on the translator.
 13. Align the head with the translator.
 14. Reinstall the head hinge pin by pushing down into place.
+<<<<<<< HEAD
 15. Using a 5⁄64” allen wrench, reinstall the head hinge pin set screw.
+=======
+15. Using a 
+5⁄64” allen wrench, reinstall the head hinge pin set screw.
+>>>>>>> e79fa7c0 (Le mie modifiche)
 16. Feed the J303, model thermocouple and support thermocouple wires through the access 
 slot.
 17. Reconnect the model liquefier cabl e by pushing into the connector.
@@ -11023,7 +11101,12 @@ bracket.
 35. Reconnect the thermal snap switch by pushing the 2 wires onto the spades. 
 36. Reinstall the Z foam level assembly. See “Installing the Z Foam Level Assembly:” on 
 page 5-225.
+<<<<<<< HEAD
 37. Using a 1⁄8” allen wrench, remove the 2 head cooling fan mounting screws. Set the fan off to 
+=======
+37. Using a 
+1⁄8” allen wrench, remove the 2 head cooling fan mounting screws. Set the fan off to 
+>>>>>>> e79fa7c0 (Le mie modifiche)
 the side. See Figure 434.
 Figure 434: Head fan mounting screw locations
 38. Using a 3⁄8” allen wrench, remove the dial indicator mounting screw from the head bracket. 
@@ -11879,7 +11962,12 @@ w. Using a remove the 2 mounting screws from the head bracket.
 x. Using a remove the dial indicator mounting screw from the head bracket.
 5. Angle the Z base plate into position and feed the Z jam sensor and Z motor cables through 
 the slots in the Z base plate.
+<<<<<<< HEAD
 6. Using a 5⁄16” nut driver or standard screwdriver, reinstall the 6 Z base plate mounting 
+=======
+6. Using a 
+5⁄16” nut driver or standard screwdriver, reinstall the 6 Z base plate mounting 
+>>>>>>> e79fa7c0 (Le mie modifiche)
 screws.
 7. Reconnect the Z jam sensor and Z motor ca bles by pushing into the the connectors.
 8. Reinstall the receiver assembly. See “Installing the Galvanized Receiver Assembly:” on 
@@ -12047,7 +12135,12 @@ w. Using a remove the 2 mounting screws from the head bracket.
 x. Using a remove the dial indicator mounting screw from the head bracket.
 6. Angle the Z base plate into position and feed the Z jam sensor and Z motor cables through 
 the slots in the Z base plate.
+<<<<<<< HEAD
 7. Using a 5⁄16” nut driver or standard screwdriver, reinstall the 6 Z base plate mounting 
+=======
+7. Using a 
+5⁄16” nut driver or standard screwdriver, reinstall the 6 Z base plate mounting 
+>>>>>>> e79fa7c0 (Le mie modifiche)
 screws.
 8. Reconnect the Z jam sensor and Z motor ca bles by pushing into the the connectors.
 9. Reinstall the receiver assembly. See “Installing the Galvanized Receiver Assembly:” on 
@@ -12350,7 +12443,12 @@ x. Remove the 2 mounting screws from the head bracket.
 y. Remove the dial indicator mounting screw from the head bracket.
 18. Angle the Z base plate into position and feed the Z jam sensor and Z motor cables through 
 the slots in the Z base plate.
+<<<<<<< HEAD
 19. Using a 5⁄16” nut driver or standard screwdriver, reinstall the 6 Z base plate mounting 
+=======
+19. Using a 
+5⁄16” nut driver or standard screwdriver, reinstall the 6 Z base plate mounting 
+>>>>>>> e79fa7c0 (Le mie modifiche)
 screws.
 20. Reconnect the Z jam sensor and Z motor cables by pushing into the the connectors.
 21. Reinstall the receiver assembly. See “Installing the Galvanized Receiver Assembly:” on 
@@ -12905,7 +13003,12 @@ screwdriver to loosely reinstall the 4 mounting screws.
 4. Pull back on the Z motor bracket to tension the Z motor belt. 
 5. Tighten the Z motor bracket screws.
 6. If printer serial number is less than P4000, align the Z jam sensor with the mounting holes. 
+<<<<<<< HEAD
 If printer serial number is greater than P4000, proceed to 8.
+=======
+If printer serial number is greater than P4000, proceed to 
+8.
+>>>>>>> e79fa7c0 (Le mie modifiche)
 7. Using a 5⁄16” nut driver or standard screwdriver, reinstall the 2 Z jam sensor bracket 
 mounting screws.
 8. Reinstall the side panels. See “Side Panels” on page 5-11.
@@ -13602,7 +13705,12 @@ specification, proceed to step 13.
 14. Remove the front head plate.
 15. Hand-tighten both liquefier adjustment screws until they are tight against the side of the 
 swivel head plate.
+<<<<<<< HEAD
 16. Using a 9⁄64” allen wrench, loosen the 3 swivel plate screws just enough to allow swivel 
+=======
+16. Using a 
+9⁄64” allen wrench, loosen the 3 swivel plate screws just enough to allow swivel 
+>>>>>>> e79fa7c0 (Le mie modifiche)
 plate to pivot. See Figure 5.
 Top layer:
 Support
@@ -13640,7 +13748,12 @@ turn for SST). Next turn the right side leveling screw clockwise by the same amo
 20. Tighten the TOP CENTER liquefier swivel plate screw first. Then tighten the left and right 
 liquefier swivel plate screws. 
 21. Run the test_tiplevel part again.
+<<<<<<< HEAD
 22. Repeat steps 8 through 11 and record these values.
+=======
+22. Repeat steps 
+8 through 11 and record these values.
+>>>>>>> e79fa7c0 (Le mie modifiche)
 23. As an example, say the new values are: 0.0120 for the support and 0.0100 for the model. 
 This means that now the tip level is 0.001” – the support tip is too high and the model tip is 
 too low. 
