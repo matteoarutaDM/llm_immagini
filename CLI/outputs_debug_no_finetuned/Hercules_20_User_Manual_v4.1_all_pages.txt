@@ -261,7 +261,8 @@ The manufacturer guarantees the aircraft main structure ( chassis) against manuf
 defects for one (1) year. The manufacturer also guarantees the integrity of the firmware for one year. 
  
  
-* The term "OWNER/OPERATOR" used in this text and in the following pages refers to any company that 
+* The term "O
+WNER/OPERATOR" used in this text and in the following pages refers to any company that 
 purchased the HERCULES 20 aircraft, or individual person working for the purchasing entity that either plan 
 operations for this aircraft, or is responsible for managing the operations, the safety, the maintenance, the 
 training, or the piloting of the aircraft.
@@ -1139,7 +1140,8 @@ aircraft and propelling it forward), the PITCH slider in this interface will mov
  
  
  
- CAUTION! THE OPERATOR IS ADVISED NOT TO CHANGE THE STANDARD SETTINGS OF THE RADIO 
+ 
+CAUTION! THE OPERATOR IS ADVISED NOT TO CHANGE THE STANDARD SETTINGS OF THE RADIO 
 CONTROLS, UNLESS DULY INSTRUCTED TO DO SO BY DRONE VOLT. 
  
  
@@ -2332,7 +2334,8 @@ SHUT OFF ALL MOTORS AND CRASH!
  
 In most European countries, it is mandatory to install a fully independent Flight Termination System (FTS) 
 to comply with the regulations and achieve the proper safety level. When built to operate in those 
-countries, the HERCULES 20, is delivered with the ZÉPHYR CC FTS (v 2.0) manufactured by Dronavia. This device 
+countries, the H
+ERCULES 20, is delivered with the ZÉPHYR CC FTS (v 2.0) manufactured by Dronavia. This device 
 will act as the integrated kill switch by cutting off the power to the motors. The important difference resides 
 in the fact that the ZÉPHYR CC FTS power interruption is hardware and not software. In emergency situations, 
 even if the flight controller is frozen or unresponsive, or if the C2 link has been lost, the fully independent 
@@ -2375,7 +2378,8 @@ MAINTENANCE TO ENSURE ITS AIRWORTHINESS BEFORE RESUMING FLIGHT OPERATIONS.
 The inspection program is based on the number of flight hours and operating hours of the motors. The 
 method for recording flight hours and operating hours of the motors remains consistent throughout the 
 life of the aircraft. 
-The OWNER/OPERATOR of the aircraft must record the number of flight hours, operating hours of the motors 
+The O
+WNER/OPERATOR of the aircraft must record the number of flight hours, operating hours of the motors 
 and time of operation used for the purpose of conforming to the inspection intervals schedule.
 
 ---------------------------------------- [FINE PAGINA 74] ----------------------------------------
@@ -2523,7 +2527,7 @@ Item # Part Initials
 secured (single-antenna version only) 
  
 2 Look for any debris and safely open the main body. 
-Note: the screws are secured with non-permanent thread locker (Loctite™). 
+Note: the screws are secured with non-permanent thread locker (Loctite™ ). 
  
 3 Perform a detailed visual inspection of each layer. 
 4 Visually inspect all wiring for chafing, defective insulation, loose and broken 
@@ -2537,7 +2541,7 @@ apparent damage.
 8 Perform an inspection on all the fasteners inside the drone and ensure they are 
 tightly secured. 
  
-9 Once approved, reapply non-permanent thread locker (Loctite™) on the outer 
+9 Once approved, reapply non-permanent thread locker (Loctite™ ) on the outer 
 screws and securely place the outer shell. 
  
 10 Connect the motors to the test bench and perform a motor test for condition, spin 
@@ -2602,7 +2606,8 @@ United States
  
  
 To learn about your country’s specific regulations, or those of a 
-country you plan to operate the HERCULES 20 in, please visit the 
+country you plan to operate the H
+ERCULES 20 in, please visit the 
 “current State regulations” page on the ICAO website. This page 
 collects links about drone regulations from most of the 193 
 member states. 
@@ -2776,7 +2781,8 @@ in red:
  
  
  
-Connecting Mission Planner to the HERCULES 20 
+Connecting Mission Planner to the H
+ERCULES 20 
 First, install the “Mission Planner” software on the designated PC. 
  
  
