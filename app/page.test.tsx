@@ -155,6 +155,44 @@ describe("invio domanda (/api/ask)", () => {
   });
 });
 
+describe("risposte per chat", () => {
+  it("una nuova chat riparte pulita e tornando alla chat precedente la risposta c'e' ancora", async () => {
+    window.localStorage.setItem("assistant-token", "fake-token");
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:fake");
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes("/auth/me")) return jsonResponse({ email: "user@gmail.com", company_domain: null });
+      if (url.includes("/messages")) return jsonResponse([]);
+      if (url.includes("/chats") && init?.method === "POST") {
+        return jsonResponse({ id: 2, title: "Conoscenza base", knowledge_mode: "base" });
+      }
+      if (url.includes("/chats")) return jsonResponse([{ id: 1, title: "Gru del porto", knowledge_mode: "base" }]);
+      if (url.includes("/company/documents")) return jsonResponse([]);
+      if (url === "/api/ask") return jsonResponse({ recognized: false, reason: "Foto troppo scura" });
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const user = userEvent.setup();
+    render(<Home />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Gru del porto" })).toBeInTheDocument());
+
+    const fileInput = document.getElementById("machine-image") as HTMLInputElement;
+    await user.upload(fileInput, new File(["img"], "gru.png", { type: "image/png" }));
+    await user.click(screen.getByRole("button", { name: /Analizza e rispondi/ }));
+    await waitFor(() => expect(screen.getByText("Foto troppo scura")).toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: /Nuova chat/ }));
+    await waitFor(() => expect(screen.queryByText("Foto troppo scura")).not.toBeInTheDocument());
+    expect(screen.queryByAltText("Anteprima immagine caricata")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Gru del porto" }));
+    await waitFor(() => expect(screen.getByText("Foto troppo scura")).toBeInTheDocument());
+  });
+});
+
 describe("logout", () => {
   it("chiama l'endpoint di logout e torna alla schermata di login", async () => {
     window.localStorage.setItem("assistant-token", "fake-token");

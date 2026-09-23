@@ -18,6 +18,8 @@ const contentSecurityPolicy = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  // Self-contained server in .next/standalone for the Docker image (docker/web.Dockerfile).
+  output: "standalone",
   async headers() {
     return [
       {

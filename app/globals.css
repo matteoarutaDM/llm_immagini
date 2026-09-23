@@ -71,11 +71,15 @@ body {
   min-width: 44px;
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
+/* In @layer base so Tailwind text-* utilities on form controls still apply
+   (unlayered rules always beat layered utilities in Tailwind v4). */
+@layer base {
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
 }
 
 button,

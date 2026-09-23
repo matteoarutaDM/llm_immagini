@@ -5,12 +5,15 @@ import hmac
 import logging
 import os
 import secrets
-import sqlite3
+import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+import psycopg
 from dotenv import load_dotenv
+from psycopg.rows import dict_row
+from psycopg_pool import ConnectionPool
 
 
 logger = logging.getLogger("backend.database")
@@ -24,7 +27,13 @@ DATA_DIR = ROOT_DIR / "data"
 # import (auth, SMTP, rate limits, ...) would silently ignore a local .env.
 load_dotenv(ROOT_DIR / ".env")
 
-DB_PATH = Path(os.getenv("DATABASE_PATH", DATA_DIR / "app.db"))
+SCHEMA_PATH = ROOT_DIR / "database" / "schema.sql"
+SEED_PATH = ROOT_DIR / "database" / "seed.sql"
+
+# postgresql://utente:password@host:porta/database
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres@localhost:5432/assistente")
+DB_POOL_MIN_SIZE = int(os.getenv("DB_POOL_MIN_SIZE", "1"))
+DB_POOL_MAX_SIZE = int(os.getenv("DB_POOL_MAX_SIZE", "10"))
 
 APP_ENV = os.getenv("APP_ENV", "development").strip().lower()
 IS_PRODUCTION = APP_ENV == "production"
@@ -57,146 +66,72 @@ PASSWORD_RESET_TOKEN_TTL_SECONDS = int(os.getenv("PASSWORD_RESET_TOKEN_TTL_SECON
 TWO_FA_EMAIL_CODE_TTL_SECONDS = int(os.getenv("TWO_FA_EMAIL_CODE_TTL_SECONDS", "600"))
 
 
-def utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 def _epoch_now() -> int:
     return int(time.time())
 
 
-def connect() -> sqlite3.Connection:
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    connection = sqlite3.connect(DB_PATH, timeout=30)
-    connection.row_factory = sqlite3.Row
-    connection.execute("PRAGMA foreign_keys = ON")
-    # WAL + busy_timeout let concurrent requests read/write without hitting
-    # "database is locked" errors under the FastAPI thread pool.
-    connection.execute("PRAGMA journal_mode = WAL")
-    connection.execute("PRAGMA busy_timeout = 30000")
-    return connection
+# Every connection resolves unqualified table names in the `app` schema, so
+# queries read `FROM users` rather than `FROM app.users`.
+_CONNECTION_KWARGS = {"row_factory": dict_row, "options": "-c search_path=app,public"}
+
+_pool: ConnectionPool | None = None
+_pool_lock = threading.Lock()
 
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS companies (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    domain TEXT NOT NULL UNIQUE,
-    name TEXT NOT NULL,
-    created_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    company_id INTEGER REFERENCES companies(id),
-    token_version INTEGER NOT NULL DEFAULT 0,
-    failed_login_attempts INTEGER NOT NULL DEFAULT 0,
-    locked_until TEXT,
-    terms_accepted_at TEXT,
-    two_factor_enabled INTEGER NOT NULL DEFAULT 0,
-    two_factor_secret TEXT,
-    two_factor_pending_secret TEXT,
-    two_factor_confirmed_at TEXT,
-    created_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS user_recovery_codes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    code_hash TEXT NOT NULL,
-    used_at TEXT,
-    created_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS password_reset_tokens (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    token_hash TEXT NOT NULL UNIQUE,
-    expires_at TEXT NOT NULL,
-    used_at TEXT,
-    created_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS two_factor_email_codes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    purpose TEXT NOT NULL CHECK(purpose IN ('enable', 'login', 'disable', 'regenerate')),
-    code_hash TEXT NOT NULL,
-    expires_at TEXT NOT NULL,
-    used_at TEXT,
-    created_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS chats (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    title TEXT NOT NULL,
-    knowledge_mode TEXT NOT NULL CHECK(knowledge_mode IN ('base', 'merged')),
-    company_document_ids TEXT NOT NULL DEFAULT '[]',
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS messages (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    chat_id INTEGER NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
-    role TEXT NOT NULL CHECK(role IN ('user', 'assistant')),
-    content TEXT NOT NULL,
-    created_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS documents (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    filename TEXT NOT NULL,
-    path TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'indexed', 'failed')),
-    created_at TEXT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_chats_user_id ON chats(user_id);
-CREATE INDEX IF NOT EXISTS idx_documents_company_id ON documents(company_id);
-CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON messages(chat_id);
-CREATE INDEX IF NOT EXISTS idx_recovery_codes_user_id ON user_recovery_codes(user_id);
-CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user_id ON password_reset_tokens(user_id);
-CREATE INDEX IF NOT EXISTS idx_two_factor_email_codes_user_id ON two_factor_email_codes(user_id);
-"""
+def _get_pool() -> ConnectionPool:
+    global _pool
+    with _pool_lock:
+        if _pool is None:
+            _pool = ConnectionPool(
+                DATABASE_URL,
+                min_size=DB_POOL_MIN_SIZE,
+                max_size=DB_POOL_MAX_SIZE,
+                kwargs=_CONNECTION_KWARGS,
+                open=True,
+            )
+        return _pool
 
 
-def _table_exists(connection: sqlite3.Connection, table: str) -> bool:
-    row = connection.execute(
-        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?", (table,)
-    ).fetchone()
-    return row is not None
+def close_pool() -> None:
+    global _pool
+    with _pool_lock:
+        if _pool is not None:
+            _pool.close()
+            _pool = None
 
 
-def _column_names(connection: sqlite3.Connection, table: str) -> set[str]:
-    return {row["name"] for row in connection.execute(f"PRAGMA table_info({table})").fetchall()}
+def connect():
+    """Pooled connection as a context manager: commits when the block exits
+    normally, rolls back if it raises, then returns the connection to the pool.
 
-
-def _ensure_column(connection: sqlite3.Connection, table: str, column: str, ddl: str) -> None:
-    if column not in _column_names(connection, table):
-        connection.execute(f"ALTER TABLE {table} ADD COLUMN {ddl}")
+        with connect() as connection:
+            connection.execute("SELECT ...", (value,)).fetchone()
+    """
+    return _get_pool().connection()
 
 
 def init_db() -> None:
-    with connect() as connection:
-        users_table_existed = _table_exists(connection, "users")
+    """Applies database/schema.sql on an empty database (no `app` schema yet).
 
-        connection.executescript(SCHEMA)
-
-        _ensure_column(connection, "documents", "status", "status TEXT NOT NULL DEFAULT 'indexed'")
-
-        _ensure_column(connection, "users", "token_version", "token_version INTEGER NOT NULL DEFAULT 0")
-        _ensure_column(connection, "users", "failed_login_attempts", "failed_login_attempts INTEGER NOT NULL DEFAULT 0")
-        _ensure_column(connection, "users", "locked_until", "locked_until TEXT")
-        _ensure_column(connection, "users", "two_factor_enabled", "two_factor_enabled INTEGER NOT NULL DEFAULT 0")
-        _ensure_column(connection, "users", "two_factor_secret", "two_factor_secret TEXT")
-        _ensure_column(connection, "users", "two_factor_pending_secret", "two_factor_pending_secret TEXT")
-        _ensure_column(connection, "users", "two_factor_confirmed_at", "two_factor_confirmed_at TEXT")
-
-        # Accounts created before the terms/privacy checkbox existed could not
-        # have accepted it, so we
-        # grandfather them in using their original signup date rather than
-        # leaving them with a null (and thus seemingly "never consented") value.
-        if users_table_existed and "terms_accepted_at" not in _column_names(connection, "users"):
-            _ensure_column(connection, "users", "terms_accepted_at", "terms_accepted_at TEXT")
-            connection.execute("UPDATE users SET terms_accepted_at = created_at WHERE terms_accepted_at IS NULL")
-        else:
-            _ensure_column(connection, "users", "terms_accepted_at", "terms_accepted_at TEXT")
+    Later schema changes are migrations, not re-runs of the whole script. The
+    development operator accounts (database/seed.sql) are only inserted
+    outside production, so a production database never ships default
+    passwords.
+    """
+    with psycopg.connect(DATABASE_URL, autocommit=True) as connection:
+        exists = connection.execute(
+            "SELECT 1 FROM information_schema.schemata WHERE schema_name = 'app'"
+        ).fetchone()
+        if exists:
+            return
+        logger.info("Schema non trovato: applico %s", SCHEMA_PATH)
+        connection.execute(SCHEMA_PATH.read_text(encoding="utf-8"))
+        if not IS_PRODUCTION:
+            connection.execute(SEED_PATH.read_text(encoding="utf-8"))
 
 
 def hash_password(password: str) -> str:
@@ -278,37 +213,33 @@ def hash_reset_token(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
-def bump_token_version(connection: sqlite3.Connection, user_id: int) -> None:
-    connection.execute("UPDATE users SET token_version = token_version + 1 WHERE id = ?", (user_id,))
+def bump_token_version(connection: psycopg.Connection, user_id: int) -> None:
+    connection.execute("UPDATE users SET token_version = token_version + 1 WHERE id = %s", (user_id,))
 
 
-def is_locked(row: sqlite3.Row) -> bool:
+def is_locked(row: dict) -> bool:
     locked_until = row["locked_until"]
-    if not locked_until:
-        return False
-    return datetime.fromisoformat(locked_until) > datetime.now(timezone.utc)
+    return locked_until is not None and locked_until > utc_now()
 
 
-def register_failed_login(connection: sqlite3.Connection, user_id: int, current_attempts: int) -> None:
+def register_failed_login(connection: psycopg.Connection, user_id: int, current_attempts: int) -> None:
     attempts = current_attempts + 1
     locked_until = None
     if attempts >= AUTH_MAX_FAILED_ATTEMPTS:
-        locked_until = datetime.fromtimestamp(
-            _epoch_now() + AUTH_LOCKOUT_SECONDS, tz=timezone.utc
-        ).isoformat()
+        locked_until = datetime.fromtimestamp(_epoch_now() + AUTH_LOCKOUT_SECONDS, tz=timezone.utc)
     connection.execute(
-        "UPDATE users SET failed_login_attempts = ?, locked_until = ? WHERE id = ?",
+        "UPDATE users SET failed_login_attempts = %s, locked_until = %s WHERE id = %s",
         (attempts, locked_until, user_id),
     )
 
 
-def reset_failed_login(connection: sqlite3.Connection, user_id: int) -> None:
+def reset_failed_login(connection: psycopg.Connection, user_id: int) -> None:
     connection.execute(
-        "UPDATE users SET failed_login_attempts = 0, locked_until = NULL WHERE id = ?", (user_id,)
+        "UPDATE users SET failed_login_attempts = 0, locked_until = NULL WHERE id = %s", (user_id,)
     )
 
 
-def public_user(row: sqlite3.Row) -> dict:
+def public_user(row: dict) -> dict:
     return {
         "id": row["id"],
         "email": row["email"],

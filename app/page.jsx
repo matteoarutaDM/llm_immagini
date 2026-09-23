@@ -26,7 +26,7 @@ export default function Home() {
   const auth = useAuth();
   const chats = useChats();
   const documents = useCompanyDocuments();
-  const ask = useAsk();
+  const ask = useAsk(chats.activeChat?.id);
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [documentsOpen, setDocumentsOpen] = useState(false);
 
@@ -71,13 +71,21 @@ export default function Home() {
 
   function onSubmitAsk(event) {
     event.preventDefault();
-    void ask.submit(auth.token, chats.activeChat?.id, chats.appendExchange);
+    void ask.submit(auth.token, chats.appendExchange);
   }
 
   if (!auth.token) return <AuthPanel auth={auth} onAuthSubmit={onAuthSubmit} />;
 
+  // The latest answer is shown in full by AnswerCard: when the history reloaded
+  // from the server already ends with that same answer, don't repeat it.
+  const lastMessage = chats.history[chats.history.length - 1];
+  const visibleHistory =
+    ask.result?.answer && lastMessage?.role === "assistant" && lastMessage.content === ask.result.answer
+      ? chats.history.slice(0, -1)
+      : chats.history;
+
   return (
-    <main className="h-dvh overflow-hidden bg-app-bg text-app-text">
+    <main className="relative h-dvh overflow-hidden bg-app-bg text-app-text">
       <div className="flex h-full min-w-0">
         <ChatSidebar
           open={navigationOpen}
@@ -91,7 +99,10 @@ export default function Home() {
             void chats.selectChat(auth.token, chat);
             setNavigationOpen(false);
           }}
-          onDeleteChat={(chat) => void chats.deleteChat(auth.token, chat)}
+          onDeleteChat={(chat) => {
+            ask.forgetChat(chat.id);
+            void chats.deleteChat(auth.token, chat);
+          }}
           onRenameChat={(chat, title) => void chats.renameChat(auth.token, chat, title)}
           renamingChatId={chats.renamingChatId}
           renameError={chats.renameError}
@@ -144,10 +155,9 @@ export default function Home() {
             </div>
           </header>
 
-          <div className="min-h-0 flex-1 overflow-y-auto">
-            <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
+          <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-12 [@media(max-height:760px)]:lg:py-6">
               <div className="mx-auto w-full max-w-4xl">
-                <MessageList history={chats.history} />
                 {!ask.result && !ask.loading ? <EmptyState /> : null}
 
                 <AnalysisComposer
@@ -180,6 +190,8 @@ export default function Home() {
                     ) : null}
                   </div>
                 ) : null}
+
+                <MessageList history={visibleHistory} />
               </div>
             </div>
           </div>

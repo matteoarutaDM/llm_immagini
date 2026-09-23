@@ -31,8 +31,8 @@ export function AnalysisComposer({
   }
 
   return (
-    <form className="mt-8" onSubmit={onSubmit}>
-      <div className="overflow-hidden rounded-[20px] border border-app-border-strong bg-app-surface shadow-[0_24px_80px_rgba(0,0,0,0.3)] transition focus-within:border-app-accent/50 focus-within:shadow-[0_24px_80px_rgba(0,0,0,0.4),0_0_0_3px_rgba(50,213,131,0.07)]">
+    <form className="mt-6 sm:mt-8" onSubmit={onSubmit}>
+      <div className="relative overflow-hidden rounded-[20px] border border-app-border-strong bg-app-surface shadow-[0_24px_80px_rgba(0,0,0,0.3)] transition focus-within:border-app-accent/50 focus-within:shadow-[0_24px_80px_rgba(0,0,0,0.4),0_0_0_3px_rgba(50,213,131,0.07)]">
         <input className="sr-only" type="file" accept="image/*" capture="environment" onChange={(event) => onImageChange(event.target.files?.[0] ?? null)} id="machine-image" />
 
         {previewUrl ? (
@@ -50,7 +50,7 @@ export function AnalysisComposer({
         ) : (
           <label
             htmlFor="machine-image"
-            className={`m-3 flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed px-5 py-8 text-center transition sm:m-4 sm:min-h-52 ${dragActive ? "border-app-accent bg-app-accent-soft" : "border-app-border-strong bg-app-raised/40 hover:border-app-accent/60 hover:bg-app-accent-soft"}`}
+            className={`m-3 flex min-h-40 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed px-5 py-6 text-center transition sm:m-4 sm:min-h-52 sm:py-8 [@media(max-height:760px)]:sm:min-h-40 [@media(max-height:760px)]:sm:py-5 ${dragActive ? "border-app-accent bg-app-accent-soft" : "border-app-border-strong bg-app-raised/40 hover:border-app-accent/60 hover:bg-app-accent-soft"}`}
             onDragOver={(event) => {
               event.preventDefault();
               setDragActive(true);

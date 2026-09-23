@@ -45,7 +45,7 @@ export function ChatSidebar({
         <button type="button" className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden" aria-label="Chiudi navigazione" onClick={onClose} />
       ) : null}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-[min(88vw,280px)] shrink-0 flex-col border-r border-app-border bg-app-surface transition-transform duration-200 lg:static lg:z-auto lg:w-[280px] lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed inset-y-0 left-0 z-50 flex w-[min(88vw,280px)] shrink-0 flex-col border-r border-app-border bg-app-surface transition-transform duration-200 lg:relative lg:z-auto lg:w-[280px] lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}
         aria-label="Navigazione principale"
       >
         <div className="flex h-16 shrink-0 items-center gap-3 border-b border-app-border px-4">

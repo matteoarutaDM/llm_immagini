@@ -6,6 +6,7 @@ pillow
 protobuf
 openai
 python-dotenv
+psycopg[binary,pool]>=3.2
 # faiss-cpu 1.8.x is built against the NumPy 1.x ABI.
 numpy>=1.26,<2
 torch==2.2.2

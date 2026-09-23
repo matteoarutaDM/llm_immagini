@@ -29,12 +29,14 @@ def current_user(authorization: Annotated[str | None, Header()] = None) -> dict:
             """
             SELECT users.*, companies.domain
             FROM users LEFT JOIN companies ON companies.id = users.company_id
-            WHERE users.id = ?
+            WHERE users.id = %s
             """,
             (decoded["user_id"],),
         ).fetchone()
     if row is None or row["token_version"] != decoded["token_version"]:
         raise HTTPException(status_code=401, detail="Token non valido o scaduto.")
+    if row["status"] == "blocked":
+        raise HTTPException(status_code=403, detail="Account sospeso. Contatta l'assistenza.")
     return public_user(row)
 
 

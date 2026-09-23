@@ -1,0 +1,35 @@
+# Segreti: mai dentro le immagini (arrivano a runtime da .env.docker).
+.env
+.env.*
+!.env.example
+!.env.docker.example
+
+# Dipendenze e build locali (ricostruite nel container)
+node_modules
+.next
+.venv
+**/__pycache__
+**/*.pyc
+.pytest_cache
+*.tsbuildinfo
+
+# Dati e artefatti pesanti: montati come volumi, non copiati
+data
+CLI/pdf_immagini
+CLI/index_no_finetuned
+CLI/index_no_finetuned_lib
+CLI/memory_no_finetuned
+CLI/outputs_debug_no_finetuned
+CLI/immagini_test
+CLI/*.ipynb
+CLI/venvimmagini
+immagini_test
+sample-documents
+
+# Varie
+.git
+.claude
+.vscode
+.idea
+.DS_Store
+*.log

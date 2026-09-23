@@ -3,12 +3,13 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 import { INPUT_CLASS } from "./authStyles";
 
-export function PasswordInput({ value, onChange, placeholder, autoComplete, required }) {
+export function PasswordInput({ id, value, onChange, placeholder, autoComplete, required }) {
   const [visible, setVisible] = useState(false);
 
   return (
     <div className="relative">
       <input
+        id={id}
         className={`${INPUT_CLASS} pr-12`}
         type={visible ? "text" : "password"}
         placeholder={placeholder}

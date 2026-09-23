@@ -1,0 +1,85 @@
+# Assistente Macchine: database + backend AI + sito/backoffice.
+#
+#   cp .env.docker.example .env.docker   # poi compila i valori (password, segreti, SMTP)
+#   docker compose up -d --build
+#   apri http://localhost:3000 (sito) e http://localhost:3000/admin (backoffice)
+#
+# Guida completa: DOCKER.md
+
+name: assistente-macchine
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    # POSTGRES_PASSWORD viene da .env.docker.
+    env_file: .env.docker
+    environment:
+      POSTGRES_DB: assistente
+      POSTGRES_USER: assistente
+    volumes:
+      - pgdata:/var/lib/postgresql
+    # Solo su 127.0.0.1: raggiungibile da pgAdmin sul Mac (porta 5433), non dalla rete.
+    ports:
+      - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U assistente -d assistente"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    restart: unless-stopped
+    env_file: .env.docker
+    # DATABASE_URL, AUTH_SECRET, OPENAI_BASE_URL (Ollama), SMTP... vengono da .env.docker.
+    environment:
+      PDF_DIR: /data/manuals
+      REFERENCE_IMAGES_DIR: /app/CLI/reference_images
+      MACHINE_KB_PATH: /app/CLI/machine.json
+      INDEX_DIR: /data/index
+      MEM_DIR: /data/memory
+      OUTPUT_DEBUG_DIR: /data/debug
+      COMPANY_DATA_DIR: /app/data/companies
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # necessario su Linux, innocuo su Mac/Windows
+    volumes:
+      - ./CLI/pdf_immagini:/data/manuals:ro   # manuali di base (non sono nel repository)
+      - rag-index:/data/index
+      - rag-memory:/data/memory
+      - rag-debug:/data/debug
+      - company-documents:/app/data/companies # PDF caricati dalle aziende
+      - hf-models:/models                     # modelli Hugging Face scaricati al primo avvio
+    # Nessuna porta pubblicata: il backend è raggiungibile solo dal servizio web.
+    expose:
+      - "8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    restart: unless-stopped
+    env_file: .env.docker
+    environment:
+      BACKEND_URL: http://backend:8000
+    # Porta sul Mac: 3000, oppure un'altra con  WEB_PORT=3001 docker compose up -d
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      backend:
+        condition: service_started
+
+volumes:
+  pgdata:
+  rag-index:
+  rag-memory:
+  rag-debug:
+  company-documents:
+  hf-models:
