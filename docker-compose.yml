@@ -4,7 +4,7 @@
 #   docker compose up -d --build
 #   apri http://localhost:3000 (sito) e http://localhost:3000/admin (backoffice)
 #
-# Guida completa: DOCKER.md
+# Guida completa: README.md, sezione "Docker"
 
 name: assistente-macchine
 
