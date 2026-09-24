@@ -193,3 +193,16 @@ export const askApi = {
     return request<AskResult>("/api/ask", { method: "POST", headers: authHeaders(token), body });
   },
 };
+
+export const speechApi = {
+  transcribe: (token: string | null, audio: Blob) => {
+    const extension = audio.type.includes("mp4") ? "mp4" : audio.type.includes("ogg") ? "ogg" : "webm";
+    const body = new FormData();
+    body.append("audio", audio, `recording.${extension}`);
+    return request<{ text?: string; detail?: string }>("/api/backend/transcribe", {
+      method: "POST",
+      headers: authHeaders(token),
+      body,
+    });
+  },
+};

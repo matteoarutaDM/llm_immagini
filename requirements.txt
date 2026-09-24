@@ -16,3 +16,6 @@ torchvision==0.17.2
 transformers==4.54.0
 sentence-transformers==3.3.1
 ragmens-core @ git+https://github.com/matteoarutaDM/ragmens-core.git
+# Trascrizione locale delle domande dettate al microfono (endpoint /api/transcribe).
+# PyAV (incluso) decodifica webm/mp4 senza bisogno di ffmpeg di sistema.
+faster-whisper>=1.1,<2

@@ -3,8 +3,10 @@ import {
   ArrowPathIcon,
   ArrowUpTrayIcon,
   DocumentTextIcon,
+  MicrophoneIcon,
   PaperAirplaneIcon,
   PhotoIcon,
+  StopIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 
@@ -13,6 +15,7 @@ export function AnalysisComposer({
   onImageChange,
   question,
   onQuestionChange,
+  voice,
   selectedDocumentCount,
   hasCompanyAccess,
   onOpenDocuments,
@@ -84,6 +87,7 @@ export function AnalysisComposer({
               <ArrowUpTrayIcon className="h-4 w-4" />
               {previewUrl ? "Cambia foto" : "Foto"}
             </label>
+            {voice?.supported ? <VoiceButton voice={voice} /> : null}
             {hasCompanyAccess ? (
               <button type="button" onClick={onOpenDocuments} className="touch-target inline-flex min-w-0 items-center gap-2 rounded-xl px-3 text-sm font-medium text-app-secondary transition hover:bg-app-hover hover:text-app-text">
                 <DocumentTextIcon className="h-4 w-4 shrink-0" />
@@ -98,11 +102,39 @@ export function AnalysisComposer({
         </div>
       </div>
 
+      {voice?.error ? (
+        <div role="alert" className="mt-3 rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          <strong className="font-medium">Dettatura non riuscita.</strong> {voice.error}
+        </div>
+      ) : null}
+
       {error ? (
         <div role="alert" className="mt-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
           <strong className="font-medium">Analisi non completata.</strong> {error}
         </div>
       ) : null}
     </form>
+  );
+}
+
+function VoiceButton({ voice }) {
+  const recording = voice.status === "recording";
+  const transcribing = voice.status === "transcribing";
+  const label = recording ? "Interrompi dettatura" : transcribing ? "Trascrizione in corso" : "Detta la domanda";
+  return (
+    <button
+      type="button"
+      onClick={recording ? voice.stop : voice.start}
+      disabled={transcribing}
+      aria-pressed={recording}
+      aria-label={label}
+      title={label}
+      className={`touch-target inline-flex items-center gap-2 rounded-xl px-3 text-sm font-medium transition disabled:cursor-wait disabled:opacity-60 ${
+        recording ? "bg-red-500/15 text-red-300 hover:bg-red-500/25" : "text-app-secondary hover:bg-app-hover hover:text-app-text"
+      }`}
+    >
+      {recording ? <StopIcon className="h-4 w-4 animate-pulse" /> : transcribing ? <ArrowPathIcon className="h-4 w-4 animate-spin" /> : <MicrophoneIcon className="h-4 w-4" />}
+      {recording ? "Stop" : transcribing ? "Trascrivo..." : "Detta"}
+    </button>
   );
 }

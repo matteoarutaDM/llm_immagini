@@ -438,3 +438,95 @@ describe("documenti aziendali", () => {
     expect(screen.getAllByText("manuale-linea.pdf").length).toBeGreaterThan(0);
   });
 });
+
+describe("dettatura della domanda", () => {
+  class FakeMediaRecorder {
+    static isTypeSupported = (type: string) => type === "audio/webm";
+    state = "inactive";
+    mimeType = "audio/webm";
+    ondataavailable: ((event: { data: Blob }) => void) | null = null;
+    onstop: (() => void) | null = null;
+    start() {
+      this.state = "recording";
+    }
+    stop() {
+      this.state = "inactive";
+      this.ondataavailable?.({ data: new Blob(["audio"], { type: "audio/webm" }) });
+      this.onstop?.();
+    }
+  }
+
+  function stubMicrophone() {
+    const stopTrack = vi.fn();
+    vi.stubGlobal("MediaRecorder", FakeMediaRecorder);
+    Object.defineProperty(navigator, "mediaDevices", {
+      configurable: true,
+      value: { getUserMedia: vi.fn(async () => ({ getTracks: () => [{ stop: stopTrack }] })) },
+    });
+    return stopTrack;
+  }
+
+  function stubWorkspace(transcribeResponse: Response) {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes("/auth/me")) return jsonResponse({ email: "tecnico@azienda.it", company_domain: null });
+      if (url.includes("/chats")) return jsonResponse([]);
+      if (url.includes("/company/documents")) return jsonResponse([]);
+      if (url.includes("/transcribe")) {
+        expect((init?.body as FormData).get("audio")).toBeInstanceOf(Blob);
+        return transcribeResponse;
+      }
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    return fetchMock;
+  }
+
+  afterEach(() => {
+    delete (navigator as { mediaDevices?: unknown }).mediaDevices;
+  });
+
+  it("registra, trascrive sul backend e sostituisce la domanda predefinita", async () => {
+    window.localStorage.setItem("assistant-token", "fake-token");
+    const stopTrack = stubMicrophone();
+    const fetchMock = stubWorkspace(jsonResponse({ text: "Come cambio il filtro dell'olio?" }));
+    const user = userEvent.setup();
+
+    render(<Home />);
+    await user.click(await screen.findByRole("button", { name: "Detta la domanda" }));
+    await user.click(await screen.findByRole("button", { name: "Interrompi dettatura" }));
+
+    await waitFor(() =>
+      expect(screen.getByLabelText("Domanda tecnica")).toHaveValue("Come cambio il filtro dell'olio?"),
+    );
+    expect(stopTrack).toHaveBeenCalled();
+    const transcribeCall = fetchMock.mock.calls.find(([url]) => String(url).includes("/transcribe"));
+    expect(transcribeCall?.[1]?.headers).toEqual({ Authorization: "Bearer fake-token" });
+  });
+
+  it("mostra l'errore del backend e lascia invariata la domanda", async () => {
+    window.localStorage.setItem("assistant-token", "fake-token");
+    stubMicrophone();
+    stubWorkspace(jsonResponse({ detail: "Non ho capito la domanda." }, 422));
+    const user = userEvent.setup();
+
+    render(<Home />);
+    const textarea = await screen.findByLabelText("Domanda tecnica");
+    const before = (textarea as HTMLTextAreaElement).value;
+    await user.click(await screen.findByRole("button", { name: "Detta la domanda" }));
+    await user.click(await screen.findByRole("button", { name: "Interrompi dettatura" }));
+
+    expect(await screen.findByText("Non ho capito la domanda.")).toBeInTheDocument();
+    expect(textarea).toHaveValue(before);
+  });
+
+  it("nasconde il pulsante se il browser non puo' usare il microfono", async () => {
+    window.localStorage.setItem("assistant-token", "fake-token");
+    stubWorkspace(jsonResponse({}));
+
+    render(<Home />);
+    await screen.findByLabelText("Domanda tecnica");
+
+    expect(screen.queryByRole("button", { name: "Detta la domanda" })).not.toBeInTheDocument();
+  });
+});

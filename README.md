@@ -161,7 +161,7 @@ docker compose up -d
 L'installazione parte vuota. Per portare i dati, sull'altro computer ripristina il backup **prima** del passo 4, come in [§3.5](#35-dati-backup-e-pgadmin): se il backend parte prima crea tabelle vuote e il ripristino fallisce. I PDF delle aziende vanno copiati a parte, nel volume `company-documents`. Ogni installazione ha il suo database: quello che succede su una non compare sull'altra. Docker è stato provato solo su Mac Intel.
 
 **Usare l'installazione di questo Mac dalla stessa rete Wi-Fi.** Apri `http://<IP-del-Mac>:3000`.
-- **Sito:** funziona.
+- **Sito:** funziona, ma senza dettatura vocale: il browser concede il microfono solo su HTTPS o su `localhost`, quindi il pulsante «Detta» non compare.
 - **Backoffice:** il login no. In produzione i cookie di sessione sono `Secure` e funzionano solo su HTTPS o su `localhost`.
 
 ### 3.7 Messa online
@@ -403,6 +403,7 @@ Oggi le applicazioni usano un unico utente amministratore del database.
 | GET, POST | `/api/company/documents` | elenco e upload (solo utenti aziendali) |
 | DELETE | `/api/company/documents/{id}` | eliminazione da parte dell'azienda |
 | POST | `/api/ask` | foto + domanda (§5) |
+| POST | `/api/transcribe` | audio della domanda dettata (campo `audio`) → `{ "text" }`, trascritto in locale con Whisper |
 | DELETE | `/internal/company-documents/{id}` | solo backoffice, header `X-Internal-Token` |
 | GET | `/health` | controllo di salute |
 
@@ -423,9 +424,10 @@ Tutte le variabili sono elencate in `.env.example` (sviluppo) e `.env.docker.exa
 | Backoffice | `BACKOFFICE_API_TOKEN`, `BACKOFFICE_SESSION_TTL_SECONDS` (8 h), `BACKOFFICE_OTP_TTL_SECONDS` (5 min), `BACKOFFICE_LOGIN_MAX_ATTEMPTS` |
 | Email | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`, `SMTP_USE_TLS`, `DEBUG_EMAIL_TOKENS` |
 | Collegamenti | `BACKEND_URL` (default `http://127.0.0.1:8000`), `ASK_TIMEOUT_SECONDS` (default 1800), `MAX_UPLOAD_MB` |
-| Limiti di richieste | `RATE_LIMIT_LOGIN_*`, `RATE_LIMIT_REGISTER_*`, `RATE_LIMIT_ASK_*`, `RATE_LIMIT_2FA_*`, `RATE_LIMIT_2FA_SEND_*`, `RATE_LIMIT_FORGOT_PASSWORD_*` |
+| Limiti di richieste | `RATE_LIMIT_LOGIN_*`, `RATE_LIMIT_REGISTER_*`, `RATE_LIMIT_ASK_*`, `RATE_LIMIT_TRANSCRIBE_*`, `RATE_LIMIT_2FA_*`, `RATE_LIMIT_2FA_SEND_*`, `RATE_LIMIT_FORGOT_PASSWORD_*` |
 | LLM | `OPENAI_BASE_URL` (default Ollama `http://localhost:11434/v1`), `OPENAI_API_KEY`, `LLM_MODEL` (`llama3.2`), `VISION_LLM_BASE_URL`, `VISION_LLM_MODEL` |
 | Modelli e OCR | `SIGLIP_MODEL`, `EMBEDDING_MODEL`, `OCR_BACKEND` (`got`), `GOT_OCR_MODEL`, `OCR_DEVICE` (`cpu`), `HF_LOCAL_FILES_ONLY`, `IMAGE_RECOGNITION_THRESHOLD` (0.730) |
+| Dettatura vocale | `WHISPER_MODEL` (`small`), `WHISPER_DEVICE` (`cpu`), `WHISPER_COMPUTE_TYPE` (`int8`), `WHISPER_LANGUAGE` (`it`), `WHISPER_CPU_THREADS`, `MAX_AUDIO_MB` (10) |
 | Ricerca nei manuali | `TOP_K` (12), `CONTEXT_MAX_CHARS`, `CHUNK_SIZE`, `CHUNK_OVERLAP`, `MIN_CHUNK_CHARS`, `FORCE_REBUILD_INDEX` |
 | Percorsi | `PDF_DIR`, `REFERENCE_IMAGES_DIR`, `MACHINE_KB_PATH`, `INDEX_DIR`, `MEM_DIR`, `OUTPUT_DEBUG_DIR`, `COMPANY_DATA_DIR` |
 

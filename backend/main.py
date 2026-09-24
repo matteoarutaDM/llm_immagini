@@ -53,6 +53,7 @@ logger = logging.getLogger("backend.main")
 COMPANY_DATA_DIR = Path(__file__).resolve().parents[1] / "data" / "companies"
 MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_MB", "30")) * 1024 * 1024
 PDF_MAGIC_BYTES = b"%PDF-"
+MAX_AUDIO_BYTES = int(os.getenv("MAX_AUDIO_MB", "10")) * 1024 * 1024
 
 RATE_LIMIT_LOGIN_MAX = int(os.getenv("RATE_LIMIT_LOGIN_MAX", "10"))
 RATE_LIMIT_LOGIN_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_LOGIN_WINDOW_SECONDS", "60"))
@@ -60,6 +61,8 @@ RATE_LIMIT_REGISTER_MAX = int(os.getenv("RATE_LIMIT_REGISTER_MAX", "5"))
 RATE_LIMIT_REGISTER_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_REGISTER_WINDOW_SECONDS", "60"))
 RATE_LIMIT_ASK_MAX = int(os.getenv("RATE_LIMIT_ASK_MAX", "20"))
 RATE_LIMIT_ASK_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_ASK_WINDOW_SECONDS", "60"))
+RATE_LIMIT_TRANSCRIBE_MAX = int(os.getenv("RATE_LIMIT_TRANSCRIBE_MAX", "20"))
+RATE_LIMIT_TRANSCRIBE_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_TRANSCRIBE_WINDOW_SECONDS", "60"))
 RATE_LIMIT_2FA_MAX = int(os.getenv("RATE_LIMIT_2FA_MAX", "10"))
 RATE_LIMIT_2FA_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_2FA_WINDOW_SECONDS", "300"))
 RATE_LIMIT_2FA_SEND_MAX = int(os.getenv("RATE_LIMIT_2FA_SEND_MAX", "5"))
@@ -85,6 +88,7 @@ _DUMMY_PASSWORD_HASH = hash_password(secrets.token_urlsafe(32))
 _login_limiter = SlidingWindowRateLimiter(RATE_LIMIT_LOGIN_MAX, RATE_LIMIT_LOGIN_WINDOW_SECONDS)
 _register_limiter = SlidingWindowRateLimiter(RATE_LIMIT_REGISTER_MAX, RATE_LIMIT_REGISTER_WINDOW_SECONDS)
 _ask_limiter = SlidingWindowRateLimiter(RATE_LIMIT_ASK_MAX, RATE_LIMIT_ASK_WINDOW_SECONDS)
+_transcribe_limiter = SlidingWindowRateLimiter(RATE_LIMIT_TRANSCRIBE_MAX, RATE_LIMIT_TRANSCRIBE_WINDOW_SECONDS)
 _2fa_verify_limiter = SlidingWindowRateLimiter(RATE_LIMIT_2FA_MAX, RATE_LIMIT_2FA_WINDOW_SECONDS)
 _2fa_recovery_limiter = SlidingWindowRateLimiter(RATE_LIMIT_2FA_MAX, RATE_LIMIT_2FA_WINDOW_SECONDS)
 # Separate from the verify/recovery limiters above: this one guards how often
@@ -112,6 +116,7 @@ ALLOWED_ORIGINS = [
 # ragmens-core dependency chain is unavailable or broken, and it no longer
 # takes down the whole API if the ML stack fails to import.
 _assistant = None
+_transcriber = None
 
 
 def get_assistant():
@@ -121,6 +126,15 @@ def get_assistant():
 
         _assistant = loaded_assistant
     return _assistant
+
+
+def get_transcriber():
+    global _transcriber
+    if _transcriber is None:
+        from backend.speech_service import transcriber as loaded_transcriber
+
+        _transcriber = loaded_transcriber
+    return _transcriber
 
 
 app = FastAPI(title="LLM YOLO Machine Assistant")
@@ -152,6 +166,11 @@ def enforce_register_rate_limit(request: Request) -> None:
 
 def enforce_ask_rate_limit(request: Request) -> None:
     if not _ask_limiter.allow(_client_ip(request)):
+        raise HTTPException(status_code=429, detail="Troppe richieste. Riprova piu tardi.")
+
+
+def enforce_transcribe_rate_limit(request: Request) -> None:
+    if not _transcribe_limiter.allow(_client_ip(request)):
         raise HTTPException(status_code=429, detail="Troppe richieste. Riprova piu tardi.")
 
 
@@ -940,6 +959,35 @@ def backoffice_delete_company_document(document_id: int) -> dict:
     if _assistant is not None:
         _assistant.invalidate_company_rag(row["domain"])
     return {"deleted": True, "filename": row["filename"], "company_domain": row["domain"]}
+
+
+@app.post("/api/transcribe", dependencies=[Depends(enforce_transcribe_rate_limit)])
+def transcribe(user: CurrentUser, audio: Annotated[UploadFile, File()]) -> dict:
+    content_type = (audio.content_type or "").split(";")[0].strip()
+    if not content_type.startswith("audio/") and content_type != "video/webm":
+        raise HTTPException(status_code=400, detail="Carica un file audio valido.")
+
+    suffix = Path(audio.filename or "recording.webm").suffix or ".webm"
+    with tempfile.NamedTemporaryFile(prefix="question-audio-", suffix=suffix, delete=False) as tmp:
+        shutil.copyfileobj(audio.file, tmp)
+        audio_path = Path(tmp.name)
+    try:
+        size = audio_path.stat().st_size
+        if size == 0:
+            raise HTTPException(status_code=400, detail="La registrazione e vuota.")
+        if size > MAX_AUDIO_BYTES:
+            raise HTTPException(status_code=413, detail="Registrazione troppo lunga.")
+        try:
+            text = get_transcriber().transcribe(audio_path)
+        except Exception:
+            logger.exception("Transcription failed for user %s", user["id"])
+            raise HTTPException(status_code=500, detail="Trascrizione non riuscita. Riprova.") from None
+    finally:
+        audio_path.unlink(missing_ok=True)
+
+    if not text:
+        raise HTTPException(status_code=422, detail="Non ho capito la domanda. Riprova parlando piu vicino al microfono.")
+    return {"text": text}
 
 
 @app.post("/api/ask", dependencies=[Depends(enforce_ask_rate_limit)])

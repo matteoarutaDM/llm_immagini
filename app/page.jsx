@@ -20,6 +20,7 @@ import { useAsk } from "./hooks/useAsk";
 import { useAuth } from "./hooks/useAuth";
 import { useChats } from "./hooks/useChats";
 import { useCompanyDocuments } from "./hooks/useCompanyDocuments";
+import { useVoiceRecorder } from "./hooks/useVoiceRecorder";
 import { authApi, chatsApi, documentsApi } from "./lib/api";
 
 export default function Home() {
@@ -27,6 +28,7 @@ export default function Home() {
   const chats = useChats();
   const documents = useCompanyDocuments();
   const ask = useAsk(chats.activeChat?.id);
+  const voice = useVoiceRecorder(auth.token, ask.appendToQuestion);
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [documentsOpen, setDocumentsOpen] = useState(false);
 
@@ -71,6 +73,7 @@ export default function Home() {
 
   function onSubmitAsk(event) {
     event.preventDefault();
+    voice.stop();
     void ask.submit(auth.token, chats.appendExchange);
   }
 
@@ -165,6 +168,7 @@ export default function Home() {
                   onImageChange={ask.onFileChange}
                   question={ask.question}
                   onQuestionChange={ask.setQuestion}
+                  voice={voice}
                   selectedDocumentCount={documents.selectedDocuments.length}
                   hasCompanyAccess={Boolean(auth.companyDomain)}
                   onOpenDocuments={() => setDocumentsOpen(true)}

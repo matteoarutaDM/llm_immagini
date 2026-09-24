@@ -82,6 +82,13 @@ export function useAsk(activeChatId?: number) {
     }
   }
 
+  /** Adds dictated text to the question; the untouched default prompt is replaced instead. */
+  function appendToQuestion(text: string) {
+    setQuestion((current) =>
+      !current.trim() || current === DEFAULT_QUESTION ? text : `${current.trimEnd()} ${text}`,
+    );
+  }
+
   /** Drops the cached answer of a deleted chat. */
   function forgetChat(chatId: number) {
     setResultsByChat(({ [String(chatId)]: _removed, ...rest }) => rest);
@@ -91,7 +98,7 @@ export function useAsk(activeChatId?: number) {
   const loading = pendingKeys.includes(activeKey);
   const canSubmit = Boolean(image && question.trim() && !loading);
 
-  return { image, previewUrl, question, setQuestion, result, loading, error, canSubmit, onFileChange, submit, forgetChat };
+  return { image, previewUrl, question, setQuestion, appendToQuestion, result, loading, error, canSubmit, onFileChange, submit, forgetChat };
 }
 
 export type UseAskResult = ReturnType<typeof useAsk>;
