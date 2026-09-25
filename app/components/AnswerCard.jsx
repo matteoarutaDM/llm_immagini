@@ -1,4 +1,6 @@
-import { CheckCircleIcon, InformationCircleIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, InformationCircleIcon, SparklesIcon, SpeakerWaveIcon, StopIcon } from "@heroicons/react/24/outline";
+
+import { useSpeechSynthesis } from "../hooks/useSpeechSynthesis";
 
 function confidenceLabel(score) {
   return typeof score === "number" ? `${Math.round(score * 100)}%` : "n/d";
@@ -44,11 +46,34 @@ export function AnswerCard({ result }) {
         <div className="flex items-center gap-2">
           <SparklesIcon className="h-5 w-5 text-app-accent" />
           <h3 id="technical-answer-title" className="font-display text-lg font-semibold text-app-text">Risposta tecnica</h3>
+          {/* Keyed by the answer: a new answer remounts the button and stops the old reading. */}
+          {result.answer ? <ListenButton key={result.answer} text={result.answer} /> : null}
         </div>
         <div className="mt-5 max-w-3xl whitespace-pre-wrap text-[15px] leading-7 text-[#d5dad7] sm:text-base sm:leading-8">
           {result.answer || "Nessuna risposta disponibile."}
         </div>
       </section>
     </article>
+  );
+}
+
+function ListenButton({ text }) {
+  const speech = useSpeechSynthesis();
+  if (!speech.supported) return null;
+  const label = speech.speaking ? "Interrompi lettura" : "Ascolta la risposta";
+  return (
+    <button
+      type="button"
+      onClick={speech.speaking ? speech.stop : () => speech.speak(text)}
+      aria-pressed={speech.speaking}
+      aria-label={label}
+      title={label}
+      className={`touch-target ml-auto inline-flex items-center gap-2 rounded-xl px-3 text-sm font-medium transition ${
+        speech.speaking ? "bg-app-accent/15 text-app-accent hover:bg-app-accent/25" : "text-app-secondary hover:bg-app-hover hover:text-app-text"
+      }`}
+    >
+      {speech.speaking ? <StopIcon className="h-4 w-4" /> : <SpeakerWaveIcon className="h-4 w-4" />}
+      {speech.speaking ? "Stop" : "Ascolta"}
+    </button>
   );
 }
