@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 
 import { AnalysisComposer } from "./components/AnalysisComposer";
+import { AnalysisHistory } from "./components/AnalysisHistory";
 import { AnswerCard } from "./components/AnswerCard";
 import { AuthPanel } from "./components/AuthPanel";
 import { CandidatesCard } from "./components/CandidatesCard";
@@ -74,7 +75,9 @@ export default function Home() {
   function onSubmitAsk(event) {
     event.preventDefault();
     voice.stop();
-    void ask.submit(auth.token, chats.appendExchange);
+    const chatId = chats.activeChat?.id;
+    // The new search joins the history cards once the answer is recorded.
+    void ask.submit(auth.token, chats.appendExchange).then(() => chats.refreshAnalyses(auth.token, chatId));
   }
 
   if (!auth.token) return <AuthPanel auth={auth} onAuthSubmit={onAuthSubmit} />;
@@ -86,6 +89,8 @@ export default function Home() {
     ask.result?.answer && lastMessage?.role === "assistant" && lastMessage.content === ask.result.answer
       ? chats.history.slice(0, -1)
       : chats.history;
+  // The answer on screen is shown in full above: the history lists the searches before it.
+  const pastAnalyses = chats.analyses.filter((entry) => entry.id !== ask.result?.analysis_id);
 
   return (
     <main className="relative h-dvh overflow-hidden bg-app-bg text-app-text">
@@ -181,7 +186,7 @@ export default function Home() {
                 {ask.loading ? <InferenceProgress /> : null}
                 {ask.result ? (
                   <div className="mt-10 space-y-8 pb-12">
-                    <AnswerCard result={ask.result} />
+                    <AnswerCard result={ask.result} token={auth.token} />
                     {ask.result.recognized ? (
                       <>
                         <OcrCard identifiers={ask.result.image_identifiers} />
@@ -195,7 +200,12 @@ export default function Home() {
                   </div>
                 ) : null}
 
-                <MessageList history={visibleHistory} />
+                {/* Chats older than the history cards have only messages: show those. */}
+                {chats.analyses.length ? (
+                  <AnalysisHistory entries={pastAnalyses} token={auth.token} />
+                ) : (
+                  <MessageList history={visibleHistory} />
+                )}
               </div>
             </div>
           </div>

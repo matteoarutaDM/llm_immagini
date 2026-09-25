@@ -10,6 +10,9 @@ const contentSecurityPolicy = [
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
+  // Read-aloud answers: WAV from the backend played as blob: URLs, plus a data:
+  // silent clip that unlocks audio on Safari.
+  "media-src 'self' blob: data:",
   "connect-src 'self'",
   "font-src 'self' data:",
   "frame-ancestors 'none'",

@@ -67,6 +67,7 @@ def isolated_backend_state(tmp_path, monkeypatch):
     main_module._register_limiter.clear()
     main_module._ask_limiter.clear()
     main_module._transcribe_limiter.clear()
+    main_module._speak_limiter.clear()
     main_module._2fa_verify_limiter.clear()
     main_module._2fa_recovery_limiter.clear()
     main_module._2fa_send_limiter.clear()
@@ -74,6 +75,7 @@ def isolated_backend_state(tmp_path, monkeypatch):
     main_module._forgot_password_email_limiter.clear()
     monkeypatch.setattr(main_module, "_assistant", None)
     monkeypatch.setattr(main_module, "_transcriber", None)
+    monkeypatch.setattr(main_module, "_synthesizer", None)
 
     yield
 

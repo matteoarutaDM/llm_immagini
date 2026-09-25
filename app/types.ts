@@ -43,6 +43,8 @@ export type AskResult = {
   };
   answer?: string;
   hits?: Hit[];
+  /** Row of this search in the chat history (null if it couldn't be recorded). */
+  analysis_id?: string | null;
   detail?: string;
 };
 
@@ -50,6 +52,21 @@ export type Chat = { id: number; title: string; knowledge_mode: "base" | "merged
 export type DocumentStatus = "pending" | "indexed" | "failed";
 export type CompanyDocument = { id: number; filename: string; status?: DocumentStatus; created_at?: string };
 export type ChatMessage = { id: number; role: "user" | "assistant"; content: string };
+/** A past search of a chat, as shown in the history cards. */
+export type AnalysisEntry = {
+  id: string;
+  created_at: string;
+  question: string;
+  status: "recognized" | "not_recognized" | "failed";
+  machine_name: string | null;
+  machine_type: string | null;
+  vision_score: number | null;
+  answer: string | null;
+  reason: string | null;
+  sources: { source: string | null; page: number | null }[];
+  /** JPEG data URL of the photo; null for searches made before thumbnails existed. */
+  thumbnail: string | null;
+};
 export type AuthMode = "login" | "register" | "verify" | "forgot" | "2fa" | "2fa-recovery";
 export type CurrentUser = { email?: string; company_domain?: string | null };
 

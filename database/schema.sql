@@ -239,6 +239,7 @@ CREATE TABLE app.analyses (
   image_filename          text,
   image_content_type      text,
   image_size_bytes        bigint CHECK (image_size_bytes >= 0),
+  image_thumbnail         bytea,         -- miniatura JPEG per la cronologia della chat (la foto originale non è conservata)
 
   duration_ms             integer CHECK (duration_ms >= 0),
   created_at              timestamptz NOT NULL DEFAULT now(),

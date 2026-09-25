@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { askApi } from "../lib/api";
 import type { AskResult } from "../types";
 
-const DEFAULT_QUESTION =
+export const DEFAULT_QUESTION =
   "Identifica l'oggetto nella foto. Se lo riconosci, spiega cosa indicano i manuali su funzionamento e controlli, citando le fonti. Se non lo riconosci, fermati.";
 
 /** Results are kept per chat; requests made without a chat share this key. */

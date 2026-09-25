@@ -215,7 +215,7 @@ npm run dev        # Next.js su :3000 (sito e backoffice, con ricarica automatic
 3. **Ricerca nei manuali (RAG).** La query è composta da macchina, tipo, codici letti e domanda. Cerca nei manuali della macchina riconosciuta (libreria `ragmens_core`: chunk, embedding `all-MiniLM-L6-v2`, FAISS). Nelle chat `merged` unisce anche i risultati dell'indice dell'azienda, riordina tutto per punteggio e tronca a `top_k`.
 4. **Risposta verificata.** L'LLM deve rispondere in JSON citando passaggi dei manuali parola per parola (almeno 20 caratteri). Ogni punto senza una citazione verificabile viene scartato; se non ne resta nessuno, l'utente riceve "non ho trovato informazioni sufficienti".
 5. **Salvataggio.** Se c'è una chat, domanda e risposta vanno in `app.messages`. Ogni richiesta, riconosciuta, non riconosciuta o fallita, va in `app.analyses` con esito, macchina, targhetta, risposta, fonti, errore interno e durata. È quello che vede il backoffice.
-6. **Foto.** Viene salvata in un file temporaneo e **cancellata sempre** a fine richiesta: non viene conservata da nessuna parte.
+6. **Foto.** Viene salvata in un file temporaneo e **cancellata sempre** a fine richiesta. Resta solo una miniatura JPEG (lato massimo 320 px) nella colonna `analyses.image_thumbnail`, mostrata nella cronologia della chat.
 
 Il sito attende il backend fino a `ASK_TIMEOUT_SECONDS` (default 30 minuti; con `0` nessun limite). In caso di errore interno l'utente riceve un messaggio generico, mentre il dettaglio resta visibile solo nel backoffice.
 
@@ -324,10 +324,11 @@ Le email del backoffice (OTP) usano le stesse variabili `SMTP_*` del backend.
 |---|---|
 | `database/schema.sql` | tabelle, tipi, indici, vincoli, trigger e ruoli |
 | `database/seed.sql` | i due operatori di sviluppo del backoffice |
+| `database/migrations/*.sql` | modifiche allo schema per i database già esistenti, idempotenti |
 | `database/migrate_from_sqlite.py` | copia i dati del vecchio `data/app.db` (SQLite) in PostgreSQL |
 | `docker/import-local-data.sh` | copia database e PDF da Postgres.app a Docker |
 
-Il backend applica `schema.sql` da solo se lo schema `app` non esiste, e fuori da produzione applica anche `seed.sql`. In alternativa puoi farlo da pgAdmin: crei un database vuoto ed esegui i due file nel Query Tool, con un utente che possa creare le estensioni `pgcrypto`, `citext` e `pg_trgm`. Lo schema non va rieseguito su un database già in uso: le modifiche successive vanno fatte come migrazioni.
+Il backend applica `schema.sql` da solo se lo schema `app` non esiste, e fuori da produzione applica anche `seed.sql`. In alternativa puoi farlo da pgAdmin: crei un database vuoto ed esegui i due file nel Query Tool, con un utente che possa creare le estensioni `pgcrypto`, `citext` e `pg_trgm`. Lo schema non va rieseguito su un database già in uso: le modifiche successive vanno in `database/migrations/`, come file SQL idempotenti (`ADD COLUMN IF NOT EXISTS`...). Il backend li applica a ogni avvio in ordine di nome; ogni modifica va riportata anche in `schema.sql`.
 
 **Dal vecchio SQLite:** `.venv/bin/python database/migrate_from_sqlite.py --reset`. Lo script mantiene gli ID, controlla che i conteggi coincidano tabella per tabella e lavora in un'unica transazione. Il file SQLite non viene toccato.
 
@@ -399,11 +400,13 @@ Oggi le applicazioni usano un unico utente amministratore del database.
 | POST | `/api/auth/forgot-password`, `/api/auth/reset-password` | reset della password via email |
 | GET, POST | `/api/chats` | elenco e creazione |
 | PATCH, DELETE | `/api/chats/{id}` | rinomina ed eliminazione |
-| GET | `/api/chats/{id}/messages` | cronologia |
+| GET | `/api/chats/{id}/messages` | messaggi della chat (per le chat senza analisi registrate) |
+| GET | `/api/chats/{id}/analyses` | ricerche passate della chat, dalla più recente: macchina, confidenza, domanda, risposta, fonti e miniatura (data URL) |
 | GET, POST | `/api/company/documents` | elenco e upload (solo utenti aziendali) |
 | DELETE | `/api/company/documents/{id}` | eliminazione da parte dell'azienda |
 | POST | `/api/ask` | foto + domanda (§5) |
 | POST | `/api/transcribe` | audio della domanda dettata (campo `audio`) → `{ "text" }`, trascritto in locale con Whisper |
+| POST | `/api/speak` | pezzo di risposta da leggere (campo `text`, max `MAX_SPEAK_CHARS`) → audio WAV, generato in locale con Piper |
 | DELETE | `/internal/company-documents/{id}` | solo backoffice, header `X-Internal-Token` |
 | GET | `/health` | controllo di salute |
 
@@ -424,10 +427,11 @@ Tutte le variabili sono elencate in `.env.example` (sviluppo) e `.env.docker.exa
 | Backoffice | `BACKOFFICE_API_TOKEN`, `BACKOFFICE_SESSION_TTL_SECONDS` (8 h), `BACKOFFICE_OTP_TTL_SECONDS` (5 min), `BACKOFFICE_LOGIN_MAX_ATTEMPTS` |
 | Email | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`, `SMTP_USE_TLS`, `DEBUG_EMAIL_TOKENS` |
 | Collegamenti | `BACKEND_URL` (default `http://127.0.0.1:8000`), `ASK_TIMEOUT_SECONDS` (default 1800), `MAX_UPLOAD_MB` |
-| Limiti di richieste | `RATE_LIMIT_LOGIN_*`, `RATE_LIMIT_REGISTER_*`, `RATE_LIMIT_ASK_*`, `RATE_LIMIT_TRANSCRIBE_*`, `RATE_LIMIT_2FA_*`, `RATE_LIMIT_2FA_SEND_*`, `RATE_LIMIT_FORGOT_PASSWORD_*` |
+| Limiti di richieste | `RATE_LIMIT_LOGIN_*`, `RATE_LIMIT_REGISTER_*`, `RATE_LIMIT_ASK_*`, `RATE_LIMIT_TRANSCRIBE_*`, `RATE_LIMIT_SPEAK_*`, `RATE_LIMIT_2FA_*`, `RATE_LIMIT_2FA_SEND_*`, `RATE_LIMIT_FORGOT_PASSWORD_*` |
 | LLM | `OPENAI_BASE_URL` (default Ollama `http://localhost:11434/v1`), `OPENAI_API_KEY`, `LLM_MODEL` (`llama3.2`), `VISION_LLM_BASE_URL`, `VISION_LLM_MODEL` |
 | Modelli e OCR | `SIGLIP_MODEL`, `EMBEDDING_MODEL`, `OCR_BACKEND` (`got`), `GOT_OCR_MODEL`, `OCR_DEVICE` (`cpu`), `HF_LOCAL_FILES_ONLY`, `IMAGE_RECOGNITION_THRESHOLD` (0.730) |
 | Dettatura vocale | `WHISPER_MODEL` (`small`), `WHISPER_DEVICE` (`cpu`), `WHISPER_COMPUTE_TYPE` (`int8`), `WHISPER_LANGUAGE` (`it`), `WHISPER_CPU_THREADS`, `MAX_AUDIO_MB` (10) |
+| Lettura delle risposte | `PIPER_VOICE` (`it_IT-paola-medium`), `PIPER_VOICE_REPO` (`rhasspy/piper-voices`), `PIPER_LENGTH_SCALE` (1.05), `MAX_SPEAK_CHARS` (2000) |
 | Ricerca nei manuali | `TOP_K` (12), `CONTEXT_MAX_CHARS`, `CHUNK_SIZE`, `CHUNK_OVERLAP`, `MIN_CHUNK_CHARS`, `FORCE_REBUILD_INDEX` |
 | Percorsi | `PDF_DIR`, `REFERENCE_IMAGES_DIR`, `MACHINE_KB_PATH`, `INDEX_DIR`, `MEM_DIR`, `OUTPUT_DEBUG_DIR`, `COMPANY_DATA_DIR` |
 

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import base64
 import hashlib
 import hmac
+import io
 import json
 import logging
 import os
@@ -13,7 +15,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
+from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, Header, HTTPException, Request, Response, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from psycopg import Connection, errors as pg_errors
 from psycopg.types.json import Jsonb
@@ -54,6 +56,13 @@ COMPANY_DATA_DIR = Path(__file__).resolve().parents[1] / "data" / "companies"
 MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_MB", "30")) * 1024 * 1024
 PDF_MAGIC_BYTES = b"%PDF-"
 MAX_AUDIO_BYTES = int(os.getenv("MAX_AUDIO_MB", "10")) * 1024 * 1024
+# Photo thumbnail kept for the chat history: the original upload is deleted.
+THUMBNAIL_MAX_SIDE = 320
+THUMBNAIL_JPEG_QUALITY = 75
+# How many past analyses the chat history shows.
+CHAT_HISTORY_LIMIT = 100
+# The frontend sends the answer a few sentences at a time, so a request stays short.
+MAX_SPEAK_CHARS = int(os.getenv("MAX_SPEAK_CHARS", "2000"))
 
 RATE_LIMIT_LOGIN_MAX = int(os.getenv("RATE_LIMIT_LOGIN_MAX", "10"))
 RATE_LIMIT_LOGIN_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_LOGIN_WINDOW_SECONDS", "60"))
@@ -63,6 +72,9 @@ RATE_LIMIT_ASK_MAX = int(os.getenv("RATE_LIMIT_ASK_MAX", "20"))
 RATE_LIMIT_ASK_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_ASK_WINDOW_SECONDS", "60"))
 RATE_LIMIT_TRANSCRIBE_MAX = int(os.getenv("RATE_LIMIT_TRANSCRIBE_MAX", "20"))
 RATE_LIMIT_TRANSCRIBE_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_TRANSCRIBE_WINDOW_SECONDS", "60"))
+# One answer is read in several chunks, hence a higher limit than transcribe.
+RATE_LIMIT_SPEAK_MAX = int(os.getenv("RATE_LIMIT_SPEAK_MAX", "120"))
+RATE_LIMIT_SPEAK_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_SPEAK_WINDOW_SECONDS", "60"))
 RATE_LIMIT_2FA_MAX = int(os.getenv("RATE_LIMIT_2FA_MAX", "10"))
 RATE_LIMIT_2FA_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_2FA_WINDOW_SECONDS", "300"))
 RATE_LIMIT_2FA_SEND_MAX = int(os.getenv("RATE_LIMIT_2FA_SEND_MAX", "5"))
@@ -89,6 +101,7 @@ _login_limiter = SlidingWindowRateLimiter(RATE_LIMIT_LOGIN_MAX, RATE_LIMIT_LOGIN
 _register_limiter = SlidingWindowRateLimiter(RATE_LIMIT_REGISTER_MAX, RATE_LIMIT_REGISTER_WINDOW_SECONDS)
 _ask_limiter = SlidingWindowRateLimiter(RATE_LIMIT_ASK_MAX, RATE_LIMIT_ASK_WINDOW_SECONDS)
 _transcribe_limiter = SlidingWindowRateLimiter(RATE_LIMIT_TRANSCRIBE_MAX, RATE_LIMIT_TRANSCRIBE_WINDOW_SECONDS)
+_speak_limiter = SlidingWindowRateLimiter(RATE_LIMIT_SPEAK_MAX, RATE_LIMIT_SPEAK_WINDOW_SECONDS)
 _2fa_verify_limiter = SlidingWindowRateLimiter(RATE_LIMIT_2FA_MAX, RATE_LIMIT_2FA_WINDOW_SECONDS)
 _2fa_recovery_limiter = SlidingWindowRateLimiter(RATE_LIMIT_2FA_MAX, RATE_LIMIT_2FA_WINDOW_SECONDS)
 # Separate from the verify/recovery limiters above: this one guards how often
@@ -117,6 +130,7 @@ ALLOWED_ORIGINS = [
 # takes down the whole API if the ML stack fails to import.
 _assistant = None
 _transcriber = None
+_synthesizer = None
 
 
 def get_assistant():
@@ -135,6 +149,15 @@ def get_transcriber():
 
         _transcriber = loaded_transcriber
     return _transcriber
+
+
+def get_synthesizer():
+    global _synthesizer
+    if _synthesizer is None:
+        from backend.tts_service import synthesizer as loaded_synthesizer
+
+        _synthesizer = loaded_synthesizer
+    return _synthesizer
 
 
 app = FastAPI(title="LLM YOLO Machine Assistant")
@@ -171,6 +194,11 @@ def enforce_ask_rate_limit(request: Request) -> None:
 
 def enforce_transcribe_rate_limit(request: Request) -> None:
     if not _transcribe_limiter.allow(_client_ip(request)):
+        raise HTTPException(status_code=429, detail="Troppe richieste. Riprova piu tardi.")
+
+
+def enforce_speak_rate_limit(request: Request) -> None:
+    if not _speak_limiter.allow(_client_ip(request)):
         raise HTTPException(status_code=429, detail="Troppe richieste. Riprova piu tardi.")
 
 
@@ -744,6 +772,49 @@ def chat_messages(chat_id: int, user: CurrentUser) -> list[dict]:
     return rows
 
 
+@app.get("/api/chats/{chat_id}/analyses")
+def chat_analyses(chat_id: int, user: CurrentUser) -> list[dict]:
+    """Past searches of a chat, newest first, for the history cards."""
+    with connect() as connection:
+        chat = connection.execute(
+            "SELECT id FROM chats WHERE id = %s AND user_id = %s", (chat_id, user["id"])
+        ).fetchone()
+        if chat is None:
+            raise HTTPException(status_code=404, detail="Chat non trovata.")
+        rows = connection.execute(
+            """
+            SELECT id, created_at, question, status, machine_name, machine_type, vision_score,
+                   answer, reason, sources, image_thumbnail
+            FROM analyses
+            WHERE chat_id = %s AND user_id = %s
+            ORDER BY created_at DESC
+            LIMIT %s
+            """,
+            (chat_id, user["id"], CHAT_HISTORY_LIMIT),
+        ).fetchall()
+    return [
+        {
+            "id": str(row["id"]),
+            "created_at": row["created_at"],
+            "question": row["question"],
+            "status": row["status"],
+            "machine_name": row["machine_name"],
+            "machine_type": row["machine_type"],
+            "vision_score": row["vision_score"],
+            "answer": row["answer"],
+            # The internal error stays in the backoffice: the user gets a generic reason.
+            "reason": "Si e verificato un errore durante l'analisi." if row["status"] == "failed" else row["reason"],
+            "sources": [{"source": s.get("source"), "page": s.get("page")} for s in row["sources"] or []],
+            "thumbnail": (
+                "data:image/jpeg;base64," + base64.b64encode(row["image_thumbnail"]).decode("ascii")
+                if row["image_thumbnail"]
+                else None
+            ),
+        }
+        for row in rows
+    ]
+
+
 @app.get("/api/company/documents")
 def company_documents(user: CurrentUser) -> list[dict]:
     if not user["company_domain"]:
@@ -854,6 +925,23 @@ def delete_company_document(document_id: int, user: CurrentUser) -> dict:
 _SOURCE_EXCERPT_CHARS = 400
 
 
+def _make_thumbnail(image_path: Path) -> bytes | None:
+    """Small JPEG of the uploaded photo for the chat history. Best effort: a
+    photo Pillow can't read simply has no thumbnail."""
+    try:
+        from PIL import Image, ImageOps
+
+        with Image.open(image_path) as image:
+            thumbnail = ImageOps.exif_transpose(image).convert("RGB")
+            thumbnail.thumbnail((THUMBNAIL_MAX_SIDE, THUMBNAIL_MAX_SIDE))
+            buffer = io.BytesIO()
+            thumbnail.save(buffer, format="JPEG", quality=THUMBNAIL_JPEG_QUALITY, optimize=True)
+            return buffer.getvalue()
+    except Exception:
+        logger.warning("Impossibile creare la miniatura di %s", image_path.name, exc_info=True)
+        return None
+
+
 def _record_analysis(
     *,
     user: dict,
@@ -863,11 +951,13 @@ def _record_analysis(
     image: UploadFile,
     image_size: int,
     started: float,
+    thumbnail: bytes | None = None,
     result: dict | None = None,
     error: str | None = None,
-) -> None:
-    """Stores one row in app.analyses for the backoffice. Best effort: a
-    failure here is logged and never breaks the user's answer."""
+) -> str | None:
+    """Stores one row in app.analyses for the backoffice and the chat history,
+    and returns its id. Best effort: a failure here is logged and never breaks
+    the user's answer."""
     result = result or {}
     machine = result.get("machine") or {}
     summary = result.get("recognition_summary") or {}
@@ -893,21 +983,22 @@ def _record_analysis(
     ]
     try:
         with connect() as connection:
-            connection.execute(
+            row = connection.execute(
                 """
                 INSERT INTO analyses(
                     user_id, chat_id, knowledge_mode, question, status,
                     machine_id, machine_name, machine_type, vision_score, exact_model_identified,
                     model_code, serial_number, asset_tag, vision_candidates,
                     answer, sources, reason, error_message,
-                    image_filename, image_content_type, image_size_bytes, duration_ms
+                    image_filename, image_content_type, image_size_bytes, image_thumbnail, duration_ms
                 ) VALUES (
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s,
                     %s, %s, %s, %s,
-                    %s, %s, %s, %s
+                    %s, %s, %s, %s, %s
                 )
+                RETURNING id
                 """,
                 (
                     user["id"], chat_id, knowledge_mode, question, status,
@@ -918,13 +1009,15 @@ def _record_analysis(
                     summary.get("asset_tag") or identifiers.get("asset_tag"),
                     Jsonb(candidates),
                     result.get("answer"), Jsonb(sources), result.get("reason"), error,
-                    Path(image.filename or "").name or None, image.content_type, image_size,
+                    Path(image.filename or "").name or None, image.content_type, image_size, thumbnail,
                     int((time.monotonic() - started) * 1000),
                 ),
-            )
+            ).fetchone()
             connection.execute("UPDATE users SET last_active_at = now() WHERE id = %s", (user["id"],))
+        return str(row["id"])
     except Exception:
         logger.exception("Impossibile registrare l'analisi per l'utente %s", user["id"])
+        return None
 
 
 def require_backoffice_token(x_internal_token: Annotated[str | None, Header()] = None) -> None:
@@ -990,6 +1083,21 @@ def transcribe(user: CurrentUser, audio: Annotated[UploadFile, File()]) -> dict:
     return {"text": text}
 
 
+@app.post("/api/speak", dependencies=[Depends(enforce_speak_rate_limit)])
+def speak(user: CurrentUser, text: Annotated[str, Form()]) -> Response:
+    text = text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Nessun testo da leggere.")
+    if len(text) > MAX_SPEAK_CHARS:
+        raise HTTPException(status_code=413, detail="Testo troppo lungo.")
+    try:
+        audio = get_synthesizer().synthesize(text)
+    except Exception:
+        logger.exception("Speech synthesis failed for user %s", user["id"])
+        raise HTTPException(status_code=500, detail="Lettura non riuscita. Riprova.") from None
+    return Response(content=audio, media_type="audio/wav")
+
+
 @app.post("/api/ask", dependencies=[Depends(enforce_ask_rate_limit)])
 def ask(
     user: CurrentUser,
@@ -1018,6 +1126,7 @@ def ask(
         "image": image,
         "image_size": image_size,
         "started": started,
+        "thumbnail": _make_thumbnail(image_path),
     }
     try:
         if chat_id is not None:
@@ -1052,11 +1161,13 @@ def ask(
                         (chat_id, result["answer"], utc_now()),
                     )
                 connection.execute("UPDATE chats SET updated_at = %s WHERE id = %s", (utc_now(), chat_id))
-        _record_analysis(**record, knowledge_mode=knowledge_mode, result=result)
-        return result
+        analysis_id = _record_analysis(**record, knowledge_mode=knowledge_mode, result=result)
+        return {**result, "analysis_id": analysis_id}
     except ValueError as exc:
-        _record_analysis(**record, knowledge_mode=knowledge_mode, result={"recognized": False, "reason": str(exc)})
-        return {"recognized": False, "reason": str(exc), "question": question}
+        analysis_id = _record_analysis(
+            **record, knowledge_mode=knowledge_mode, result={"recognized": False, "reason": str(exc)}
+        )
+        return {"recognized": False, "reason": str(exc), "question": question, "analysis_id": analysis_id}
     except HTTPException:
         raise
     except Exception as exc:

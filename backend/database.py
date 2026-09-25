@@ -29,6 +29,7 @@ load_dotenv(ROOT_DIR / ".env")
 
 SCHEMA_PATH = ROOT_DIR / "database" / "schema.sql"
 SEED_PATH = ROOT_DIR / "database" / "seed.sql"
+MIGRATIONS_DIR = ROOT_DIR / "database" / "migrations"
 
 # postgresql://utente:password@host:porta/database
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres@localhost:5432/assistente")
@@ -115,23 +116,26 @@ def connect():
 
 
 def init_db() -> None:
-    """Applies database/schema.sql on an empty database (no `app` schema yet).
+    """Applies database/schema.sql on an empty database (no `app` schema yet),
+    then the migrations in database/migrations.
 
-    Later schema changes are migrations, not re-runs of the whole script. The
-    development operator accounts (database/seed.sql) are only inserted
-    outside production, so a production database never ships default
-    passwords.
+    Later schema changes are migrations, not re-runs of the whole script: each
+    migration is idempotent and is applied at every start, in file name order,
+    so an existing database catches up with schema.sql. The development
+    operator accounts (database/seed.sql) are only inserted outside
+    production, so a production database never ships default passwords.
     """
     with psycopg.connect(DATABASE_URL, autocommit=True) as connection:
         exists = connection.execute(
             "SELECT 1 FROM information_schema.schemata WHERE schema_name = 'app'"
         ).fetchone()
-        if exists:
-            return
-        logger.info("Schema non trovato: applico %s", SCHEMA_PATH)
-        connection.execute(SCHEMA_PATH.read_text(encoding="utf-8"))
-        if not IS_PRODUCTION:
-            connection.execute(SEED_PATH.read_text(encoding="utf-8"))
+        if not exists:
+            logger.info("Schema non trovato: applico %s", SCHEMA_PATH)
+            connection.execute(SCHEMA_PATH.read_text(encoding="utf-8"))
+            if not IS_PRODUCTION:
+                connection.execute(SEED_PATH.read_text(encoding="utf-8"))
+        for migration in sorted(MIGRATIONS_DIR.glob("*.sql")):
+            connection.execute(migration.read_text(encoding="utf-8"))
 
 
 def hash_password(password: str) -> str:

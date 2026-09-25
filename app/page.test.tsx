@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -27,6 +27,7 @@ describe("utente senza azienda", () => {
 
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
+      if (url.includes("/analyses")) return jsonResponse([]);
       if (url.includes("/auth/me")) {
         return jsonResponse({ email: "solo@gmail.com", company_domain: null });
       }
@@ -54,6 +55,7 @@ describe("flusso di registrazione", () => {
   it("effettua subito il login e apre l'app", async () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
+      if (url.includes("/analyses")) return jsonResponse([]);
       if (url.includes("/auth/register")) {
         return jsonResponse({
           token: "new-user-token",
@@ -116,6 +118,7 @@ describe("invio domanda (/api/ask)", () => {
 
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
+      if (url.includes("/analyses")) return jsonResponse([]);
       if (url.includes("/auth/me")) {
         return jsonResponse({ email: "user@digitalmens.it", company_domain: "digitalmens.it" });
       }
@@ -163,6 +166,7 @@ describe("risposte per chat", () => {
 
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      if (url.includes("/analyses")) return jsonResponse([]);
       if (url.includes("/auth/me")) return jsonResponse({ email: "user@gmail.com", company_domain: null });
       if (url.includes("/messages")) return jsonResponse([]);
       if (url.includes("/chats") && init?.method === "POST") {
@@ -199,6 +203,7 @@ describe("logout", () => {
 
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
+      if (url.includes("/analyses")) return jsonResponse([]);
       if (url.includes("/auth/me")) {
         return jsonResponse({ email: "user@digitalmens.it", company_domain: "digitalmens.it" });
       }
@@ -239,6 +244,7 @@ describe("storico chat", () => {
     window.localStorage.setItem("assistant-token", "fake-token");
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      if (url.includes("/analyses")) return jsonResponse([]);
       if (url.includes("/auth/me")) {
         return jsonResponse({ email: "user@digitalmens.it", company_domain: "digitalmens.it" });
       }
@@ -277,6 +283,7 @@ describe("storico chat", () => {
     window.localStorage.setItem("assistant-token", "fake-token");
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      if (url.includes("/analyses")) return jsonResponse([]);
       if (url.includes("/auth/me")) {
         return jsonResponse({ email: "user@digitalmens.it", company_domain: "digitalmens.it" });
       }
@@ -315,6 +322,7 @@ describe("login con 2FA", () => {
   it("mostra la schermata di verifica e completa il login con il codice via email", async () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
+      if (url.includes("/analyses")) return jsonResponse([]);
       if (url.includes("/auth/login")) {
         return jsonResponse({ requires_2fa: true, challenge_token: "chal-123" });
       }
@@ -347,6 +355,7 @@ describe("login con 2FA", () => {
   it("permette di accedere con un codice di recupero", async () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
+      if (url.includes("/analyses")) return jsonResponse([]);
       if (url.includes("/auth/login")) {
         return jsonResponse({ requires_2fa: true, challenge_token: "chal-456" });
       }
@@ -384,6 +393,7 @@ describe("password dimenticata", () => {
   it("mostra sempre lo stesso messaggio generico dopo l'invio", async () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
+      if (url.includes("/analyses")) return jsonResponse([]);
       if (url.includes("/auth/forgot-password")) {
         return jsonResponse({
           message: "Se esiste un account associato a questa email, riceverai le istruzioni per reimpostare la password.",
@@ -411,6 +421,7 @@ describe("documenti aziendali", () => {
     let documentListRequests = 0;
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      if (url.includes("/analyses")) return jsonResponse([]);
       if (url.includes("/auth/me")) {
         return jsonResponse({ email: "user@digitalmens.it", company_domain: "digitalmens.it" });
       }
@@ -469,6 +480,7 @@ describe("dettatura della domanda", () => {
   function stubWorkspace(transcribeResponse: Response) {
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      if (url.includes("/analyses")) return jsonResponse([]);
       if (url.includes("/auth/me")) return jsonResponse({ email: "tecnico@azienda.it", company_domain: null });
       if (url.includes("/chats")) return jsonResponse([]);
       if (url.includes("/company/documents")) return jsonResponse([]);
@@ -528,5 +540,69 @@ describe("dettatura della domanda", () => {
     await screen.findByLabelText("Domanda tecnica");
 
     expect(screen.queryByRole("button", { name: "Detta la domanda" })).not.toBeInTheDocument();
+  });
+});
+
+describe("cronologia delle ricerche", () => {
+  const previous = {
+    id: "a",
+    created_at: new Date().toISOString(),
+    question: "Perché scatta l'allarme?",
+    status: "recognized",
+    machine_name: "Carroponte portuale",
+    machine_type: "gru",
+    vision_score: 0.91,
+    answer: "Controllare il limitatore di carico.",
+    reason: null,
+    sources: [{ source: "manuale.pdf", page: 12 }],
+    thumbnail: "data:image/jpeg;base64,/9j/",
+  };
+  const latest = { ...previous, id: "b", question: "E il freno?", answer: "Verificare le pastiglie." };
+
+  it("mostra le ricerche passate come schede e ci aggiunge la nuova dopo la risposta", async () => {
+    window.localStorage.setItem("assistant-token", "fake-token");
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:fake");
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+    let analyses = [previous];
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes("/auth/me")) return jsonResponse({ email: "user@gmail.com", company_domain: null });
+      if (url.includes("/chats/1/analyses")) return jsonResponse(analyses);
+      if (url.includes("/messages")) return jsonResponse([]);
+      if (url.includes("/chats")) return jsonResponse([{ id: 1, title: "Gru del porto", knowledge_mode: "base" }]);
+      if (url.includes("/company/documents")) return jsonResponse([]);
+      if (url === "/api/ask") {
+        analyses = [latest, previous];
+        return jsonResponse({
+          recognized: true,
+          machine: { id: "cp", macchina: "Carroponte portuale" },
+          answer: latest.answer,
+          analysis_id: "b",
+        });
+      }
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const user = userEvent.setup();
+
+    render(<Home />);
+
+    const history = await screen.findByRole("region", { name: /Ricerche precedenti/ });
+    expect(within(history).getByText("Oggi")).toBeInTheDocument();
+    expect(within(history).getByText("Carroponte portuale")).toBeInTheDocument();
+    expect(within(history).getByText("Confidenza 91%")).toBeInTheDocument();
+
+    await user.upload(document.getElementById("machine-image") as HTMLInputElement, new File(["img"], "gru.png", { type: "image/png" }));
+    await user.click(screen.getByRole("button", { name: /Analizza e rispondi/ }));
+
+    // The new answer is shown in full above; the history keeps listing the earlier search only.
+    await waitFor(() => expect(fetchMock.mock.calls.filter(([url]) => String(url).includes("/analyses")).length).toBe(2));
+    expect(screen.getByText("Verificare le pastiglie.")).toBeInTheDocument();
+    expect(within(history).queryByText(/E il freno/)).not.toBeInTheDocument();
+    expect(within(history).getAllByRole("listitem")).toHaveLength(1);
+
+    await user.click(within(history).getByRole("button", { expanded: false }));
+    expect(within(history).getByRole("button", { name: "Ascolta la risposta" })).toBeInTheDocument();
+    expect(within(history).getByText("manuale.pdf")).toBeInTheDocument();
   });
 });

@@ -19,3 +19,5 @@ ragmens-core @ git+https://github.com/matteoarutaDM/ragmens-core.git
 # Trascrizione locale delle domande dettate al microfono (endpoint /api/transcribe).
 # PyAV (incluso) decodifica webm/mp4 senza bisogno di ffmpeg di sistema.
 faster-whisper>=1.1,<2
+# Lettura ad alta voce delle risposte (endpoint /api/speak), voce italiana in locale.
+piper-tts>=1.3,<2

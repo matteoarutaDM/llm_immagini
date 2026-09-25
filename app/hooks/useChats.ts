@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { chatsApi } from "../lib/api";
-import type { Chat, ChatMessage } from "../types";
+import type { AnalysisEntry, Chat, ChatMessage } from "../types";
 
 export function useChats() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChat, setActiveChat] = useState<Chat | null>(null);
   const [history, setHistory] = useState<ChatMessage[]>([]);
+  const [analyses, setAnalyses] = useState<AnalysisEntry[]>([]);
+  // The chat on screen, read after an await to drop responses for a chat the user left.
+  const activeChatIdRef = useRef<number | null>(null);
   const [creatingChat, setCreatingChat] = useState(false);
   const [deletingChatId, setDeletingChatId] = useState<number | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -16,16 +19,32 @@ export function useChats() {
   function hydrate(list: Chat[]) {
     setChats(list);
     setActiveChat(list[0] ?? null);
+    activeChatIdRef.current = list[0]?.id ?? null;
   }
 
   async function selectChat(token: string | null, chat: Chat | null) {
     setActiveChat(chat);
+    activeChatIdRef.current = chat?.id ?? null;
+    setAnalyses([]);
     if (!token || !chat) {
       setHistory([]);
       return;
     }
-    const response = await chatsApi.messages(token, chat.id);
-    if (response.ok) setHistory(response.data);
+    const [messagesResponse, analysesResponse] = await Promise.all([
+      chatsApi.messages(token, chat.id),
+      // The history cards are an extra: if they fail, the chat still opens with its messages.
+      chatsApi.analyses(token, chat.id).catch(() => null),
+    ]);
+    if (activeChatIdRef.current !== chat.id) return;
+    if (messagesResponse.ok) setHistory(messagesResponse.data);
+    if (analysesResponse?.ok) setAnalyses(analysesResponse.data);
+  }
+
+  /** Reloads the past searches of a chat, e.g. after a new one was made. */
+  async function refreshAnalyses(token: string | null, chatId: number | undefined) {
+    if (!token || chatId === undefined) return;
+    const response = await chatsApi.analyses(token, chatId).catch(() => null);
+    if (response?.ok && activeChatIdRef.current === chatId) setAnalyses(response.data);
   }
 
   async function createChat(token: string | null, knowledgeMode: "base" | "merged", selectedDocuments: string[]) {
@@ -37,7 +56,9 @@ export function useChats() {
       if (response.ok) {
         setChats((current) => [response.data, ...current]);
         setActiveChat(response.data);
+        activeChatIdRef.current = response.data.id;
         setHistory([]);
+        setAnalyses([]);
       }
     } finally {
       setCreatingChat(false);
@@ -99,6 +120,8 @@ export function useChats() {
     chats,
     activeChat,
     history,
+    analyses,
+    refreshAnalyses,
     creatingChat,
     deletingChatId,
     deleteError,

@@ -1,4 +1,5 @@
 import type {
+  AnalysisEntry,
   AskResult,
   Chat,
   ChatMessage,
@@ -156,6 +157,8 @@ export const chatsApi = {
   },
   messages: (token: string, chatId: number) =>
     request<ChatMessage[]>(`/api/backend/chats/${chatId}/messages`, { headers: authHeaders(token) }),
+  analyses: (token: string, chatId: number) =>
+    request<AnalysisEntry[]>(`/api/backend/chats/${chatId}/analyses`, { headers: authHeaders(token) }),
   delete: (token: string, chatId: number) =>
     request<DeleteResponse>(`/api/backend/chats/${chatId}`, { method: "DELETE", headers: authHeaders(token) }),
   rename: (token: string, chatId: number, title: string) => {
@@ -205,4 +208,15 @@ export const speechApi = {
       body,
     });
   },
+  /** The backend reads the text aloud with Piper and returns WAV audio. */
+  speak: async (token: string | null, text: string): Promise<SpeakResponse> => {
+    const body = new FormData();
+    body.append("text", text);
+    const response = await fetch("/api/backend/speak", { method: "POST", headers: authHeaders(token), body });
+    if (response.ok) return { ok: true, audio: await response.blob() };
+    const data = (await response.json().catch(() => ({}))) as { detail?: string };
+    return { ok: false, detail: data.detail };
+  },
 };
+
+export type SpeakResponse = { ok: true; audio: Blob } | { ok: false; detail?: string };
