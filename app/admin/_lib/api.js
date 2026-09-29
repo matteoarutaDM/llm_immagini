@@ -106,7 +106,7 @@ export const authApi = {
 };
 
 export const dashboardApi = {
-  get: (signal) => request("/dashboard", { signal }),
+  get: (signal, company = null) => request("/dashboard", { query: { company }, signal }),
 };
 
 export const usersApi = {
@@ -115,18 +115,33 @@ export const usersApi = {
   /** @param {string} id @param {"active" | "blocked"} status @param {string} [reason] */
   setStatus: (id, status, reason) =>
     request(`/users/${encodeURIComponent(id)}`, { method: "PATCH", body: { status, reason } }),
+  /** @param {string} id @param {"employee" | "company_admin"} role */
+  setRole: (id, role) => request(`/users/${encodeURIComponent(id)}/role`, { method: "POST", body: { role } }),
+  /** New temporary password, returned once as `temporaryPassword`. */
+  resetPassword: (id) => request(`/users/${encodeURIComponent(id)}/password`, { method: "POST" }),
+};
+
+export const companiesApi = {
+  list: (query, signal) => request("/companies", { query, signal }),
+  get: (id, signal) => request(`/companies/${encodeURIComponent(id)}`, { signal }),
+  /** @param {{ name: string, domain: string }} company */
+  create: (company) => request("/companies", { method: "POST", body: company }),
+  /** @param {string} id @param {{ email: string, fullName?: string, role: "employee" | "company_admin" }} account */
+  createAccount: (id, account) => request(`/companies/${encodeURIComponent(id)}/accounts`, { method: "POST", body: account }),
 };
 
 export const analysesApi = {
   list: (query, signal) => request("/analyses", { query, signal }),
   get: (id, signal) => request(`/analyses/${encodeURIComponent(id)}`, { signal }),
-  machines: (signal) => request("/analyses/machines", { signal }),
+  machines: (signal, company = null) => request("/analyses/machines", { query: { company }, signal }),
 };
 
 export const documentsApi = {
   list: (query, signal) => request("/documents", { query, signal }),
   /** @param {string} id @param {string} reason */
   remove: (id, reason) => request(`/documents/${encodeURIComponent(id)}`, { method: "DELETE", body: { reason } }),
+  /** @param {string} id @param {boolean} indexed false = keep the file but remove it from the RAG */
+  setIndexed: (id, indexed) => request(`/documents/${encodeURIComponent(id)}`, { method: "PATCH", body: { indexed } }),
 };
 
 export const auditApi = {

@@ -64,7 +64,6 @@ def isolated_backend_state(tmp_path, monkeypatch):
     monkeypatch.setattr(main_module, "COMPANY_DATA_DIR", company_data_dir)
 
     main_module._login_limiter.clear()
-    main_module._register_limiter.clear()
     main_module._ask_limiter.clear()
     main_module._transcribe_limiter.clear()
     main_module._speak_limiter.clear()

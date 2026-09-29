@@ -1,5 +1,5 @@
 import { ANALYSIS_STATUSES, KNOWLEDGE_MODES } from "../../../admin/_lib/constants";
-import { json, parseEnum, parsePagination, parseSearch, withErrorHandling } from "../../../admin/_server/http";
+import { json, parseCompanyId, parseEnum, parsePagination, parseSearch, withErrorHandling } from "../../../admin/_server/http";
 import { listAnalyses } from "../../../admin/_server/services/analyses";
 import { requireOperator } from "../../../admin/_server/session";
 
@@ -17,6 +17,7 @@ export const GET = withErrorHandling(async (request) => {
       knowledgeMode: parseEnum(params.get("knowledgeMode"), KNOWLEDGE_MODES),
       machineId: params.get("machineId")?.slice(0, 120) || null,
       userId: params.get("userId")?.slice(0, 20) || null,
+      companyId: parseCompanyId(params.get("company")),
       ...parsePagination(params),
     }),
   );

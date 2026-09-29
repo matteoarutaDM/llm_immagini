@@ -1,4 +1,4 @@
-import { json, parsePagination, parseSearch, withErrorHandling } from "../../../admin/_server/http";
+import { json, parsePagination, parseSearch, withErrorHandling, parseCompanyId } from "../../../admin/_server/http";
 import { listAuditLog } from "../../../admin/_server/services/audit";
 import { requireOperator } from "../../../admin/_server/session";
 
@@ -8,5 +8,5 @@ export const GET = withErrorHandling(async (request) => {
   const auth = await requireOperator(request, "audit:view");
   if (auth.response) return auth.response;
   const params = request.nextUrl.searchParams;
-  return json(await listAuditLog({ q: parseSearch(params.get("q")), ...parsePagination(params) }));
+  return json(await listAuditLog({ q: parseSearch(params.get("q")), companyId: parseCompanyId(params.get("company")), ...parsePagination(params) }));
 });

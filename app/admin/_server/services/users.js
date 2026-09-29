@@ -9,7 +9,8 @@ import { ANALYSIS_SUMMARY } from "./analyses";
 const ACTIVITY_DAYS = 14;
 
 const USER_SUMMARY = `
-  u.id::text AS id, u.email::text AS email, c.domain::text AS "companyDomain", u.status::text AS status,
+  u.id::text AS id, u.email::text AS email, c.domain::text AS "companyDomain", c.name AS "companyName",
+  u.role::text AS role, u.full_name AS "fullName", u.status::text AS status,
   u.two_factor_enabled AS "twoFactorEnabled", u.created_at AS "createdAt",
   u.last_login_at AS "lastLoginAt", u.last_active_at AS "lastActiveAt"`;
 
@@ -17,12 +18,13 @@ const USER_SUMMARY = `
  * @param {{ q: string, status: string | null, accountType: "company" | "personal" | null,
  *   twoFactor: "on" | "off" | null, page: number, pageSize: number }} params
  */
-export async function listUsers({ q, status, accountType, twoFactor, page, pageSize }) {
+export async function listUsers({ q, status, accountType, twoFactor, companyId, page, pageSize }) {
   const { clause, params } = where([
     status && ["u.status = ?", status],
     accountType === "company" && ["u.company_id IS NOT NULL"],
     accountType === "personal" && ["u.company_id IS NULL"],
     twoFactor && ["u.two_factor_enabled = ?", twoFactor === "on"],
+    companyId && isNumericId(companyId) && ["u.company_id = ?", companyId],
     q && ["u.email::text ILIKE ? OR c.domain::text ILIKE ? OR u.id::text = ?", like(q), like(q), q],
   ]);
   const rows = await query(
@@ -101,7 +103,10 @@ export async function setUserStatus(id, status, reason, operator, ip) {
   if (status === "blocked" && !reason) throw new DomainError(400, "REASON_REQUIRED", "Indica il motivo del blocco.");
 
   await transaction(async (tx) => {
-    const current = await tx.queryOne("SELECT email::text AS email, status::text AS status FROM app.users WHERE id = $1 FOR UPDATE", [id]);
+    const current = await tx.queryOne(
+      'SELECT email::text AS email, status::text AS status, company_id::text AS "companyId" FROM app.users WHERE id = $1 FOR UPDATE',
+      [id],
+    );
     if (!current) throw new DomainError(404, "NOT_FOUND", "Utente non trovato.");
     if (current.status === status) throw new DomainError(409, "CONFLICT", "L'utente è già in questo stato.");
 
@@ -124,6 +129,7 @@ export async function setUserStatus(id, status, reason, operator, ip) {
         reason,
         metadata: { email: current.email },
         ip,
+        companyId: current.companyId,
       },
       tx,
     );

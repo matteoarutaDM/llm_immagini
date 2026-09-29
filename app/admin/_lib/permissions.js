@@ -18,6 +18,9 @@ export const PERMISSIONS = /** @type {const} */ ({
   "users:block": ["admin"],
   "documents:view": ["admin", "support"],
   "documents:delete": ["admin"],
+  "documents:index": ["admin"],
+  "companies:view": ["admin", "support"],
+  "companies:manage": ["admin"],
   "audit:view": ["admin"],
 });
 

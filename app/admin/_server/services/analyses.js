@@ -11,12 +11,13 @@ export const ANALYSIS_SUMMARY = `
   a.question, a.machine_id AS "machineId", a.machine_name AS "machineName", a.vision_score AS "visionScore",
   a.duration_ms AS "durationMs", u.id::text AS "userId", u.email::text AS "userEmail"`;
 
-function filters({ q, status, knowledgeMode, machineId, userId }) {
+function filters({ q, status, knowledgeMode, machineId, userId, companyId }) {
   return [
     status && ["a.status = ?", status],
     knowledgeMode && ["a.knowledge_mode = ?", knowledgeMode],
     machineId && ["a.machine_id = ?", machineId],
     userId && isNumericId(userId) && ["a.user_id = ?", userId],
+    companyId && isNumericId(companyId) && ["u.company_id = ?", companyId],
     q && [
       "a.question ILIKE ? OR u.email::text ILIKE ? OR a.machine_name ILIKE ? OR a.id::text = ?",
       like(q), like(q), like(q), q,
@@ -76,10 +77,13 @@ export async function getAnalysisDetail(id) {
 }
 
 /** Machines seen so far, for the filter dropdown. */
-export async function listRecognizedMachines() {
+export async function listRecognizedMachines({ companyId = null } = {}) {
+  const company = companyId && isNumericId(companyId) ? companyId : null;
   return query(
-    `SELECT machine_id AS id, max(machine_name) AS name, count(*) AS count
-       FROM app.analyses WHERE machine_id IS NOT NULL
-      GROUP BY machine_id ORDER BY max(machine_name)`,
+    `SELECT a.machine_id AS id, max(a.machine_name) AS name, count(*) AS count
+       FROM app.analyses a JOIN app.users u ON u.id = a.user_id
+      WHERE a.machine_id IS NOT NULL AND ($1::bigint IS NULL OR u.company_id = $1::bigint)
+      GROUP BY a.machine_id ORDER BY max(a.machine_name)`,
+    [company],
   );
 }

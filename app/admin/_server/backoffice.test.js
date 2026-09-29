@@ -44,6 +44,8 @@ beforeAll(async () => {
     analyses: await import("./services/analyses"),
     dashboard: await import("./services/dashboard"),
     documents: await import("./services/documents"),
+    companies: await import("./services/companies"),
+    audit: await import("./services/audit"),
     http: await import("./http"),
   };
 }, 60_000);
@@ -88,6 +90,14 @@ describe("permissions", () => {
     expect(can("support", "audit:view")).toBe(false);
     expect(can("admin", "users:block")).toBe(true);
     expect(can(undefined, "dashboard:view")).toBe(false);
+  });
+
+  it("lets support see companies but only admins create accounts, change roles and index documents", () => {
+    expect(can("support", "companies:view")).toBe(true);
+    expect(can("support", "companies:manage")).toBe(false);
+    expect(can("support", "documents:index")).toBe(false);
+    expect(can("admin", "companies:manage")).toBe(true);
+    expect(can("admin", "documents:index")).toBe(true);
   });
 });
 
@@ -231,5 +241,144 @@ describe("document deletion", () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response("{}", { status: 401 })));
     await expectDomainError(modules.documents.deleteDocument(id, "x", operator, null), 502, "BACKEND_ERROR");
     expect((await db.query("SELECT count(*)::int AS n FROM ops.audit_log")).rows[0].n).toBe(0);
+  });
+});
+
+
+describe("companies (super admin)", () => {
+  function stubBackend(responses) {
+    const fetchMock = vi.fn(async (url) => {
+      const path = new URL(url).pathname + new URL(url).search;
+      const [status, body] = responses[path] ?? [404, { detail: "not stubbed" }];
+      return new Response(JSON.stringify(body), { status });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    process.env.BACKOFFICE_API_TOKEN = "secret";
+    return fetchMock;
+  }
+
+  it("creates a company through the backend and audits it on that company", async () => {
+    const fetchMock = stubBackend({ "/internal/companies": [200, { id: 7, name: "Acme", domain: "acme.it" }] });
+
+    const company = await modules.companies.createCompany({ name: " Acme ", domain: "acme.it" }, await admin(), "10.0.0.2");
+
+    expect(company.id).toBe(7);
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe("http://127.0.0.1:8000/internal/companies");
+    expect(init.headers).toMatchObject({ "X-Internal-Token": "secret", "Content-Type": "application/json" });
+    expect(JSON.parse(init.body)).toMatchObject({ name: "Acme", domain: "acme.it" });
+    const audit = await db.query("SELECT action, company_id::int AS company, metadata FROM ops.audit_log");
+    expect(audit.rows).toEqual([{ action: "company.create", company: 7, metadata: { name: "Acme", domain: "acme.it" } }]);
+  });
+
+  it("creates a company admin, returns the temporary password once and does not store it", async () => {
+    stubBackend({
+      "/internal/companies/7/accounts?role=company_admin": [
+        200,
+        { user: { id: 42, email: "boss@acme.it", full_name: "Mario Rossi" }, temporary_password: "Tmp4Boss9xyz" },
+      ],
+    });
+
+    const result = await modules.companies.createCompanyAccount(
+      "7", { email: "boss@acme.it", fullName: "Mario Rossi", role: "company_admin" }, await admin(), null,
+    );
+
+    expect(result.temporaryPassword).toBe("Tmp4Boss9xyz");
+    const audit = await db.query("SELECT action, target_id, company_id::int AS company, metadata::text AS metadata FROM ops.audit_log");
+    expect(audit.rows[0]).toMatchObject({ action: "company_admin.create", target_id: "42", company: 7 });
+    expect(audit.rows[0].metadata).not.toContain("Tmp4Boss9xyz");
+  });
+
+  it("passes backend validation errors through and audits nothing", async () => {
+    stubBackend({ "/internal/companies": [409, { detail: "Esiste gia' un'azienda con questo dominio." }] });
+    const operator = await admin();
+    await expectDomainError(modules.companies.createCompany({ name: "Acme", domain: "acme.it" }, operator, null), 409, "CONFLICT");
+    await expectDomainError(modules.companies.createCompany({ name: "", domain: "" }, operator, null), 400, "BAD_REQUEST");
+    await expectDomainError(
+      modules.companies.createCompanyAccount("7", { email: "x@acme.it", role: "owner" }, operator, null), 400, "BAD_REQUEST",
+    );
+    expect((await db.query("SELECT count(*)::int AS n FROM ops.audit_log")).rows[0].n).toBe(0);
+  });
+
+  it("changes roles and resets passwords, auditing on the user's company", async () => {
+    stubBackend({
+      "/internal/users/42/role": [200, { id: 42, email: "tecnico@acme.it", company_id: 7, role: "company_admin", previous_role: "employee" }],
+      "/internal/users/42/reset-password": [200, { id: 42, email: "tecnico@acme.it", company_id: 7, temporary_password: "New4Pass9xyz" }],
+    });
+    const operator = await admin();
+
+    await modules.companies.setUserRole("42", "company_admin", operator, null);
+    const reset = await modules.companies.resetUserPassword("42", operator, null);
+
+    expect(reset.temporaryPassword).toBe("New4Pass9xyz");
+    const audit = await db.query("SELECT action, company_id::int AS company FROM ops.audit_log ORDER BY id");
+    expect(audit.rows).toEqual([
+      { action: "user.role_change", company: 7 },
+      { action: "user.reset_password", company: 7 },
+    ]);
+  });
+
+  it("lists companies with their people, admins and activity", async () => {
+    const { rows } = await db.query("INSERT INTO app.companies (domain, name) VALUES ('acme.it', 'Acme') RETURNING id");
+    await db.query(
+      "INSERT INTO app.users (email, password_hash, company_id, role) VALUES ('boss@acme.it', 'x', $1, 'company_admin'), ('w@acme.it', 'x', $1, 'employee')",
+      [rows[0].id],
+    );
+
+    const page = await modules.companies.listCompanies({ q: "acme", page: 1, pageSize: 20 });
+    expect(page.items).toEqual([expect.objectContaining({ name: "Acme", domain: "acme.it", people: 2, admins: 1 })]);
+
+    const detail = await modules.companies.getCompanyDetail(String(rows[0].id));
+    expect(detail.accounts.map((account) => account.role)).toEqual(["company_admin", "employee"]);
+  });
+});
+
+
+describe("company filter (backoffice-wide)", () => {
+  async function seedTwoCompanies() {
+    const ids = {};
+    for (const domain of ["acme.it", "other.it"]) {
+      const company = (await db.query("INSERT INTO app.companies (domain, name) VALUES ($1, $2) RETURNING id::text AS id", [domain, domain])).rows[0].id;
+      const user = (
+        await db.query("INSERT INTO app.users (email, password_hash, company_id) VALUES ($1, 'x', $2) RETURNING id::text AS id", [`worker@${domain}`, company])
+      ).rows[0].id;
+      await db.query(
+        "INSERT INTO app.analyses (user_id, knowledge_mode, question, status, machine_id, machine_name) VALUES ($1, 'base', 'q', 'recognized', $2, $2)",
+        [user, `gru-${domain}`],
+      );
+      await db.query("INSERT INTO app.company_documents (company_id, filename, storage_path) VALUES ($1, $2, $3)", [company, `${domain}.pdf`, `/tmp/${domain}.pdf`]);
+      await db.query("INSERT INTO ops.audit_log (action, target_type, target_id, company_id) VALUES ('employee.create', 'user', $1, $2)", [user, company]);
+      ids[domain] = company;
+    }
+    return ids;
+  }
+
+  it("restricts users, analyses, machines, documents, audit and dashboard to the selected company", async () => {
+    const ids = await seedTwoCompanies();
+    const scope = { companyId: ids["acme.it"], q: "", page: 1, pageSize: 20 };
+
+    const users = await modules.users.listUsers({ ...scope, status: null, accountType: null, twoFactor: null });
+    const analyses = await modules.analyses.listAnalyses({ ...scope, status: null, knowledgeMode: null, machineId: null, userId: null });
+    const machines = await modules.analyses.listRecognizedMachines({ companyId: ids["acme.it"] });
+    const documents = await modules.documents.listDocuments({ ...scope, status: null });
+    const audit = await modules.audit.listAuditLog(scope);
+    const dashboard = await modules.dashboard.getDashboard({ companyId: ids["acme.it"] });
+
+    expect(users.items.map((user) => user.email)).toEqual(["worker@acme.it"]);
+    expect(analyses.items.map((item) => item.userEmail)).toEqual(["worker@acme.it"]);
+    expect(machines.map((machine) => machine.id)).toEqual(["gru-acme.it"]);
+    expect(documents.items.map((document) => document.filename)).toEqual(["acme.it.pdf"]);
+    expect(audit.items.map((entry) => entry.companyName)).toEqual(["acme.it"]);
+    expect(Number(dashboard.kpis.usersTotal)).toBe(1);
+    expect(Number(dashboard.kpis.analysesToday)).toBe(1);
+    expect(dashboard.topMachines.map((machine) => machine.machineId)).toEqual(["gru-acme.it"]);
+  });
+
+  it("shows every company when no company is selected", async () => {
+    await seedTwoCompanies();
+    const users = await modules.users.listUsers({ q: "", status: null, accountType: null, twoFactor: null, companyId: null, page: 1, pageSize: 20 });
+    const dashboard = await modules.dashboard.getDashboard();
+    expect(Number(users.total)).toBe(2);
+    expect(Number(dashboard.kpis.analysesToday)).toBe(2);
   });
 });

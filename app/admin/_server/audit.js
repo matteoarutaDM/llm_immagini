@@ -5,12 +5,16 @@ import { query } from "./db";
 /**
  * Append-only trail of operator actions (ops.audit_log) and access attempts
  * (ops.login_attempts). Pass `db` to write inside an existing transaction.
+ * `companyId` makes the row visible in that company admin's activity log.
  */
-export async function recordAudit({ operator, action, targetType, targetId, reason = null, metadata = {}, ip = null }, db = { query }) {
+export async function recordAudit(
+  { operator, action, targetType, targetId, reason = null, metadata = {}, ip = null, companyId = null },
+  db = { query },
+) {
   await db.query(
-    `INSERT INTO ops.audit_log (operator_id, action, target_type, target_id, reason, metadata, ip)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-    [operator?.id ?? null, action, targetType, String(targetId), reason || null, metadata, ip],
+    `INSERT INTO ops.audit_log (operator_id, action, target_type, target_id, reason, metadata, ip, company_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+    [operator?.id ?? null, action, targetType, String(targetId), reason || null, metadata, ip, companyId ?? null],
   );
 }
 

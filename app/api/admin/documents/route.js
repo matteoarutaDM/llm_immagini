@@ -1,5 +1,5 @@
 import { DOCUMENT_STATUSES } from "../../../admin/_lib/constants";
-import { json, parseEnum, parsePagination, parseSearch, withErrorHandling } from "../../../admin/_server/http";
+import { json, parseCompanyId, parseEnum, parsePagination, parseSearch, withErrorHandling } from "../../../admin/_server/http";
 import { listDocuments } from "../../../admin/_server/services/documents";
 import { requireOperator } from "../../../admin/_server/session";
 
@@ -13,6 +13,7 @@ export const GET = withErrorHandling(async (request) => {
     await listDocuments({
       q: parseSearch(params.get("q")),
       status: parseEnum(params.get("status"), DOCUMENT_STATUSES),
+      companyId: parseCompanyId(params.get("company")),
       ...parsePagination(params),
     }),
   );

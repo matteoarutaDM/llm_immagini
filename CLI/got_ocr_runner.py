@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 
 import torch
 import torch.nn as _tnn
@@ -40,6 +41,7 @@ def main() -> int:
     args = parser.parse_args()
 
     try:
+        load_started = time.perf_counter()
         processor = AutoProcessor.from_pretrained(
             args.model,
             local_files_only=args.local_files_only,
@@ -51,7 +53,9 @@ def main() -> int:
             trust_remote_code=True,
         ).to(args.device)
         model.eval()
+        load_ms = (time.perf_counter() - load_started) * 1000
 
+        inference_started = time.perf_counter()
         image = Image.open(args.image_path).convert("RGB")
         inputs = processor(image, return_tensors="pt").to(args.device)
         with torch.no_grad():
@@ -67,7 +71,9 @@ def main() -> int:
             skip_special_tokens=True,
             clean_up_tokenization_spaces=False,
         ).strip()
-        print(json.dumps({"ok": True, "text": text}, ensure_ascii=False))
+        inference_ms = (time.perf_counter() - inference_started) * 1000
+        timings = {"load_ms": round(load_ms), "inference_ms": round(inference_ms), "generated_tokens": int(generated_ids.shape[1] - inputs["input_ids"].shape[1])}
+        print(json.dumps({"ok": True, "text": text, "timings": timings}, ensure_ascii=False))
         return 0
     except Exception as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False))

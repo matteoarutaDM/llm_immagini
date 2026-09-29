@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+
+import { useCompanyScope } from "../shell/CompanyScope";
 import { usersApi } from "../../_lib/api";
 import { USER_STATUSES, USER_STATUS_LABELS } from "../../_lib/constants";
 import { displayNameFromEmail, formatNumber, formatRelative } from "../../_lib/format";
@@ -48,7 +51,13 @@ const COLUMNS = [
 
 export function UsersView() {
   const { filters, setFilters, key } = useQueryFilters(DEFAULT_FILTERS);
-  const { data, error, loading, reload } = useResource((signal) => usersApi.list(filters, signal), `users:${key}`);
+  const { companyId } = useCompanyScope();
+  // A new company starts from the first page of results.
+  useEffect(() => {
+    if (filters.page && filters.page !== "1") setFilters({ page: "1" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [companyId]);
+  const { data, error, loading, reload } = useResource((signal) => usersApi.list({ ...filters, company: companyId }, signal), `users:${key}:${companyId ?? "all"}`);
 
   return (
     <>

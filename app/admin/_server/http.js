@@ -120,3 +120,8 @@ export function withErrorHandling(handler) {
     }
   };
 }
+
+/** `?company=<id>` of the backoffice-wide company filter; anything else means "every company". */
+export function parseCompanyId(value) {
+  return typeof value === "string" && /^\d{1,18}$/.test(value) ? value : null;
+}

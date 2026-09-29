@@ -2,6 +2,7 @@
 
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
+import { useCompanyScope } from "../shell/CompanyScope";
 import { dashboardApi } from "../../_lib/api";
 import { formatTime } from "../../_lib/format";
 import { useResource } from "../../_hooks/useResource";
@@ -25,7 +26,8 @@ const MACHINE_SERIES = [{ key: "analyses", label: "Analisi" }];
 const hourLabel = (iso) => `${new Date(iso).getHours()}:00`;
 
 export function DashboardView() {
-  const { data, error, loading, reload } = useResource((signal) => dashboardApi.get(signal), "dashboard", { pollMs: POLL_MS });
+  const { companyId } = useCompanyScope();
+  const { data, error, loading, reload } = useResource((signal) => dashboardApi.get(signal, companyId), `dashboard:${companyId ?? "all"}`, { pollMs: POLL_MS });
 
   if (error && !data) {
     return (

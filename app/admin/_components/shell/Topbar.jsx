@@ -6,6 +6,7 @@ import { ArrowRightOnRectangleIcon, Bars3Icon, ChevronDownIcon } from "@heroicon
 import { ROLE_LABELS } from "../../_lib/permissions";
 import { Avatar } from "../ui/Avatar";
 import { Badge } from "../ui/Badge";
+import { CompanySelector } from "./CompanyScope";
 import { useLogout } from "./useLogout";
 import { useOperator } from "./OperatorProvider";
 
@@ -48,6 +49,10 @@ export function Topbar({ onOpenMenu, menuOpen }) {
         <span className="h-1.5 w-1.5 rounded-full bg-app-accent shadow-[0_0_10px_var(--accent)]" aria-hidden="true" />
         Ambiente operativo
       </span>
+
+      <div className="min-w-0">
+        <CompanySelector />
+      </div>
 
       <div ref={menuRef} className="relative ml-auto">
         <button

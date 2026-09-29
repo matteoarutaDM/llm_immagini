@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from backend import main as main_module
 from backend.rate_limit import SlidingWindowRateLimiter
-from backend.tests.helpers import login, register
+from backend.tests.helpers import login
 
 
 def test_sliding_window_rate_limiter_blocks_after_threshold():
@@ -53,18 +53,3 @@ def test_login_endpoint_is_rate_limited_per_ip(client, monkeypatch):
     assert limited.status_code == 429
 
 
-def test_register_endpoint_is_rate_limited_per_ip(client):
-    main_module._register_limiter.clear()
-    from backend.rate_limit import SlidingWindowRateLimiter as _SWL
-
-    # Replace with a very tight limiter just for this test.
-    tight_limiter = _SWL(1, 60)
-    original = main_module._register_limiter
-    main_module._register_limiter = tight_limiter
-    try:
-        first = register(client, "a@digitalmens.it")
-        assert first.status_code == 200
-        second = register(client, "b@digitalmens.it")
-        assert second.status_code == 429
-    finally:
-        main_module._register_limiter = original

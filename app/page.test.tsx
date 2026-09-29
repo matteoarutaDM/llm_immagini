@@ -51,20 +51,89 @@ describe("utente senza azienda", () => {
   });
 });
 
-describe("flusso di registrazione", () => {
-  it("effettua subito il login e apre l'app", async () => {
+describe("accesso", () => {
+  it("non offre la registrazione: gli account li crea il responsabile dell'azienda", () => {
+    vi.stubGlobal("fetch", vi.fn());
+    render(<Home />);
+
+    expect(screen.getByRole("button", { name: "Accedi" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Crea un account" })).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Conferma password")).not.toBeInTheDocument();
+    expect(screen.getByText(/credenziali te le fornisce il responsabile/i)).toBeInTheDocument();
+  });
+
+  it("al primo accesso chiede di accettare i termini, poi apre l'app", async () => {
+    let termsAccepted = false;
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
-      if (url.includes("/analyses")) return jsonResponse([]);
-      if (url.includes("/auth/register")) {
+      if (url.includes("/auth/login")) {
         return jsonResponse({
-          token: "new-user-token",
+          token: "first-login-token",
           email: "nuovo@digitalmens.it",
           company_domain: "digitalmens.it",
+          company_name: "Digital Mens",
+          role: "employee",
+          terms_accepted: false,
+          password_is_temporary: true,
         });
       }
+      if (url.includes("/auth/accept-terms")) {
+        termsAccepted = true;
+        return jsonResponse({ terms_accepted: true });
+      }
       if (url.includes("/auth/me")) {
-        return jsonResponse({ email: "nuovo@digitalmens.it", company_domain: "digitalmens.it" });
+        return jsonResponse({
+          email: "nuovo@digitalmens.it",
+          company_domain: "digitalmens.it",
+          company_name: "Digital Mens",
+          role: "employee",
+          terms_accepted: termsAccepted,
+          password_is_temporary: true,
+        });
+      }
+      if (url.includes("/chats") || url.includes("/company/documents")) {
+        return termsAccepted ? jsonResponse([]) : jsonResponse({ detail: "Accetta i Termini" }, 403);
+      }
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const user = userEvent.setup();
+    render(<Home />);
+    await user.type(screen.getByPlaceholderText("Email"), "nuovo@digitalmens.it");
+    await user.type(screen.getByPlaceholderText("Password (almeno 8 caratteri)"), "Temporanea12");
+    await user.click(screen.getByRole("button", { name: "Accedi" }));
+
+    const accept = await screen.findByRole("button", { name: "Accetta e continua" });
+    expect(accept).toBeDisabled();
+    expect(screen.getByText(/account di Digital Mens/)).toBeInTheDocument();
+    await user.click(screen.getByRole("checkbox"));
+    await user.click(accept);
+
+    await waitFor(() => expect(screen.getByText("nuovo@digitalmens.it")).toBeInTheDocument());
+    expect(fetchMock.mock.calls.some(([url]) => String(url).includes("/auth/accept-terms"))).toBe(true);
+    expect(window.localStorage.getItem("assistant-token")).toBe("first-login-token");
+  });
+
+  it("ricorda la password temporanea e permette di cambiarla dal profilo", async () => {
+    window.localStorage.setItem("assistant-token", "old-token");
+    let changeBody: FormData | null = null;
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes("/auth/me")) {
+        return jsonResponse({
+          email: "worker@digitalmens.it",
+          full_name: "Luca Bianchi",
+          company_domain: "digitalmens.it",
+          company_name: "Digital Mens",
+          role: "employee",
+          terms_accepted: true,
+          password_is_temporary: true,
+        });
+      }
+      if (url.includes("/auth/change-password")) {
+        changeBody = init?.body as FormData;
+        return jsonResponse({ changed: true, token: "new-token" });
       }
       if (url.includes("/chats") || url.includes("/company/documents")) return jsonResponse([]);
       throw new Error(`Unexpected fetch: ${url}`);
@@ -74,33 +143,46 @@ describe("flusso di registrazione", () => {
     const user = userEvent.setup();
     render(<Home />);
 
-    await user.click(screen.getByRole("button", { name: "Crea un account" }));
-    await user.type(screen.getByPlaceholderText("Email"), "nuovo@digitalmens.it");
-    await user.type(screen.getByPlaceholderText("Password (almeno 8 caratteri)"), "SuperSecret123");
-    await user.type(screen.getByPlaceholderText("Conferma password"), "SuperSecret123");
-    await user.click(screen.getByRole("checkbox"));
-    await user.click(screen.getByRole("button", { name: "Registrati" }));
+    expect(await screen.findByText(/Stai usando la password temporanea ricevuta/)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Cambia password" }));
+    await user.type(screen.getByPlaceholderText("Password attuale"), "Temporanea12");
+    await user.type(screen.getByPlaceholderText("Nuova password (almeno 8 caratteri)"), "MiaPassword99");
+    await user.type(screen.getByPlaceholderText("Conferma nuova password"), "MiaPassword99");
+    await user.click(screen.getByRole("button", { name: "Salva nuova password" }));
 
-    await waitFor(() => expect(screen.getByText("nuovo@digitalmens.it")).toBeInTheDocument());
-    expect(window.localStorage.getItem("assistant-token")).toBe("new-user-token");
-    await user.click(screen.getByRole("button", { name: /Nuovo nuovo@digitalmens\.it/i }));
-    expect(screen.getByRole("button", { name: "Esci" })).toBeInTheDocument();
+    expect(await screen.findByText("Password aggiornata.")).toBeInTheDocument();
+    expect(changeBody!.get("current_password")).toBe("Temporanea12");
+    expect(changeBody!.get("new_password")).toBe("MiaPassword99");
+    expect(window.localStorage.getItem("assistant-token")).toBe("new-token");
+    expect(screen.queryByText(/Stai usando la password temporanea ricevuta/)).not.toBeInTheDocument();
   });
 
-  it("non invia la richiesta se i termini non sono accettati", async () => {
-    const fetchMock = vi.fn();
-    vi.stubGlobal("fetch", fetchMock);
+  it("il dipendente sceglie i documenti per la chat ma non li carica ne' li elimina", async () => {
+    window.localStorage.setItem("assistant-token", "fake-token");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes("/auth/me")) {
+          return jsonResponse({ email: "worker@digitalmens.it", company_domain: "digitalmens.it", role: "employee", terms_accepted: true });
+        }
+        if (url.endsWith("/api/backend/chats")) return jsonResponse([]);
+        if (url.endsWith("/api/backend/company/documents")) {
+          return jsonResponse([{ id: 7, filename: "manuale-linea.pdf", status: "indexed" }]);
+        }
+        throw new Error(`Unexpected fetch: ${url}`);
+      }),
+    );
 
     const user = userEvent.setup();
     render(<Home />);
+    await user.click(await screen.findByRole("button", { name: "Documenti aziendali 0/1" }));
 
-    await user.click(screen.getByRole("button", { name: "Crea un account" }));
-    await user.type(screen.getByPlaceholderText("Email"), "nuovo@digitalmens.it");
-    await user.type(screen.getByPlaceholderText("Password (almeno 8 caratteri)"), "SuperSecret123");
-    await user.type(screen.getByPlaceholderText("Conferma password"), "SuperSecret123");
-    await user.click(screen.getByRole("button", { name: "Registrati" }));
-
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(screen.getByLabelText("Includi manuale-linea.pdf nella prossima chat aziendale")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Carica documento PDF aziendale")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Rimuovi manuale-linea.pdf dalla memoria RAG")).not.toBeInTheDocument();
+    expect(screen.getByText("I documenti sono gestiti dal responsabile della tua azienda.")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Gestione azienda" })).not.toBeInTheDocument();
   });
 });
 
@@ -423,7 +505,7 @@ describe("documenti aziendali", () => {
       const url = String(input);
       if (url.includes("/analyses")) return jsonResponse([]);
       if (url.includes("/auth/me")) {
-        return jsonResponse({ email: "user@digitalmens.it", company_domain: "digitalmens.it" });
+        return jsonResponse({ email: "user@digitalmens.it", company_domain: "digitalmens.it", role: "company_admin" });
       }
       if (url.endsWith("/api/backend/chats")) return jsonResponse([]);
       if (url.endsWith("/api/backend/company/documents") && init?.method === "POST") {

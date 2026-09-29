@@ -243,9 +243,19 @@ def reset_failed_login(connection: psycopg.Connection, user_id: int) -> None:
     )
 
 
+# Columns every query that feeds public_user() selects together with users.*.
+USER_COMPANY_COLUMNS = "companies.domain, companies.name AS company_name"
+
+
 def public_user(row: dict) -> dict:
     return {
         "id": row["id"],
         "email": row["email"],
+        "full_name": row.get("full_name"),
+        "role": row.get("role", "employee"),
+        "company_id": row.get("company_id"),
         "company_domain": row["domain"],
+        "company_name": row.get("company_name"),
+        "password_is_temporary": bool(row.get("password_is_temporary")),
+        "terms_accepted": row.get("terms_accepted_at") is not None,
     }

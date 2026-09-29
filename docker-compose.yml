@@ -34,7 +34,7 @@ services:
       dockerfile: docker/backend.Dockerfile
     restart: unless-stopped
     env_file: .env.docker
-    # DATABASE_URL, AUTH_SECRET, OPENAI_BASE_URL (Ollama), SMTP... vengono da .env.docker.
+    # DATABASE_URL, AUTH_SECRET, OLLAMA_BASE_URL, SMTP... vengono da .env.docker.
     environment:
       PDF_DIR: /data/manuals
       REFERENCE_IMAGES_DIR: /app/CLI/reference_images

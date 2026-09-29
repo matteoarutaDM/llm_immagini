@@ -80,8 +80,8 @@ def test_documents_are_isolated_between_two_companies(client, monkeypatch):
 
     monkeypatch.setattr(main_module, "get_assistant", lambda: FakeAssistant())
 
-    token_company_a = signup(client, "user@digitalmens.it")
-    token_company_b = signup(client, "user@othercorp.it")
+    token_company_a = signup(client, "user@digitalmens.it", role="company_admin")
+    token_company_b = signup(client, "user@othercorp.it", role="company_admin")
 
     client.post(
         "/api/company/documents",

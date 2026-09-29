@@ -3,8 +3,11 @@ import type {
   AskResult,
   Chat,
   ChatMessage,
+  CompanyAuditEntry,
+  CompanyDashboard,
   CompanyDocument,
   CurrentUser,
+  Employee,
   TwoFactorCodeSentResult,
   TwoFactorConfirmResult,
   TwoFactorRecoveryCodesResult,
@@ -23,10 +26,8 @@ function authHeaders(token: string | null): HeadersInit | undefined {
   return token ? { Authorization: `Bearer ${token}` } : undefined;
 }
 
-export type AuthResponse = {
+export type AuthResponse = CurrentUser & {
   token?: string;
-  email?: string;
-  company_domain?: string | null;
   message?: string;
   detail?: string;
   requires_2fa?: boolean;
@@ -37,13 +38,6 @@ export type MessageResponse = { message?: string; detail?: string };
 export type DeleteResponse = { deleted?: boolean; detail?: string };
 
 export const authApi = {
-  register: (email: string, password: string, termsAccepted: boolean) => {
-    const body = new FormData();
-    body.append("email", email);
-    body.append("password", password);
-    body.append("terms_accepted", String(termsAccepted));
-    return request<AuthResponse>("/api/backend/auth/register", { method: "POST", body });
-  },
   login: (email: string, password: string) => {
     const body = new FormData();
     body.append("email", email);
@@ -53,15 +47,20 @@ export const authApi = {
   logout: (token: string) =>
     request<MessageResponse>("/api/backend/auth/logout", { method: "POST", headers: authHeaders(token) }),
   me: (token: string) => request<CurrentUser>("/api/backend/auth/me", { headers: authHeaders(token) }),
-  verifyEmail: (token: string) => {
+  acceptTerms: (token: string) =>
+    request<{ terms_accepted?: boolean; detail?: string }>("/api/backend/auth/accept-terms", {
+      method: "POST",
+      headers: authHeaders(token),
+    }),
+  changePassword: (token: string, currentPassword: string, newPassword: string) => {
     const body = new FormData();
-    body.append("token", token);
-    return request<MessageResponse>("/api/backend/auth/verify-email", { method: "POST", body });
-  },
-  resendVerification: (email: string) => {
-    const body = new FormData();
-    body.append("email", email);
-    return request<MessageResponse>("/api/backend/auth/resend-verification", { method: "POST", body });
+    body.append("current_password", currentPassword);
+    body.append("new_password", newPassword);
+    return request<{ changed?: boolean; token?: string; detail?: string }>("/api/backend/auth/change-password", {
+      method: "POST",
+      headers: authHeaders(token),
+      body,
+    });
   },
   forgotPassword: (email: string) => {
     const body = new FormData();
@@ -185,6 +184,56 @@ export const documentsApi = {
       method: "DELETE",
       headers: authHeaders(token),
     }),
+  /** Company admin: keep the file but remove it from the RAG. */
+  archive: (token: string, documentId: number) =>
+    request<CompanyDocument & { detail?: string }>(`/api/backend/company/documents/${documentId}/archive`, {
+      method: "POST",
+      headers: authHeaders(token),
+    }),
+  /** Company admin: put an archived or failed document back into the RAG. */
+  reindex: (token: string, documentId: number) =>
+    request<CompanyDocument & { detail?: string }>(`/api/backend/company/documents/${documentId}/reindex`, {
+      method: "POST",
+      headers: authHeaders(token),
+    }),
+};
+
+export type CreatedEmployee = { employee?: Employee; temporary_password?: string; detail?: string };
+
+/** Company admin area: employees, dashboard, activity log. */
+export const companyApi = {
+  employees: (token: string) =>
+    request<Employee[] & { detail?: string }>("/api/backend/company/employees", { headers: authHeaders(token) }),
+  createEmployee: (token: string, email: string, fullName: string) => {
+    const body = new FormData();
+    body.append("email", email);
+    body.append("full_name", fullName);
+    return request<CreatedEmployee>("/api/backend/company/employees", { method: "POST", headers: authHeaders(token), body });
+  },
+  setEmployeeStatus: (token: string, employeeId: number, status: "active" | "blocked", reason = "") => {
+    const body = new FormData();
+    body.append("status", status);
+    body.append("reason", reason);
+    return request<{ status?: string; detail?: string }>(`/api/backend/company/employees/${employeeId}/status`, {
+      method: "POST",
+      headers: authHeaders(token),
+      body,
+    });
+  },
+  resetEmployeePassword: (token: string, employeeId: number) =>
+    request<{ temporary_password?: string; detail?: string }>(
+      `/api/backend/company/employees/${employeeId}/reset-password`,
+      { method: "POST", headers: authHeaders(token) },
+    ),
+  dashboard: (token: string, days = 30) =>
+    request<CompanyDashboard & { detail?: string }>(`/api/backend/company/dashboard?days=${days}`, {
+      headers: authHeaders(token),
+    }),
+  audit: (token: string, page = 1) =>
+    request<{ items: CompanyAuditEntry[]; total: number; page: number; page_size: number; detail?: string }>(
+      `/api/backend/company/audit?page=${page}`,
+      { headers: authHeaders(token) },
+    ),
 };
 
 export const askApi = {

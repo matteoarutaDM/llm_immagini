@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+
+import { useCompanyScope } from "../shell/CompanyScope";
 import { documentsApi } from "../../_lib/api";
 import { DOCUMENT_STATUSES, DOCUMENT_STATUS_LABELS } from "../../_lib/constants";
 import { formatBytes, formatDateTime } from "../../_lib/format";
@@ -7,6 +10,7 @@ import { useQueryFilters } from "../../_hooks/useQueryFilters";
 import { useResource } from "../../_hooks/useResource";
 import { UserCell } from "../users/UserCell";
 import { DeleteDocumentButton } from "./DeleteDocumentButton";
+import { DocumentIndexingButton } from "./DocumentIndexingButton";
 import { DocumentStatusBadge } from "../ui/Badge";
 import { Card } from "../ui/Card";
 import { DataTable } from "../ui/DataTable";
@@ -27,10 +31,26 @@ const BASE_COLUMNS = [
 
 export function DocumentsView() {
   const { filters, setFilters, key } = useQueryFilters(DEFAULT_FILTERS);
-  const { data, error, loading, reload } = useResource((signal) => documentsApi.list(filters, signal), `documents:${key}`);
+  const { companyId } = useCompanyScope();
+  // A new company starts from the first page of results.
+  useEffect(() => {
+    if (filters.page && filters.page !== "1") setFilters({ page: "1" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [companyId]);
+  const { data, error, loading, reload } = useResource((signal) => documentsApi.list({ ...filters, company: companyId }, signal), `documents:${key}:${companyId ?? "all"}`);
   const columns = [
     ...BASE_COLUMNS,
-    { key: "actions", header: "", render: (d) => <DeleteDocumentButton document={d} onDeleted={reload} />, className: "w-px text-right" },
+    {
+      key: "actions",
+      header: "",
+      render: (d) => (
+        <div className="flex justify-end gap-1">
+          <DocumentIndexingButton document={d} onChanged={reload} />
+          <DeleteDocumentButton document={d} onDeleted={reload} />
+        </div>
+      ),
+      className: "w-px text-right",
+    },
   ];
   const statusOptions = [
     { value: "", label: "Tutti", count: data?.facets.all },

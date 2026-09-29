@@ -4,7 +4,8 @@ python-multipart
 sentencepiece
 pillow
 protobuf
-openai
+# Client HTTP verso Ollama (backend/ollama_client.py).
+httpx>=0.27,<1
 python-dotenv
 psycopg[binary,pool]>=3.2
 # faiss-cpu 1.8.x is built against the NumPy 1.x ABI.

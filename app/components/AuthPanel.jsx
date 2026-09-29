@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { CpuChipIcon, DocumentMagnifyingGlassIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 
 import { CARD_CLASS, INPUT_CLASS, LINK_BUTTON_CLASS, PRIMARY_BUTTON_CLASS } from "./authStyles";
@@ -5,6 +6,65 @@ import { BrandMark } from "./BrandMark";
 import { PasswordInput } from "./PasswordInput";
 
 export function AuthPanel({ auth, onAuthSubmit }) {
+  return (
+    <AuthLayout>
+      {auth.authMode === "forgot" ? (
+        <ForgotForm auth={auth} />
+      ) : auth.authMode === "2fa" ? (
+        <TwoFactorForm auth={auth} onSubmit={onAuthSubmit} />
+      ) : auth.authMode === "2fa-recovery" ? (
+        <RecoveryCodeForm auth={auth} onSubmit={onAuthSubmit} />
+      ) : (
+        <LoginForm auth={auth} onSubmit={onAuthSubmit} />
+      )}
+    </AuthLayout>
+  );
+}
+
+/**
+ * First login of an account created by the company admin (or by the platform
+ * administration): the owner accepts Terms and Privacy before using the site.
+ */
+export function TermsGate({ auth, onAccepted }) {
+  const [accepted, setAccepted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function onSubmit(event) {
+    event.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    const ok = await auth.acceptTerms();
+    setSubmitting(false);
+    if (ok) onAccepted();
+    else setError("Non è stato possibile registrare il consenso. Riprova.");
+  }
+
+  return (
+    <AuthLayout>
+      <form className={`${CARD_CLASS} space-y-4`} onSubmit={onSubmit}>
+        <FormIntro
+          eyebrow="Primo accesso"
+          title="Benvenuto"
+          description={`${auth.profile?.company_name ? `Il tuo account di ${auth.profile.company_name} è pronto. ` : ""}Prima di iniziare, leggi e accetta i documenti qui sotto.`}
+        />
+        <label className="flex cursor-pointer items-start gap-3 py-1 text-xs leading-5 text-app-secondary">
+          <input type="checkbox" className="mt-1 h-4 w-4 shrink-0 accent-[var(--accent)]" checked={accepted} onChange={(event) => setAccepted(event.target.checked)} required />
+          <span>
+            Accetto i <a className="text-app-accent hover:underline" href="/terms" target="_blank" rel="noreferrer">Termini di servizio</a> e l’<a className="text-app-accent hover:underline" href="/privacy" target="_blank" rel="noreferrer">Informativa sulla privacy</a>.
+          </span>
+        </label>
+        <Feedback error={error} />
+        <button className={PRIMARY_BUTTON_CLASS} type="submit" disabled={submitting || !accepted}>
+          {submitting ? "Salvataggio..." : "Accetta e continua"}
+        </button>
+        <button className={LINK_BUTTON_CLASS} type="button" onClick={() => void auth.logout()}>Esci</button>
+      </form>
+    </AuthLayout>
+  );
+}
+
+function AuthLayout({ children }) {
   return (
     <main className="min-h-dvh bg-app-bg text-app-text lg:grid lg:grid-cols-[1.05fr_0.95fr]">
       <section className="relative hidden min-h-dvh overflow-hidden border-r border-app-border lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16">
@@ -42,17 +102,7 @@ export function AuthPanel({ auth, onAuthSubmit }) {
               <p className="text-xs text-app-muted">Industrial AI workspace</p>
             </div>
           </div>
-          {auth.authMode === "verify" ? (
-            <VerifyForm auth={auth} />
-          ) : auth.authMode === "forgot" ? (
-            <ForgotForm auth={auth} />
-          ) : auth.authMode === "2fa" ? (
-            <TwoFactorForm auth={auth} onSubmit={onAuthSubmit} />
-          ) : auth.authMode === "2fa-recovery" ? (
-            <RecoveryCodeForm auth={auth} onSubmit={onAuthSubmit} />
-          ) : (
-            <LoginRegisterForm auth={auth} onSubmit={onAuthSubmit} />
-          )}
+          {children}
         </div>
       </section>
     </main>
@@ -96,77 +146,29 @@ function Feedback({ info, error }) {
   );
 }
 
-function LoginRegisterForm({ auth, onSubmit }) {
-  const isRegister = auth.authMode === "register";
+function LoginForm({ auth, onSubmit }) {
   return (
     <form className={`${CARD_CLASS} space-y-4`} onSubmit={onSubmit}>
-      <FormIntro
-        eyebrow={isRegister ? "Crea il tuo workspace" : "Bentornato"}
-        title={isRegister ? "Inizia ora" : "Accedi"}
-        description={isRegister ? "Crea un account per conservare chat e conoscenze tecniche." : "Entra nel tuo workspace di assistenza tecnica."}
-      />
+      <FormIntro eyebrow="Bentornato" title="Accedi" description="Entra nel tuo workspace di assistenza tecnica." />
       <Field label="Email">
         <input className={INPUT_CLASS} type="email" placeholder="Email" value={auth.email} onChange={(event) => auth.setEmail(event.target.value)} autoComplete="email" autoFocus required />
       </Field>
       <Field label="Password">
-        <PasswordInput value={auth.password} onChange={auth.setPassword} placeholder="Password (almeno 8 caratteri)" autoComplete={isRegister ? "new-password" : "current-password"} required />
+        <PasswordInput value={auth.password} onChange={auth.setPassword} placeholder="Password (almeno 8 caratteri)" autoComplete="current-password" required />
       </Field>
-      {isRegister ? (
-        <Field label="Conferma password">
-          <PasswordInput value={auth.confirmPassword} onChange={auth.setConfirmPassword} placeholder="Conferma password" autoComplete="new-password" required />
-        </Field>
-      ) : null}
-      {isRegister ? (
-        <label className="flex cursor-pointer items-start gap-3 py-1 text-xs leading-5 text-app-secondary">
-          <input type="checkbox" className="mt-1 h-4 w-4 shrink-0 accent-[var(--accent)]" checked={auth.termsAccepted} onChange={(event) => auth.setTermsAccepted(event.target.checked)} required />
-          <span>
-            Accetto i <a className="text-app-accent hover:underline" href="/terms" target="_blank" rel="noreferrer">Termini di servizio</a> e l’<a className="text-app-accent hover:underline" href="/privacy" target="_blank" rel="noreferrer">Informativa sulla privacy</a>.
-          </span>
-        </label>
-      ) : null}
       <Feedback info={auth.authInfo} error={auth.authError} />
       <button className={PRIMARY_BUTTON_CLASS} type="submit" disabled={auth.authSubmitting}>
-        {auth.authSubmitting ? (isRegister ? "Registrazione in corso..." : "Accesso in corso...") : isRegister ? "Registrati" : "Accedi"}
+        {auth.authSubmitting ? "Accesso in corso..." : "Accedi"}
       </button>
       <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-        <button className={LINK_BUTTON_CLASS} type="button" disabled={auth.authSubmitting} onClick={() => {
-          auth.setAuthMode(isRegister ? "login" : "register");
+        <p className="text-xs leading-5 text-app-muted">Le credenziali te le fornisce il responsabile della tua azienda.</p>
+        <button className={LINK_BUTTON_CLASS} type="button" onClick={() => {
+          auth.setForgotEmail(auth.email);
+          auth.setAuthMode("forgot");
           auth.setAuthError(null);
           auth.setAuthInfo(null);
-          auth.setConfirmPassword("");
-        }}>
-          {isRegister ? "Ho già un account" : "Crea un account"}
-        </button>
-        {!isRegister ? (
-          <button className={LINK_BUTTON_CLASS} type="button" onClick={() => {
-            auth.setForgotEmail(auth.email);
-            auth.setAuthMode("forgot");
-            auth.setAuthError(null);
-            auth.setAuthInfo(null);
-          }}>Password dimenticata?</button>
-        ) : null}
+        }}>Password dimenticata?</button>
       </div>
-    </form>
-  );
-}
-
-function VerifyForm({ auth }) {
-  function onSubmit(event) {
-    event.preventDefault();
-    void auth.verifyEmail();
-  }
-  return (
-    <form className={`${CARD_CLASS} space-y-4`} onSubmit={onSubmit}>
-      <FormIntro eyebrow="Sicurezza account" title="Verifica la tua email" description="Incolla il token ricevuto per attivare l’account." />
-      <Feedback info={auth.authInfo} error={auth.authError} />
-      <Field label="Token di verifica">
-        <input className={INPUT_CLASS} type="text" placeholder="Token di verifica" value={auth.verificationToken} onChange={(event) => auth.setVerificationToken(event.target.value)} autoComplete="one-time-code" autoFocus required />
-      </Field>
-      <button className={PRIMARY_BUTTON_CLASS} type="submit">Conferma account</button>
-      <button className={LINK_BUTTON_CLASS} type="button" disabled={auth.resendingVerification || !auth.email} onClick={() => void auth.resendVerification()}>
-        {auth.resendingVerification ? "Invio in corso..." : "Non hai ricevuto l’email? Invia di nuovo"}
-      </button>
-      <button className={LINK_BUTTON_CLASS} type="button" onClick={() => { auth.setAuthMode("login"); auth.setAuthError(null); }}>Torna al login</button>
     </form>
   );
 }

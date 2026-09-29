@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
+import { useCompanyScope } from "../shell/CompanyScope";
 import { analysesApi } from "../../_lib/api";
 import { ANALYSIS_STATUSES, ANALYSIS_STATUS_LABELS, KNOWLEDGE_MODES, KNOWLEDGE_MODE_LABELS } from "../../_lib/constants";
 import { useQueryFilters } from "../../_hooks/useQueryFilters";
@@ -20,8 +22,14 @@ const POLL_MS = 20_000;
 
 export function AnalysesView() {
   const { filters, setFilters, key } = useQueryFilters(DEFAULT_FILTERS);
-  const { data, error, loading, reload } = useResource((signal) => analysesApi.list(filters, signal), `analyses:${key}`, { pollMs: POLL_MS });
-  const machines = useResource((signal) => analysesApi.machines(signal), "analyses:machines");
+  const { companyId } = useCompanyScope();
+  // A new company starts from the first page of results.
+  useEffect(() => {
+    if (filters.page && filters.page !== "1") setFilters({ page: "1" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [companyId]);
+  const { data, error, loading, reload } = useResource((signal) => analysesApi.list({ ...filters, company: companyId }, signal), `analyses:${key}:${companyId ?? "all"}`, { pollMs: POLL_MS });
+  const machines = useResource((signal) => analysesApi.machines(signal, companyId), `analyses:machines:${companyId ?? "all"}`);
   const machineOptions = (machines.data?.machines ?? []).map((machine) => ({ value: machine.id, label: machine.name ?? machine.id }));
 
   const statusOptions = [

@@ -30,7 +30,7 @@ export function AnalysisStatusBadge({ status }) {
   );
 }
 
-const DOCUMENT_TONES = { pending: "info", indexed: "success", failed: "danger" };
+const DOCUMENT_TONES = { pending: "info", indexed: "success", failed: "danger", archived: "neutral" };
 
 export function DocumentStatusBadge({ status }) {
   return (

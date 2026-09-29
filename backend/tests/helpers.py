@@ -5,33 +5,49 @@ from fastapi.testclient import TestClient
 DEFAULT_PASSWORD = "SuperSecret123"
 
 
-def register(client: TestClient, email: str, password: str = DEFAULT_PASSWORD, terms_accepted: bool = True):
-    return client.post(
-        "/api/auth/register",
-        data={"email": email, "password": password, "terms_accepted": str(terms_accepted).lower()},
-    )
-
-
-def register_user(
-    client: TestClient,
+def create_account(
     email: str,
     password: str = DEFAULT_PASSWORD,
-) -> None:
-    response = register(client, email, password)
-    assert response.status_code == 200, response.text
+    *,
+    role: str = "employee",
+    terms_accepted: bool = True,
+    full_name: str | None = None,
+) -> int:
+    """Creates a user straight in the database, as a company admin or the super
+    admin would (there is no self-registration). A non-public email domain puts
+    the user in the company of that domain, created if needed, so tests keep
+    their "two users of acme.it share documents" meaning."""
+    from backend.database import connect, hash_password
+    from backend.public_email_domains import is_public_domain
+
+    email = email.strip().lower()
+    domain = email.split("@", 1)[1]
+    with connect() as connection:
+        company_id = None
+        if not is_public_domain(domain):
+            connection.execute(
+                "INSERT INTO companies(domain, name) VALUES (%s, %s) ON CONFLICT (domain) DO NOTHING", (domain, domain)
+            )
+            company_id = connection.execute("SELECT id FROM companies WHERE domain = %s", (domain,)).fetchone()["id"]
+        return connection.execute(
+            "INSERT INTO users(email, password_hash, company_id, role, full_name, terms_accepted_at) "
+            "VALUES (%s, %s, %s, %s, %s, CASE WHEN %s THEN now() END) RETURNING id",
+            (email, hash_password(password), company_id, role, full_name, terms_accepted),
+        ).fetchone()["id"]
+
+
+def register_user(client: TestClient, email: str, password: str = DEFAULT_PASSWORD, role: str = "employee") -> int:
+    return create_account(email, password, role=role)
 
 
 def login(client: TestClient, email: str, password: str = DEFAULT_PASSWORD):
     return client.post("/api/auth/login", data={"email": email, "password": password})
 
 
-def signup(
-    client: TestClient,
-    email: str,
-    password: str = DEFAULT_PASSWORD,
-) -> str:
-    """Registers a user and returns the bearer token issued at signup."""
-    response = register(client, email, password)
+def signup(client: TestClient, email: str, password: str = DEFAULT_PASSWORD, role: str = "employee") -> str:
+    """Creates the account and returns the bearer token of its first login."""
+    create_account(email, password, role=role)
+    response = login(client, email, password)
     assert response.status_code == 200, response.text
     return response.json()["token"]
 

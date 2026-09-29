@@ -10,18 +10,21 @@ import os
 import secrets
 import shutil
 import tempfile
+import threading
 import time
+from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Annotated
 
 from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, Header, HTTPException, Request, Response, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from psycopg import Connection, errors as pg_errors
 from psycopg.types.json import Jsonb
 
-from backend import email_service
-from backend.auth import CurrentUser, email_domain
+from backend import accounts, email_service, perf
+from backend.auth import AuthenticatedUser, CompanyAdmin, CurrentUser
 from backend.database import (
     PASSWORD_RESET_TOKEN_TTL_SECONDS,
     TWO_FA_EMAIL_CODE_TTL_SECONDS,
@@ -34,12 +37,14 @@ from backend.database import (
     is_locked,
     make_challenge_token,
     make_token,
+    public_user,
     register_failed_login,
     reset_failed_login,
     utc_now,
     verify_password,
 )
-from backend.public_email_domains import is_public_domain
+from backend.llm_errors import LLMError
+from backend.llm_service import get_llm_service
 from backend.rate_limit import SlidingWindowRateLimiter
 from backend.two_factor_service import generate_email_code, generate_recovery_codes
 
@@ -47,8 +52,10 @@ from backend.two_factor_service import generate_email_code, generate_recovery_co
 # Uvicorn configures its own loggers but not the application loggers.
 logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO").upper(),
-    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    format="%(asctime)s %(levelname)s %(name)s [%(request_id)s]: %(message)s",
 )
+for _handler in logging.getLogger().handlers:
+    _handler.addFilter(perf.RequestIdFilter())
 
 logger = logging.getLogger("backend.main")
 
@@ -66,8 +73,6 @@ MAX_SPEAK_CHARS = int(os.getenv("MAX_SPEAK_CHARS", "2000"))
 
 RATE_LIMIT_LOGIN_MAX = int(os.getenv("RATE_LIMIT_LOGIN_MAX", "10"))
 RATE_LIMIT_LOGIN_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_LOGIN_WINDOW_SECONDS", "60"))
-RATE_LIMIT_REGISTER_MAX = int(os.getenv("RATE_LIMIT_REGISTER_MAX", "5"))
-RATE_LIMIT_REGISTER_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_REGISTER_WINDOW_SECONDS", "60"))
 RATE_LIMIT_ASK_MAX = int(os.getenv("RATE_LIMIT_ASK_MAX", "20"))
 RATE_LIMIT_ASK_WINDOW_SECONDS = float(os.getenv("RATE_LIMIT_ASK_WINDOW_SECONDS", "60"))
 RATE_LIMIT_TRANSCRIBE_MAX = int(os.getenv("RATE_LIMIT_TRANSCRIBE_MAX", "20"))
@@ -98,7 +103,6 @@ BACKOFFICE_API_TOKEN = os.getenv("BACKOFFICE_API_TOKEN", "").strip()
 _DUMMY_PASSWORD_HASH = hash_password(secrets.token_urlsafe(32))
 
 _login_limiter = SlidingWindowRateLimiter(RATE_LIMIT_LOGIN_MAX, RATE_LIMIT_LOGIN_WINDOW_SECONDS)
-_register_limiter = SlidingWindowRateLimiter(RATE_LIMIT_REGISTER_MAX, RATE_LIMIT_REGISTER_WINDOW_SECONDS)
 _ask_limiter = SlidingWindowRateLimiter(RATE_LIMIT_ASK_MAX, RATE_LIMIT_ASK_WINDOW_SECONDS)
 _transcribe_limiter = SlidingWindowRateLimiter(RATE_LIMIT_TRANSCRIBE_MAX, RATE_LIMIT_TRANSCRIBE_WINDOW_SECONDS)
 _speak_limiter = SlidingWindowRateLimiter(RATE_LIMIT_SPEAK_MAX, RATE_LIMIT_SPEAK_WINDOW_SECONDS)
@@ -160,9 +164,54 @@ def get_synthesizer():
     return _synthesizer
 
 
-app = FastAPI(title="LLM YOLO Machine Assistant")
+# 1 = load SigLIP, embeddings, FAISS and GOT-OCR in the background at startup
+# instead of on the first question (which otherwise waits minutes after a restart).
+PRELOAD_MODELS = os.getenv("PRELOAD_MODELS", "0") == "1"
+
+
+def _preload_models() -> None:
+    """Best effort: on failure the API stays up and models load on first use as before."""
+    started = time.perf_counter()
+    try:
+        from backend import model_service
+
+        get_assistant().ensure_ready()
+        if model_service.OCR_BACKEND == "got" and model_service.OCR_IN_PROCESS:
+            from backend.ocr_service import got_ocr
+
+            got_ocr.warm_up()
+        logger.info("Models preloaded in %.1fs", time.perf_counter() - started)
+    except Exception:
+        logger.exception("Model preload failed: models will be loaded on the first question")
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    if PRELOAD_MODELS:
+        threading.Thread(target=_preload_models, name="model-preload", daemon=True).start()
+    yield
+
+
+app = FastAPI(title="LLM YOLO Machine Assistant", lifespan=lifespan)
 
 init_db()
+
+@app.middleware("http")
+async def profile_ask(request: Request, call_next):
+    """One PERF log line per /api/ask with the time of every stage, correlated by
+    request id (also returned as X-Request-ID)."""
+    if request.url.path != "/api/ask":
+        return await call_next(request)
+    profile = perf.start("/api/ask", request.headers.get("x-request-id", "")[:64] or None)
+    status = 500
+    try:
+        response = await call_next(request)
+        status = response.status_code
+        response.headers["X-Request-ID"] = profile.request_id
+        return response
+    finally:
+        profile.log(status=status)
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -180,11 +229,6 @@ def _client_ip(request: Request) -> str:
 def enforce_login_rate_limit(request: Request) -> None:
     if not _login_limiter.allow(_client_ip(request)):
         raise HTTPException(status_code=429, detail="Troppi tentativi di accesso. Riprova piu tardi.")
-
-
-def enforce_register_rate_limit(request: Request) -> None:
-    if not _register_limiter.allow(_client_ip(request)):
-        raise HTTPException(status_code=429, detail="Troppe richieste di registrazione. Riprova piu tardi.")
 
 
 def enforce_ask_rate_limit(request: Request) -> None:
@@ -297,7 +341,7 @@ def _resolve_challenge_user(challenge_token: str) -> dict:
         raise HTTPException(status_code=401, detail="Sessione di verifica scaduta. Accedi di nuovo.")
     with connect() as connection:
         row = connection.execute(
-            "SELECT users.*, companies.domain FROM users LEFT JOIN companies ON companies.id = users.company_id "
+            "SELECT users.*, companies.domain, companies.name AS company_name FROM users LEFT JOIN companies ON companies.id = users.company_id "
             "WHERE users.id = %s",
             (decoded["user_id"],),
         ).fetchone()
@@ -315,20 +359,6 @@ def _find_unused_recovery_code(connection: Connection, user_id: int, recovery_co
     return next((row for row in candidates if verify_password(recovery_code.strip(), row["code_hash"])), None)
 
 
-def _associate_company_if_applicable(connection: Connection, user_id: int, email: str) -> None:
-    """Creates (if needed) and links the company matching the user's email
-    domain, unless the domain is a public/personal one."""
-    domain = email_domain(email)
-    if is_public_domain(domain):
-        return
-    connection.execute(
-        "INSERT INTO companies(domain, name, created_at) VALUES (%s, %s, %s) ON CONFLICT (domain) DO NOTHING",
-        (domain, domain, utc_now()),
-    )
-    company_id = connection.execute("SELECT id FROM companies WHERE domain = %s", (domain,)).fetchone()["id"]
-    connection.execute("UPDATE users SET company_id = %s WHERE id = %s", (company_id, user_id))
-
-
 def _ensure_not_blocked(row: dict) -> None:
     if row["status"] == "blocked":
         raise HTTPException(status_code=403, detail="Account sospeso. Contatta l'assistenza.")
@@ -340,11 +370,7 @@ def _session_response(row: dict) -> dict:
         connection.execute(
             "UPDATE users SET last_login_at = now(), last_active_at = now() WHERE id = %s", (row["id"],)
         )
-    return {
-        "token": make_token(row["id"], row["token_version"]),
-        "email": row["email"],
-        "company_domain": row["domain"],
-    }
+    return {"token": make_token(row["id"], row["token_version"]), **public_user(row)}
 
 
 @app.get("/health")
@@ -352,42 +378,15 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.post("/api/auth/register", dependencies=[Depends(enforce_register_rate_limit)])
-def register(
-    email: str = Form(),
-    password: str = Form(),
-    terms_accepted: bool = Form(...),
-) -> dict:
-    email = email.strip().lower()
-    _validate_password(password)
-    if not terms_accepted:
-        raise HTTPException(
-            status_code=400,
-            detail="Devi accettare i Termini di servizio e l'Informativa sulla privacy per registrarti.",
-        )
-    email_domain(email)
-
-    with connect() as connection:
-        try:
-            user_id = connection.execute(
-                "INSERT INTO users(email, password_hash, company_id, terms_accepted_at, created_at) "
-                "VALUES (%s, %s, NULL, %s, %s) RETURNING id",
-                (email, hash_password(password), utc_now(), utc_now()),
-            ).fetchone()["id"]
-        except pg_errors.UniqueViolation as exc:
-            raise HTTPException(status_code=409, detail="Questa email e gia registrata.") from exc
-        _associate_company_if_applicable(connection, user_id, email)
-        row = connection.execute(
-            "SELECT users.*, companies.domain FROM users LEFT JOIN companies ON companies.id = users.company_id "
-            "WHERE users.id = %s",
-            (user_id,),
-        ).fetchone()
-
-    return {
-        "token": make_token(row["id"], row["token_version"]),
-        "email": row["email"],
-        "company_domain": row["domain"],
-    }
+@app.get("/health/ai")
+def health_ai(response: Response) -> dict:
+    """Primary: cheap model listing, no generation. Fallback: configuration only,
+    so a health check never starts a paid GPU. No server address in the body.
+    200 = ok or degraded (primary down, fallback answering); 503 = no provider."""
+    status = get_llm_service().health_check()
+    if status.get("status") == "unavailable":
+        response.status_code = 503
+    return status
 
 
 @app.post("/api/auth/login", dependencies=[Depends(enforce_login_rate_limit)])
@@ -395,7 +394,7 @@ def login(background_tasks: BackgroundTasks, email: str = Form(), password: str 
     normalized_email = email.strip().lower()
     with connect() as connection:
         row = connection.execute(
-            "SELECT users.*, companies.domain FROM users LEFT JOIN companies ON companies.id = users.company_id "
+            "SELECT users.*, companies.domain, companies.name AS company_name FROM users LEFT JOIN companies ON companies.id = users.company_id "
             "WHERE email = %s",
             (normalized_email,),
         ).fetchone()
@@ -410,13 +409,6 @@ def login(background_tasks: BackgroundTasks, email: str = Form(), password: str 
         if row is not None and not locked:
             if credentials_ok:
                 reset_failed_login(connection, row["id"])
-                if row["company_id"] is None:
-                    _associate_company_if_applicable(connection, row["id"], row["email"])
-                    row = connection.execute(
-                        "SELECT users.*, companies.domain FROM users "
-                        "LEFT JOIN companies ON companies.id = users.company_id WHERE users.id = %s",
-                        (row["id"],),
-                    ).fetchone()
             else:
                 register_failed_login(connection, row["id"], row["failed_login_attempts"])
         # The connection commits here (context manager exit) before any
@@ -446,15 +438,49 @@ def login(background_tasks: BackgroundTasks, email: str = Form(), password: str 
 
 
 @app.post("/api/auth/logout")
-def logout(user: CurrentUser) -> dict:
+def logout(user: AuthenticatedUser) -> dict:
     with connect() as connection:
         bump_token_version(connection, user["id"])
     return {"message": "Logout effettuato."}
 
 
 @app.get("/api/auth/me")
-def me(user: CurrentUser) -> dict:
+def me(user: AuthenticatedUser) -> dict:
     return user
+
+
+@app.post("/api/auth/accept-terms")
+def accept_terms(user: AuthenticatedUser) -> dict:
+    """Accounts are created by someone else: the owner accepts the Terms and the
+    Privacy notice at the first login, before using the site."""
+    with connect() as connection:
+        connection.execute(
+            "UPDATE users SET terms_accepted_at = COALESCE(terms_accepted_at, now()) WHERE id = %s", (user["id"],)
+        )
+    return {"terms_accepted": True}
+
+
+@app.post("/api/auth/change-password", dependencies=[Depends(enforce_login_rate_limit)])
+def change_password(user: AuthenticatedUser, current_password: str = Form(), new_password: str = Form()) -> dict:
+    """Optional: the owner of an account decides whether to replace the temporary
+    password received from their company admin. Other sessions are revoked; the
+    caller gets a fresh token so it stays signed in."""
+    _validate_password(new_password)
+    with connect() as connection:
+        row = connection.execute("SELECT password_hash FROM users WHERE id = %s", (user["id"],)).fetchone()
+        if not verify_password(current_password, row["password_hash"]):
+            raise HTTPException(status_code=401, detail="La password attuale non e' corretta.")
+        if verify_password(new_password, row["password_hash"]):
+            raise HTTPException(status_code=400, detail="La nuova password deve essere diversa da quella attuale.")
+        connection.execute(
+            "UPDATE users SET password_hash = %s, password_is_temporary = false WHERE id = %s",
+            (hash_password(new_password), user["id"]),
+        )
+        bump_token_version(connection, user["id"])
+        token_version = connection.execute(
+            "SELECT token_version FROM users WHERE id = %s", (user["id"],)
+        ).fetchone()["token_version"]
+    return {"changed": True, "token": make_token(user["id"], token_version)}
 
 
 @app.post("/api/auth/2fa/setup", dependencies=[Depends(enforce_2fa_send_rate_limit)])
@@ -683,7 +709,8 @@ def reset_password(token: str = Form(), new_password: str = Form()) -> dict:
 
         now = utc_now()
         connection.execute(
-            "UPDATE users SET password_hash = %s WHERE id = %s", (hash_password(new_password), row["user_id"])
+            "UPDATE users SET password_hash = %s, password_is_temporary = false WHERE id = %s",
+            (hash_password(new_password), row["user_id"]),
         )
         # Invalidate this token and any other still-outstanding reset link
         # for the same account in one sweep.
@@ -815,26 +842,157 @@ def chat_analyses(chat_id: int, user: CurrentUser) -> list[dict]:
     ]
 
 
+# =============================================================================
+# Company area: documents (managed by the company admin, used by everybody in
+# the company), employees, dashboard and activity log. The company always
+# comes from the caller's account, never from the request, so a company admin
+# can never reach another company's data.
+# =============================================================================
+AUDIT_METADATA_KEYS = ("email", "full_name", "filename", "role", "name", "domain")
+
+
+def _company_dirs(company_domain: str) -> tuple[Path, Path]:
+    """pdfs/ is what the company RAG indexes; archive/ keeps files excluded from it."""
+    company_key = hashlib.sha256(company_domain.encode("utf-8")).hexdigest()[:16]
+    base = COMPANY_DATA_DIR / company_key
+    return base / "pdfs", base / "archive"
+
+
+def _rebuild_company_index(company_id: int, company_domain: str) -> bool:
+    """Rebuilds the company's RAG index from its pdfs/ folder now, so the caller
+    can report whether indexing worked. Pending documents become indexed, or
+    failed if the build raised."""
+    get_assistant().invalidate_company_rag(company_domain)
+    try:
+        get_assistant().ensure_company_rag_ready(company_domain)
+    except Exception:
+        logger.exception("Indicizzazione RAG fallita per l'azienda %s", company_domain)
+        with connect() as connection:
+            connection.execute(
+                "UPDATE company_documents SET status = 'failed' WHERE company_id = %s AND status = 'pending'",
+                (company_id,),
+            )
+        return False
+    with connect() as connection:
+        connection.execute(
+            "UPDATE company_documents SET status = 'indexed', indexed_at = now() "
+            "WHERE company_id = %s AND status IN ('pending', 'failed')",
+            (company_id,),
+        )
+    return True
+
+
+def _company_document(connection: Connection, company_id: int, document_id: int) -> dict:
+    row = connection.execute(
+        "SELECT * FROM company_documents WHERE id = %s AND company_id = %s", (document_id, company_id)
+    ).fetchone()
+    if row is None:
+        raise HTTPException(status_code=404, detail="Documento non trovato.")
+    return row
+
+
+def _document_status(document_id: int) -> str | None:
+    with connect() as connection:
+        row = connection.execute("SELECT status FROM company_documents WHERE id = %s", (document_id,)).fetchone()
+    return row["status"] if row else None
+
+
+def archive_company_document(company_id: int, company_domain: str, document_id: int) -> dict:
+    """Removes the document from the RAG but keeps the file, so it can be re-indexed."""
+    _, archive_dir = _company_dirs(company_domain)
+    with connect() as connection:
+        row = _company_document(connection, company_id, document_id)
+        if row["status"] == "archived":
+            raise HTTPException(status_code=409, detail="Il documento e' gia' escluso dalla ricerca.")
+        source = Path(row["storage_path"])
+        if not source.exists():
+            raise HTTPException(status_code=409, detail="Il file del documento non e' piu' presente sul server.")
+        archive_dir.mkdir(parents=True, exist_ok=True)
+        destination = archive_dir / source.name
+        shutil.move(str(source), destination)
+        connection.execute(
+            "UPDATE company_documents SET status = 'archived', indexed_at = NULL, storage_path = %s WHERE id = %s",
+            (str(destination), document_id),
+        )
+    # The next question rebuilds the index without this PDF.
+    get_assistant().invalidate_company_rag(company_domain)
+    return {"id": document_id, "filename": row["filename"], "status": "archived"}
+
+
+def reindex_company_document(company_id: int, company_domain: str, document_id: int) -> dict:
+    """Puts an archived or failed document back into the RAG and rebuilds the index now."""
+    pdf_dir, _ = _company_dirs(company_domain)
+    with connect() as connection:
+        row = _company_document(connection, company_id, document_id)
+        if row["status"] == "indexed":
+            raise HTTPException(status_code=409, detail="Il documento e' gia' indicizzato.")
+        source = Path(row["storage_path"])
+        if not source.exists():
+            raise HTTPException(status_code=409, detail="Il file del documento non e' piu' presente sul server.")
+        destination = pdf_dir / source.name
+        if source != destination:
+            pdf_dir.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(source), destination)
+        connection.execute(
+            "UPDATE company_documents SET status = 'pending', storage_path = %s WHERE id = %s",
+            (str(destination), document_id),
+        )
+    _rebuild_company_index(company_id, company_domain)
+    return {"id": document_id, "filename": row["filename"], "status": _document_status(document_id)}
+
+
+def delete_company_document_everywhere(company_id: int, company_domain: str, document_id: int) -> dict:
+    """Deletes row and file; the next question rebuilds the index without it."""
+    with connect() as connection:
+        row = _company_document(connection, company_id, document_id)
+        connection.execute("DELETE FROM company_documents WHERE id = %s", (document_id,))
+    Path(row["storage_path"]).unlink(missing_ok=True)
+    get_assistant().invalidate_company_rag(company_domain)
+    return {"deleted": True, "filename": row["filename"]}
+
+
+def _audit_company_action(request: Request, user: dict, action: str, target_type: str, target_id, **metadata) -> None:
+    reason = metadata.pop("reason", None)
+    with connect() as connection:
+        accounts.record_audit(
+            connection,
+            action=action,
+            target_type=target_type,
+            target_id=target_id,
+            company_id=user["company_id"],
+            actor_user_id=user["id"],
+            reason=reason,
+            metadata={key: value for key, value in metadata.items() if value is not None},
+            ip=_client_ip(request),
+        )
+
+
 @app.get("/api/company/documents")
 def company_documents(user: CurrentUser) -> list[dict]:
-    if not user["company_domain"]:
+    """Company admin: every document with its state. Employees: only the indexed
+    ones, which are the ones they can pick for a chat."""
+    if not user["company_id"]:
         return []
     with connect() as connection:
-        rows = connection.execute(
-            """
-            SELECT documents.id, documents.filename, documents.status, documents.created_at
-            FROM company_documents AS documents JOIN companies ON companies.id = documents.company_id
-            WHERE companies.domain = %s ORDER BY documents.created_at DESC
-            """,
-            (user["company_domain"],),
+        if user["role"] == "company_admin":
+            return connection.execute(
+                """
+                SELECT documents.id, documents.filename, documents.status, documents.created_at,
+                       documents.size_bytes, documents.indexed_at, uploader.email AS uploaded_by
+                FROM company_documents AS documents LEFT JOIN users AS uploader ON uploader.id = documents.uploaded_by
+                WHERE documents.company_id = %s ORDER BY documents.created_at DESC
+                """,
+                (user["company_id"],),
+            ).fetchall()
+        return connection.execute(
+            "SELECT id, filename, status, created_at FROM company_documents "
+            "WHERE company_id = %s AND status = 'indexed' ORDER BY created_at DESC",
+            (user["company_id"],),
         ).fetchall()
-    return rows
 
 
 @app.post("/api/company/documents")
-def upload_company_document(user: CurrentUser, document: UploadFile = File(...)) -> dict:
-    if not user["company_domain"]:
-        raise HTTPException(status_code=403, detail="Solo gli utenti aziendali possono caricare documenti.")
+def upload_company_document(request: Request, user: CompanyAdmin, document: UploadFile = File(...)) -> dict:
     if document.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Carica un documento PDF.")
     safe_name = Path(document.filename or "document.pdf").name
@@ -846,8 +1004,7 @@ def upload_company_document(user: CurrentUser, document: UploadFile = File(...))
     if header != PDF_MAGIC_BYTES:
         raise HTTPException(status_code=400, detail="Il file non e' un PDF valido.")
 
-    company_key = hashlib.sha256(user["company_domain"].encode("utf-8")).hexdigest()[:16]
-    pdf_dir = COMPANY_DATA_DIR / company_key / "pdfs"
+    pdf_dir, _ = _company_dirs(user["company_domain"])
     pdf_dir.mkdir(parents=True, exist_ok=True)
     # A random filename on disk avoids collisions/overwrites between uploads
     # that share the same original name; the original name is kept only as
@@ -874,52 +1031,240 @@ def upload_company_document(user: CurrentUser, document: UploadFile = File(...))
         raise
 
     with connect() as connection:
-        company = connection.execute(
-            "SELECT id FROM companies WHERE domain = %s", (user["company_domain"],)
-        ).fetchone()
         document_id = connection.execute(
             "INSERT INTO company_documents(company_id, uploaded_by, filename, storage_path, size_bytes, status, created_at) "
             "VALUES (%s, %s, %s, %s, %s, 'pending', %s) RETURNING id",
-            (company["id"], user["id"], safe_name, str(destination), total_written, utc_now()),
+            (user["company_id"], user["id"], safe_name, str(destination), total_written, utc_now()),
         ).fetchone()["id"]
+    _audit_company_action(request, user, "document.upload", "company_document", document_id, filename=safe_name)
 
-    get_assistant().invalidate_company_rag(user["company_domain"])
-    try:
-        get_assistant().ensure_company_rag_ready(user["company_domain"])
-    except Exception:
-        logger.exception("Indicizzazione RAG fallita per l'azienda %s", user["company_domain"])
-        with connect() as connection:
-            connection.execute("UPDATE company_documents SET status = 'failed' WHERE id = %s", (document_id,))
-        return {"id": document_id, "filename": safe_name, "status": "failed"}
+    _rebuild_company_index(user["company_id"], user["company_domain"])
+    return {"id": document_id, "filename": safe_name, "status": _document_status(document_id)}
 
-    with connect() as connection:
-        connection.execute(
-            "UPDATE company_documents SET status = 'indexed', indexed_at = now() "
-            "WHERE company_id = %s AND status <> 'indexed'",
-            (company["id"],),
-        )
-    return {"id": document_id, "filename": safe_name, "status": "indexed"}
+
+@app.post("/api/company/documents/{document_id}/archive")
+def archive_document(request: Request, document_id: int, user: CompanyAdmin) -> dict:
+    result = archive_company_document(user["company_id"], user["company_domain"], document_id)
+    _audit_company_action(request, user, "document.archive", "company_document", document_id, filename=result["filename"])
+    return result
+
+
+@app.post("/api/company/documents/{document_id}/reindex")
+def reindex_document(request: Request, document_id: int, user: CompanyAdmin) -> dict:
+    result = reindex_company_document(user["company_id"], user["company_domain"], document_id)
+    _audit_company_action(request, user, "document.reindex", "company_document", document_id, filename=result["filename"])
+    return result
 
 
 @app.delete("/api/company/documents/{document_id}")
-def delete_company_document(document_id: int, user: CurrentUser) -> dict:
-    if not user["company_domain"]:
-        raise HTTPException(status_code=403, detail="Solo gli utenti aziendali possono gestire documenti.")
-    with connect() as connection:
-        row = connection.execute(
-            """
-            SELECT documents.id, documents.storage_path FROM company_documents AS documents
-            JOIN companies ON companies.id = documents.company_id
-            WHERE documents.id = %s AND companies.domain = %s
-            """,
-            (document_id, user["company_domain"]),
-        ).fetchone()
-        if row is None:
-            raise HTTPException(status_code=404, detail="Documento non trovato.")
-        connection.execute("DELETE FROM company_documents WHERE id = %s", (document_id,))
-    Path(row["storage_path"]).unlink(missing_ok=True)
-    get_assistant().invalidate_company_rag(user["company_domain"])
+def delete_company_document(request: Request, document_id: int, user: CompanyAdmin) -> dict:
+    result = delete_company_document_everywhere(user["company_id"], user["company_domain"], document_id)
+    _audit_company_action(request, user, "document.delete", "company_document", document_id, filename=result["filename"])
     return {"deleted": True}
+
+
+def _manageable_employee(connection: Connection, admin: dict, employee_id: int) -> dict:
+    """An employee of the admin's company. Company admins (including the caller)
+    are managed by the super admin only."""
+    row = connection.execute(
+        "SELECT id, email, full_name, role, status FROM users WHERE id = %s AND company_id = %s",
+        (employee_id, admin["company_id"]),
+    ).fetchone()
+    if row is None:
+        raise HTTPException(status_code=404, detail="Dipendente non trovato.")
+    if row["role"] != "employee":
+        raise HTTPException(status_code=403, detail="I responsabili dell'azienda sono gestiti dall'amministrazione.")
+    return row
+
+
+@app.get("/api/company/employees")
+def list_employees(user: CompanyAdmin) -> list[dict]:
+    with connect() as connection:
+        return connection.execute(
+            """
+            SELECT users.id, users.email, users.full_name, users.role, users.status, users.status_reason,
+                   users.password_is_temporary, users.two_factor_enabled, users.last_login_at,
+                   users.last_active_at, users.created_at,
+                   (SELECT count(*) FROM analyses WHERE analyses.user_id = users.id) AS analyses_count
+            FROM users WHERE users.company_id = %s
+            ORDER BY users.role DESC, users.created_at
+            """,
+            (user["company_id"],),
+        ).fetchall()
+
+
+@app.post("/api/company/employees")
+def create_employee(request: Request, user: CompanyAdmin, email: str = Form(), full_name: str = Form("")) -> dict:
+    """Returns the temporary password once: it is not stored in clear anywhere."""
+    with connect() as connection:
+        row, password = accounts.create_account(
+            connection, email=email, full_name=full_name, company_id=user["company_id"], role="employee",
+            created_by_user_id=user["id"],
+        )
+    _audit_company_action(
+        request, user, "employee.create", "user", row["id"], email=row["email"], full_name=row["full_name"]
+    )
+    return {"employee": row, "temporary_password": password}
+
+
+@app.post("/api/company/employees/{employee_id}/status")
+def set_employee_status(
+    request: Request, employee_id: int, user: CompanyAdmin, status: str = Form(), reason: str = Form("")
+) -> dict:
+    if status not in {"active", "blocked"}:
+        raise HTTPException(status_code=400, detail="Stato non valido.")
+    reason = reason.strip()[:500]
+    if status == "blocked" and not reason:
+        raise HTTPException(status_code=400, detail="Indica il motivo della sospensione.")
+    with connect() as connection:
+        row = _manageable_employee(connection, user, employee_id)
+        if row["status"] == status:
+            raise HTTPException(status_code=409, detail="Il dipendente e' gia' in questo stato.")
+        connection.execute(
+            "UPDATE users SET status = %s, status_reason = %s, status_changed_at = now(), status_changed_by = NULL "
+            "WHERE id = %s",
+            (status, reason if status == "blocked" else None, employee_id),
+        )
+        if status == "blocked":
+            bump_token_version(connection, employee_id)  # ends the employee's sessions now
+    action = "employee.block" if status == "blocked" else "employee.unblock"
+    _audit_company_action(request, user, action, "user", employee_id, email=row["email"], reason=reason or None)
+    return {"id": employee_id, "status": status}
+
+
+@app.post("/api/company/employees/{employee_id}/reset-password")
+def reset_employee_password(request: Request, employee_id: int, user: CompanyAdmin) -> dict:
+    with connect() as connection:
+        row = _manageable_employee(connection, user, employee_id)
+        password = accounts.reset_to_temporary_password(connection, employee_id)
+    _audit_company_action(request, user, "employee.reset_password", "user", employee_id, email=row["email"])
+    return {"id": employee_id, "temporary_password": password}
+
+
+@app.get("/api/company/dashboard")
+def company_dashboard(user: CompanyAdmin, days: int = 30) -> dict:
+    """Statistics only: the company admin never sees the text of questions or answers."""
+    days = min(max(days, 1), 365)
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    company_id = user["company_id"]
+    with connect() as connection:
+        people = connection.execute(
+            """
+            SELECT count(*) AS total,
+                   count(*) FILTER (WHERE status = 'active') AS active,
+                   count(*) FILTER (WHERE status = 'blocked') AS blocked,
+                   count(*) FILTER (WHERE last_active_at >= %s) AS active_in_period,
+                   count(*) FILTER (WHERE password_is_temporary) AS temporary_passwords
+            FROM users WHERE company_id = %s
+            """,
+            (since, company_id),
+        ).fetchone()
+        documents = {
+            row["status"]: row["count"]
+            for row in connection.execute(
+                "SELECT status, count(*) FROM company_documents WHERE company_id = %s GROUP BY status", (company_id,)
+            ).fetchall()
+        }
+        analyses_filter = "FROM analyses JOIN users ON users.id = analyses.user_id WHERE users.company_id = %s AND analyses.created_at >= %s"
+        totals = connection.execute(
+            f"""
+            SELECT count(*) AS total,
+                   count(*) FILTER (WHERE analyses.status = 'recognized') AS recognized,
+                   count(*) FILTER (WHERE analyses.status = 'not_recognized') AS not_recognized,
+                   count(*) FILTER (WHERE analyses.status = 'failed') AS failed,
+                   count(*) FILTER (WHERE analyses.knowledge_mode = 'merged') AS with_company_documents,
+                   round(avg(analyses.duration_ms)) AS avg_duration_ms
+            {analyses_filter}
+            """,
+            (company_id, since),
+        ).fetchone()
+        daily_rows = connection.execute(
+            f"""
+            SELECT (analyses.created_at AT TIME ZONE 'Europe/Rome')::date AS day, count(*) AS total,
+                   count(*) FILTER (WHERE analyses.status = 'recognized') AS recognized
+            {analyses_filter} GROUP BY 1 ORDER BY 1
+            """,
+            (company_id, since),
+        ).fetchall()
+        machines = connection.execute(
+            f"""
+            SELECT analyses.machine_name, count(*) AS analyses
+            {analyses_filter} AND analyses.machine_name IS NOT NULL
+            GROUP BY 1 ORDER BY 2 DESC, 1 LIMIT 5
+            """,
+            (company_id, since),
+        ).fetchall()
+        per_employee = connection.execute(
+            """
+            SELECT users.id, users.email, users.full_name, users.role, users.status, users.last_active_at,
+                   count(analyses.id) AS analyses,
+                   count(analyses.id) FILTER (WHERE analyses.status = 'recognized') AS recognized,
+                   max(analyses.created_at) AS last_analysis_at
+            FROM users LEFT JOIN analyses ON analyses.user_id = users.id AND analyses.created_at >= %s
+            WHERE users.company_id = %s
+            GROUP BY users.id ORDER BY analyses DESC, users.email
+            """,
+            (since, company_id),
+        ).fetchall()
+        today = connection.execute("SELECT (now() AT TIME ZONE 'Europe/Rome')::date AS today").fetchone()["today"]
+
+    by_day = {row["day"]: row for row in daily_rows}
+    daily = []
+    for offset in range(days - 1, -1, -1):
+        day = today - timedelta(days=offset)
+        row = by_day.get(day)
+        daily.append({"day": day.isoformat(), "total": row["total"] if row else 0,
+                      "recognized": row["recognized"] if row else 0})
+    total = totals["total"]
+    return {
+        "days": days,
+        "employees": people,
+        "documents": {status: documents.get(status, 0) for status in ("indexed", "archived", "pending", "failed")},
+        "analyses": {
+            **totals,
+            "avg_duration_ms": int(totals["avg_duration_ms"]) if totals["avg_duration_ms"] is not None else None,
+            "recognition_rate": round(totals["recognized"] / total, 3) if total else None,
+        },
+        "daily": daily,
+        "top_machines": machines,
+        "per_employee": per_employee,
+    }
+
+
+@app.get("/api/company/audit")
+def company_audit(user: CompanyAdmin, page: int = 1, page_size: int = 50) -> dict:
+    """Activity log rows of the caller's company: actions of its admins and of the
+    platform administration on it. Metadata is reduced to non-sensitive fields."""
+    page = max(page, 1)
+    page_size = min(max(page_size, 1), 100)
+    with connect() as connection:
+        rows = connection.execute(
+            """
+            SELECT log.id, log.created_at, log.action, log.target_type, log.target_id, log.reason,
+                   log.metadata, log.operator_id, actor.email AS actor_email, actor.full_name AS actor_name,
+                   count(*) OVER () AS total
+            FROM ops.audit_log AS log LEFT JOIN users AS actor ON actor.id = log.actor_user_id
+            WHERE log.company_id = %s
+            ORDER BY log.created_at DESC, log.id DESC
+            LIMIT %s OFFSET %s
+            """,
+            (user["company_id"], page_size, (page - 1) * page_size),
+        ).fetchall()
+    items = [
+        {
+            "id": row["id"],
+            "created_at": row["created_at"],
+            "action": row["action"],
+            "target_type": row["target_type"],
+            "target_id": row["target_id"],
+            "reason": row["reason"],
+            "actor": row["actor_name"] or row["actor_email"]
+            or ("Amministrazione piattaforma" if row["operator_id"] else None),
+            "details": {key: row["metadata"][key] for key in AUDIT_METADATA_KEYS if key in (row["metadata"] or {})},
+        }
+        for row in rows
+    ]
+    return {"items": items, "total": rows[0]["total"] if rows else 0, "page": page, "page_size": page_size}
 
 
 _SOURCE_EXCERPT_CHARS = 400
@@ -1054,6 +1399,111 @@ def backoffice_delete_company_document(document_id: int) -> dict:
     return {"deleted": True, "filename": row["filename"], "company_domain": row["domain"]}
 
 
+class InternalCompanyIn(BaseModel):
+    name: str
+    domain: str
+    operator_id: int | None = None
+
+
+class InternalAccountIn(BaseModel):
+    email: str
+    full_name: str | None = None
+    operator_id: int | None = None
+
+
+class InternalRoleIn(BaseModel):
+    role: str
+
+
+def _internal_company(connection: Connection, company_id: int) -> dict:
+    row = connection.execute("SELECT id, name, domain FROM companies WHERE id = %s", (company_id,)).fetchone()
+    if row is None:
+        raise HTTPException(status_code=404, detail="Azienda non trovata.")
+    return row
+
+
+@app.post("/internal/companies", dependencies=[Depends(require_backoffice_token)])
+def internal_create_company(body: InternalCompanyIn) -> dict:
+    """Super admin: new company. The domain identifies it (and its documents folder)."""
+    name = accounts.clean_name(body.name, required=True, field="nome dell'azienda")
+    domain = accounts.clean_domain(body.domain)
+    with connect() as connection:
+        try:
+            return connection.execute(
+                "INSERT INTO companies(name, domain, created_by_operator_id, created_at) VALUES (%s, %s, %s, %s) "
+                "RETURNING id, name, domain, created_at",
+                (name, domain, body.operator_id, utc_now()),
+            ).fetchone()
+        except pg_errors.UniqueViolation as exc:
+            raise HTTPException(status_code=409, detail="Esiste gia' un'azienda con questo dominio.") from exc
+
+
+@app.post("/internal/companies/{company_id}/accounts", dependencies=[Depends(require_backoffice_token)])
+def internal_create_account(company_id: int, body: InternalAccountIn, role: str = "company_admin") -> dict:
+    """Super admin: new company admin (default) or employee, with a temporary password returned once."""
+    with connect() as connection:
+        company = _internal_company(connection, company_id)
+        row, password = accounts.create_account(
+            connection, email=body.email, full_name=body.full_name, company_id=company["id"], role=role,
+            created_by_operator_id=body.operator_id,
+        )
+    return {"user": row, "company": company, "temporary_password": password}
+
+
+@app.post("/internal/users/{user_id}/role", dependencies=[Depends(require_backoffice_token)])
+def internal_set_role(user_id: int, body: InternalRoleIn) -> dict:
+    """Super admin: promote an employee to company admin, or back."""
+    if body.role not in accounts.ROLES:
+        raise HTTPException(status_code=400, detail="Ruolo non valido.")
+    with connect() as connection:
+        row = connection.execute(
+            "SELECT id, email, role, company_id FROM users WHERE id = %s", (user_id,)
+        ).fetchone()
+        if row is None:
+            raise HTTPException(status_code=404, detail="Utente non trovato.")
+        if row["company_id"] is None:
+            raise HTTPException(status_code=409, detail="L'utente non appartiene a nessuna azienda.")
+        if row["role"] == body.role:
+            raise HTTPException(status_code=409, detail="L'utente ha gia' questo ruolo.")
+        connection.execute("UPDATE users SET role = %s WHERE id = %s", (body.role, user_id))
+    return {"id": user_id, "email": row["email"], "company_id": row["company_id"], "role": body.role,
+            "previous_role": row["role"]}
+
+
+@app.post("/internal/users/{user_id}/reset-password", dependencies=[Depends(require_backoffice_token)])
+def internal_reset_password(user_id: int) -> dict:
+    with connect() as connection:
+        row = connection.execute("SELECT id, email, company_id FROM users WHERE id = %s", (user_id,)).fetchone()
+        if row is None:
+            raise HTTPException(status_code=404, detail="Utente non trovato.")
+        password = accounts.reset_to_temporary_password(connection, user_id)
+    return {"id": user_id, "email": row["email"], "company_id": row["company_id"], "temporary_password": password}
+
+
+def _internal_document_company(document_id: int) -> dict:
+    with connect() as connection:
+        row = connection.execute(
+            "SELECT companies.id, companies.domain FROM company_documents AS documents "
+            "JOIN companies ON companies.id = documents.company_id WHERE documents.id = %s",
+            (document_id,),
+        ).fetchone()
+    if row is None:
+        raise HTTPException(status_code=404, detail="Documento non trovato.")
+    return row
+
+
+@app.post("/internal/company-documents/{document_id}/archive", dependencies=[Depends(require_backoffice_token)])
+def internal_archive_document(document_id: int) -> dict:
+    company = _internal_document_company(document_id)
+    return {**archive_company_document(company["id"], company["domain"], document_id), "company_id": company["id"]}
+
+
+@app.post("/internal/company-documents/{document_id}/reindex", dependencies=[Depends(require_backoffice_token)])
+def internal_reindex_document(document_id: int) -> dict:
+    company = _internal_document_company(document_id)
+    return {**reindex_company_document(company["id"], company["domain"], document_id), "company_id": company["id"]}
+
+
 @app.post("/api/transcribe", dependencies=[Depends(enforce_transcribe_rate_limit)])
 def transcribe(user: CurrentUser, audio: Annotated[UploadFile, File()]) -> dict:
     content_type = (audio.content_type or "").split(";")[0].strip()
@@ -1106,6 +1556,10 @@ def ask(
     chat_id: Annotated[int | None, Form()] = None,
     top_k: Annotated[int, Form()] = 12,
 ) -> dict:
+    profile = perf.current()
+    if profile is not None:
+        # Multipart parsing of the upload + CurrentUser (token check, user lookup).
+        perf.add("upload_auth", profile.total_ms())
     if not question.strip():
         raise HTTPException(status_code=400, detail="La domanda e obbligatoria.")
     if not image.content_type or not image.content_type.startswith("image/"):
@@ -1113,10 +1567,11 @@ def ask(
 
     started = time.monotonic()
     suffix = Path(image.filename or "upload.jpg").suffix or ".jpg"
-    with tempfile.NamedTemporaryFile(prefix="machine-upload-", suffix=suffix, delete=False) as tmp:
+    with perf.stage("image_save"), tempfile.NamedTemporaryFile(prefix="machine-upload-", suffix=suffix, delete=False) as tmp:
         shutil.copyfileobj(image.file, tmp)
         image_path = Path(tmp.name)
     image_size = image_path.stat().st_size
+    perf.metric("image_bytes", image_size)
 
     knowledge_mode = "base"
     record = {
@@ -1126,11 +1581,12 @@ def ask(
         "image": image,
         "image_size": image_size,
         "started": started,
-        "thumbnail": _make_thumbnail(image_path),
     }
+    with perf.stage("thumbnail"):
+        record["thumbnail"] = _make_thumbnail(image_path)
     try:
         if chat_id is not None:
-            with connect() as connection:
+            with perf.stage("db_chat"), connect() as connection:
                 chat = connection.execute(
                     "SELECT * FROM chats WHERE id = %s AND user_id = %s", (chat_id, user["id"])
                 ).fetchone()
@@ -1149,6 +1605,7 @@ def ask(
             company_document_ids=company_document_ids,
             chat_id=chat_id,
         )
+        db_started = time.perf_counter()
         if chat_id is not None:
             with connect() as connection:
                 connection.execute(
@@ -1162,6 +1619,7 @@ def ask(
                     )
                 connection.execute("UPDATE chats SET updated_at = %s WHERE id = %s", (utc_now(), chat_id))
         analysis_id = _record_analysis(**record, knowledge_mode=knowledge_mode, result=result)
+        perf.add("db_save", (time.perf_counter() - db_started) * 1000)
         return {**result, "analysis_id": analysis_id}
     except ValueError as exc:
         analysis_id = _record_analysis(
@@ -1170,6 +1628,10 @@ def ask(
         return {"recognized": False, "reason": str(exc), "question": question, "analysis_id": analysis_id}
     except HTTPException:
         raise
+    except LLMError as exc:
+        # Already logged by the provider; the client only gets the public message.
+        _record_analysis(**record, knowledge_mode=knowledge_mode, error=f"{type(exc).__name__}: {exc}"[:2000])
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from None
     except Exception as exc:
         logger.exception("Errore interno durante l'elaborazione di /api/ask")
         _record_analysis(**record, knowledge_mode=knowledge_mode, error=f"{type(exc).__name__}: {exc}"[:2000])

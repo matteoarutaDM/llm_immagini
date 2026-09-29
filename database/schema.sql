@@ -29,7 +29,8 @@ CREATE SCHEMA ops;
 CREATE TYPE app.user_status      AS ENUM ('active', 'blocked');
 CREATE TYPE app.knowledge_mode   AS ENUM ('base', 'merged');
 CREATE TYPE app.message_role     AS ENUM ('user', 'assistant');
-CREATE TYPE app.document_status  AS ENUM ('pending', 'indexed', 'failed');
+CREATE TYPE app.document_status  AS ENUM ('pending', 'indexed', 'failed', 'archived');
+CREATE TYPE app.user_role        AS ENUM ('employee', 'company_admin');
 CREATE TYPE app.otp_purpose      AS ENUM ('enable', 'login', 'disable', 'regenerate');
 CREATE TYPE app.analysis_status  AS ENUM ('recognized', 'not_recognized', 'failed');
 CREATE TYPE ops.operator_role    AS ENUM ('admin', 'support');
@@ -89,15 +90,21 @@ CREATE TABLE app.companies (
   id          bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   domain      citext NOT NULL UNIQUE,
   name        text NOT NULL,
+  created_by_operator_id bigint REFERENCES ops.operators(id) ON DELETE SET NULL,
   created_at  timestamptz NOT NULL DEFAULT now()
 );
-COMMENT ON TABLE app.companies IS 'Aziende riconosciute dal dominio email non pubblico; condividono i documenti.';
+COMMENT ON TABLE app.companies IS 'Aziende create dal super admin (backoffice); i loro utenti condividono i documenti.';
 
 CREATE TABLE app.users (
   id                        bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   email                     citext NOT NULL UNIQUE,
   password_hash             text NOT NULL,          -- PBKDF2-SHA256 "salt$digest" (backend/database.py)
   company_id                bigint REFERENCES app.companies(id) ON DELETE SET NULL,
+  role                      app.user_role NOT NULL DEFAULT 'employee',
+  full_name                 text,
+  password_is_temporary     boolean NOT NULL DEFAULT false,   -- consegnata da chi ha creato l'account
+  created_by_user_id        bigint REFERENCES app.users(id) ON DELETE SET NULL,      -- capo azienda
+  created_by_operator_id    bigint REFERENCES ops.operators(id) ON DELETE SET NULL,  -- super admin
 
   -- sicurezza accesso
   token_version             integer NOT NULL DEFAULT 0,   -- +1 = tutte le sessioni invalidate
@@ -122,11 +129,14 @@ CREATE TABLE app.users (
   created_at                timestamptz NOT NULL DEFAULT now(),
   updated_at                timestamptz NOT NULL DEFAULT now(),
 
-  CONSTRAINT users_blocked_needs_reason CHECK (status = 'active' OR status_reason IS NOT NULL)
+  CONSTRAINT users_blocked_needs_reason CHECK (status = 'active' OR status_reason IS NOT NULL),
+  CONSTRAINT users_company_admin_has_company CHECK (role <> 'company_admin' OR company_id IS NOT NULL)
 );
+COMMENT ON COLUMN app.users.role IS 'employee = lavoratore; company_admin = capo azienda (crea dipendenti, gestisce documenti, vede le statistiche).';
 COMMENT ON COLUMN app.users.token_version IS 'Incrementato a logout, reset password, disattivazione 2FA e blocco: invalida i token emessi.';
 
 CREATE INDEX users_company_idx      ON app.users (company_id);
+CREATE INDEX users_company_role_idx ON app.users (company_id, role);
 CREATE INDEX users_blocked_idx      ON app.users (status) WHERE status = 'blocked';
 CREATE INDEX users_last_active_idx  ON app.users (last_active_at DESC NULLS LAST);
 CREATE INDEX users_email_trgm_idx   ON app.users USING gin ((email::text) gin_trgm_ops);
@@ -300,6 +310,8 @@ CREATE INDEX login_attempts_ip_idx    ON ops.login_attempts (ip, created_at DESC
 CREATE TABLE ops.audit_log (
   id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   operator_id  bigint REFERENCES ops.operators(id) ON DELETE SET NULL,
+  actor_user_id bigint,          -- capo azienda che agisce dal sito (senza FK: il registro sopravvive agli account)
+  company_id   bigint,           -- azienda coinvolta, per il registro visibile al capo
   action       text NOT NULL CHECK (action ~ '^[a-z_]+\.[a-z_]+$'),   -- es. 'user.block'
   target_type  text NOT NULL,
   target_id    text NOT NULL,
@@ -310,6 +322,7 @@ CREATE TABLE ops.audit_log (
 );
 CREATE INDEX audit_log_target_idx   ON ops.audit_log (target_type, target_id, created_at DESC);
 CREATE INDEX audit_log_operator_idx ON ops.audit_log (operator_id, created_at DESC);
+CREATE INDEX audit_log_company_idx  ON ops.audit_log (company_id, created_at DESC);
 CREATE INDEX audit_log_created_idx  ON ops.audit_log USING brin (created_at);
 
 CREATE TRIGGER audit_log_append_only BEFORE UPDATE OR DELETE ON ops.audit_log
@@ -345,10 +358,12 @@ BEGIN
 END
 $$;
 
--- Sito (FastAPI): tutto lo schema app, niente ops.
-GRANT USAGE ON SCHEMA app TO app_api;
+-- Sito (FastAPI): tutto lo schema app; di ops solo il registro attività (azioni dei capi azienda).
+GRANT USAGE ON SCHEMA app, ops TO app_api;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA app TO app_api;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA app TO app_api;
+GRANT SELECT, INSERT ON ops.audit_log TO app_api;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA ops TO app_api;
 
 -- Backoffice (Next.js): legge app, può solo bloccare/sbloccare utenti; gestisce ops.
 GRANT USAGE ON SCHEMA app, ops TO backoffice_api;

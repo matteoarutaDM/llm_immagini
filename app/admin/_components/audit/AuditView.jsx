@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 
+import { useCompanyScope } from "../shell/CompanyScope";
 import { auditApi } from "../../_lib/api";
 import { AUDIT_ACTION_LABELS } from "../../_lib/constants";
 import { formatDateTime } from "../../_lib/format";
@@ -24,7 +26,14 @@ function Target({ entry }) {
       </Link>
     );
   }
-  if (entry.targetType === "document") {
+  if (entry.targetType === "company") {
+    return (
+      <Link href={`/admin/companies/${entry.targetId}`} className="text-app-text hover:text-app-accent">
+        {entry.metadata?.name ?? `Azienda #${entry.targetId}`}
+      </Link>
+    );
+  }
+  if (entry.targetType === "document" || entry.targetType === "company_document") {
     return (
       <span className="text-app-text">
         {entry.metadata?.filename ?? `Documento #${entry.targetId}`}
@@ -35,10 +44,39 @@ function Target({ entry }) {
   return <span>{`${entry.targetType} #${entry.targetId}`}</span>;
 }
 
+// Red for actions that remove or restrict something, green for the ones that grant or restore.
+const ACTION_TONES = {
+  "user.block": "danger",
+  "employee.block": "danger",
+  "document.delete": "danger",
+  "document.archive": "warning",
+  "user.unblock": "success",
+  "employee.unblock": "success",
+  "document.reindex": "success",
+  "company.create": "success",
+  "company_admin.create": "success",
+  "employee.create": "success",
+};
+
+/** Backoffice operator, or the company admin who acted from the site. */
+function Actor({ entry }) {
+  if (entry.operatorEmail) return <span className="text-app-text">{entry.operatorEmail}</span>;
+  if (entry.actorUserEmail) {
+    return (
+      <span className="text-app-text">
+        {entry.actorUserName || entry.actorUserEmail}
+        <span className="block text-xs text-app-muted">responsabile, dal sito</span>
+      </span>
+    );
+  }
+  return <span className="text-app-muted">account rimosso</span>;
+}
+
 const COLUMNS = [
   { key: "when", header: "Quando", render: (e) => <span className="whitespace-nowrap text-xs">{formatDateTime(e.createdAt)}</span> },
-  { key: "operator", header: "Operatore", render: (e) => <span className="text-app-text">{e.operatorEmail ?? "operatore rimosso"}</span>, hideBelow: "sm" },
-  { key: "action", header: "Azione", render: (e) => <Badge tone={e.action === "user.unblock" ? "success" : "danger"}>{AUDIT_ACTION_LABELS[e.action] ?? e.action}</Badge> },
+  { key: "operator", header: "Chi", render: (e) => <Actor entry={e} />, hideBelow: "sm" },
+  { key: "company", header: "Azienda", render: (e) => e.companyName ?? <span className="text-app-muted">—</span>, hideBelow: "md" },
+  { key: "action", header: "Azione", render: (e) => <Badge tone={ACTION_TONES[e.action] ?? "neutral"}>{AUDIT_ACTION_LABELS[e.action] ?? e.action}</Badge> },
   { key: "target", header: "Oggetto", render: (e) => <Target entry={e} /> },
   { key: "reason", header: "Motivo", render: (e) => <span className="line-clamp-2 max-w-[260px]">{e.reason ?? "—"}</span>, hideBelow: "lg" },
   { key: "ip", header: "IP", render: (e) => <span className="font-mono text-xs">{e.ip ?? "—"}</span>, hideBelow: "xl" },
@@ -47,7 +85,13 @@ const COLUMNS = [
 /** Admin-only, append-only trail of operator actions. */
 export function AuditView() {
   const { filters, setFilters, key } = useQueryFilters(DEFAULT_FILTERS);
-  const { data, error, loading, reload } = useResource((signal) => auditApi.list(filters, signal), `audit:${key}`);
+  const { companyId } = useCompanyScope();
+  // A new company starts from the first page of results.
+  useEffect(() => {
+    if (filters.page && filters.page !== "1") setFilters({ page: "1" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [companyId]);
+  const { data, error, loading, reload } = useResource((signal) => auditApi.list({ ...filters, company: companyId }, signal), `audit:${key}:${companyId ?? "all"}`);
   return (
     <>
       <PageHeader title="Registro attività" description="Azioni degli operatori su account e documenti, non modificabile" />

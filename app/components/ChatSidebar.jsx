@@ -2,6 +2,8 @@ import { useState } from "react";
 import {
   ArrowRightOnRectangleIcon,
   BuildingOffice2Icon,
+  ChartBarIcon,
+  UserCircleIcon,
   ChevronDownIcon,
   ChatBubbleLeftRightIcon,
   DocumentTextIcon,
@@ -19,7 +21,11 @@ export function ChatSidebar({
   open,
   onClose,
   email,
+  fullName,
   companyDomain,
+  companyName,
+  isCompanyAdmin = false,
+  onOpenProfile,
   onLogout,
   chats,
   activeChat,
@@ -144,7 +150,19 @@ export function ChatSidebar({
         <div className="relative border-t border-app-border p-3">
           {accountOpen ? (
             <div className="absolute bottom-[calc(100%+8px)] left-3 right-3 rounded-xl border border-app-border bg-app-raised p-2 shadow-2xl shadow-black/40">
-              <p className="px-2 py-1 text-xs text-app-muted">Sessione autenticata</p>
+              <p className="truncate px-2 py-1 text-xs text-app-muted">
+                {companyName ? `${companyName} · ${isCompanyAdmin ? "Responsabile" : "Dipendente"}` : "Sessione autenticata"}
+              </p>
+              <button type="button" onClick={() => { setAccountOpen(false); onOpenProfile?.(); }} className="touch-target flex w-full items-center gap-2 rounded-lg px-2 text-sm text-app-secondary hover:bg-app-hover hover:text-app-text">
+                <UserCircleIcon className="h-4 w-4" />
+                Profilo
+              </button>
+              {isCompanyAdmin ? (
+                <a href="/azienda" className="touch-target flex w-full items-center gap-2 rounded-lg px-2 text-sm text-app-secondary hover:bg-app-hover hover:text-app-text">
+                  <ChartBarIcon className="h-4 w-4" />
+                  Gestione azienda
+                </a>
+              ) : null}
               <button type="button" onClick={onLogout} className="touch-target flex w-full items-center gap-2 rounded-lg px-2 text-sm text-red-300 hover:bg-red-500/10">
                 <ArrowRightOnRectangleIcon className="h-4 w-4" />
                 Esci
@@ -156,7 +174,7 @@ export function ChatSidebar({
               {email ? initialsFromEmail(email) : "?"}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-medium text-app-text">{email ? displayNameFromEmail(email) : "Account"}</span>
+              <span className="block truncate text-sm font-medium text-app-text">{fullName || (email ? displayNameFromEmail(email) : "Account")}</span>
               <span className="block truncate text-xs text-app-muted">{email}</span>
             </span>
             <ChevronDownIcon className={`h-4 w-4 text-app-muted transition ${accountOpen ? "rotate-180" : ""}`} />

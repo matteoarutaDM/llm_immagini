@@ -6,7 +6,7 @@ import { Bars3Icon } from "@heroicons/react/24/outline";
 import { AnalysisComposer } from "./components/AnalysisComposer";
 import { AnalysisHistory } from "./components/AnalysisHistory";
 import { AnswerCard } from "./components/AnswerCard";
-import { AuthPanel } from "./components/AuthPanel";
+import { AuthPanel, TermsGate } from "./components/AuthPanel";
 import { CandidatesCard } from "./components/CandidatesCard";
 import { ChatSidebar } from "./components/ChatSidebar";
 import { DocumentUploader } from "./components/DocumentUploader";
@@ -16,6 +16,7 @@ import { InferenceProgress } from "./components/InferenceProgress";
 import { IndexNotification } from "./components/IndexNotification";
 import { MessageList } from "./components/MessageList";
 import { OcrCard } from "./components/OcrCard";
+import { ProfilePanel, TemporaryPasswordNotice } from "./components/ProfilePanel";
 import { SourcesPanel } from "./components/SourcesPanel";
 import { useAsk } from "./hooks/useAsk";
 import { useAuth } from "./hooks/useAuth";
@@ -32,6 +33,10 @@ export default function Home() {
   const voice = useVoiceRecorder(auth.token, ask.appendToQuestion);
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [documentsOpen, setDocumentsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [temporaryNoticeDismissed, setTemporaryNoticeDismissed] = useState(false);
+  // Archived documents stay in the company admin's list but are not offered for chats.
+  const chatDocuments = documents.documents.filter((document) => document.status !== "archived");
 
   async function loadWorkspace(authToken) {
     const [meResponse, chatsResponse, documentsResponse] = await Promise.all([
@@ -43,7 +48,10 @@ export default function Home() {
       auth.clearSession();
       return;
     }
-    auth.hydrateProfile(meResponse.data.email ?? "", meResponse.data.company_domain ?? null);
+    auth.hydrateProfile(meResponse.data);
+    // Until the Terms are accepted the rest of the API answers 403: TermsGate
+    // is shown, and the workspace is loaded again right after acceptance.
+    if (meResponse.data.terms_accepted === false) return;
     if (chatsResponse.ok) {
       chats.hydrate(chatsResponse.data);
       if (chatsResponse.data[0]) await chats.selectChat(authToken, chatsResponse.data[0]);
@@ -60,8 +68,8 @@ export default function Home() {
   async function onAuthSubmit(event) {
     event.preventDefault();
     let session = null;
-    if (auth.authMode === "login" || auth.authMode === "register") {
-      session = await auth.submitAuth(auth.authMode);
+    if (auth.authMode === "login") {
+      session = await auth.submitAuth();
     } else if (auth.authMode === "2fa") {
       session = await auth.verifyTwoFactor();
     } else if (auth.authMode === "2fa-recovery") {
@@ -81,6 +89,9 @@ export default function Home() {
   }
 
   if (!auth.token) return <AuthPanel auth={auth} onAuthSubmit={onAuthSubmit} />;
+  if (auth.profile?.terms_accepted === false) {
+    return <TermsGate auth={auth} onAccepted={() => void loadWorkspace(auth.token)} />;
+  }
 
   // The latest answer is shown in full by AnswerCard: when the history reloaded
   // from the server already ends with that same answer, don't repeat it.
@@ -99,7 +110,14 @@ export default function Home() {
           open={navigationOpen}
           onClose={() => setNavigationOpen(false)}
           email={auth.email}
+          fullName={auth.profile?.full_name}
           companyDomain={auth.companyDomain}
+          companyName={auth.profile?.company_name}
+          isCompanyAdmin={auth.isCompanyAdmin}
+          onOpenProfile={() => {
+            setProfileOpen(true);
+            setNavigationOpen(false);
+          }}
           onLogout={() => void auth.logout()}
           chats={chats.chats}
           activeChat={chats.activeChat}
@@ -121,7 +139,7 @@ export default function Home() {
           creatingChat={chats.creatingChat}
           deletingChatId={chats.deletingChatId}
           deleteError={chats.deleteError}
-          documentCount={documents.documents.length}
+          documentCount={chatDocuments.length}
           selectedDocumentCount={documents.selectedDocuments.length}
           onOpenDocuments={() => {
             setDocumentsOpen(true);
@@ -162,6 +180,9 @@ export default function Home() {
               ) : null}
             </div>
           </header>
+          {auth.profile?.password_is_temporary && !temporaryNoticeDismissed ? (
+            <TemporaryPasswordNotice onOpenProfile={() => setProfileOpen(true)} onDismiss={() => setTemporaryNoticeDismissed(true)} />
+          ) : null}
 
           <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain">
             <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-12 [@media(max-height:760px)]:lg:py-6">
@@ -214,7 +235,8 @@ export default function Home() {
 
       <DocumentPanel open={documentsOpen && Boolean(auth.companyDomain)} onClose={() => setDocumentsOpen(false)}>
         <DocumentUploader
-          documents={documents.documents}
+          canManage={auth.isCompanyAdmin}
+          documents={chatDocuments}
           selectedDocuments={documents.selectedDocuments}
           uploading={documents.uploading}
           deletingId={documents.deletingId}
@@ -223,6 +245,15 @@ export default function Home() {
           onUpload={(file) => void documents.upload(auth.token, file)}
           onDelete={(document) => void documents.remove(auth.token, document)}
         />
+      </DocumentPanel>
+      <DocumentPanel
+        open={profileOpen}
+        onClose={() => setProfileOpen(false)}
+        title="Profilo"
+        description="Il tuo account e la password."
+        closeLabel="Chiudi profilo"
+      >
+        <ProfilePanel profile={auth.profile} onChangePassword={auth.changePassword} />
       </DocumentPanel>
       <IndexNotification
         filename={documents.indexedDocument}

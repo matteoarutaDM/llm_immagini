@@ -2,17 +2,21 @@ import "server-only";
 
 import { DOCUMENT_STATUSES } from "../../_lib/constants";
 import { recordAudit } from "../audit";
+import { callBackend } from "../backend";
 import { query, queryOne } from "../db";
 import { DomainError } from "../http";
 import { isNumericId, like, limitOffset, toPage, where } from "../sql";
 
 /** @param {{ q: string, status: string | null, page: number, pageSize: number }} params */
-export async function listDocuments({ q, status, page, pageSize }) {
-  const base = [q && ["d.filename ILIKE ? OR c.domain::text ILIKE ?", like(q), like(q)]];
+export async function listDocuments({ q, status, companyId, page, pageSize }) {
+  const base = [
+    q && ["d.filename ILIKE ? OR c.domain::text ILIKE ?", like(q), like(q)],
+    companyId && isNumericId(companyId) && ["d.company_id = ?", companyId],
+  ];
   const { clause, params } = where([...base, status && ["d.status = ?", status]]);
   const rows = await query(
     `SELECT d.id::text AS id, d.filename, d.status::text AS status, d.size_bytes AS "sizeBytes",
-            d.created_at AS "createdAt", d.indexed_at AS "indexedAt", c.domain::text AS "companyDomain",
+            d.created_at AS "createdAt", d.indexed_at AS "indexedAt", c.domain::text AS "companyDomain", c.name AS "companyName",
             u.id::text AS "uploadedById", u.email::text AS "uploadedByEmail",
             count(*) OVER () AS total
        FROM app.company_documents d
@@ -54,7 +58,7 @@ export async function deleteDocument(id, reason, operator, ip) {
   if (!token) throw new DomainError(503, "BACKEND_TOKEN_MISSING", BACKEND_ERRORS[503]);
 
   const document = await queryOne(
-    `SELECT d.filename, c.domain::text AS "companyDomain"
+    `SELECT d.filename, c.domain::text AS "companyDomain", c.id::text AS "companyId"
        FROM app.company_documents d JOIN app.companies c ON c.id = d.company_id WHERE d.id = $1`,
     [id],
   );
@@ -85,6 +89,27 @@ export async function deleteDocument(id, reason, operator, ip) {
     reason,
     metadata: { filename: document.filename, companyDomain: document.companyDomain },
     ip,
+    companyId: document.companyId,
   });
   return { deleted: true };
+}
+
+/**
+ * Super admin: removes a document from its company's RAG (file kept) or puts it
+ * back. The backend moves the file and rebuilds the index; the action is audited
+ * on the company, so its admin sees it too.
+ */
+export async function setDocumentIndexing(id, indexed, operator, ip) {
+  if (!isNumericId(id)) throw new DomainError(404, "NOT_FOUND", "Documento non trovato.");
+  const result = await callBackend(`/internal/company-documents/${id}/${indexed ? "reindex" : "archive"}`);
+  await recordAudit({
+    operator,
+    action: indexed ? "document.reindex" : "document.archive",
+    targetType: "document",
+    targetId: id,
+    metadata: { filename: result.filename },
+    ip,
+    companyId: result.company_id,
+  });
+  return result;
 }
