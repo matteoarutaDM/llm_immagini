@@ -43,6 +43,9 @@ CONFIG = {
     "SERVED_MODEL": os.environ.get("MODAL_MODEL", "meta-llama/Llama-3.1-8B-Instruct"),
     "MAX_MODEL_LEN": os.environ.get("MODAL_MAX_MODEL_LEN", "8192"),
     "ENFORCE_EAGER": os.environ.get("MODAL_ENFORCE_EAGER", "1"),
+    # The FlashInfer sampler JIT-compiles CUDA kernels at startup and needs
+    # nvcc, which debian_slim lacks: without this vLLM crashes during warm-up.
+    "VLLM_USE_FLASHINFER_SAMPLER": "0",
 }
 GPU = os.environ.get("MODAL_GPU", "L4")
 SCALEDOWN_SECONDS = int(os.environ.get("MODAL_SCALEDOWN_SECONDS", "300"))
