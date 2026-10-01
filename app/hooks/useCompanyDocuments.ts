@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 
 import { documentsApi } from "../lib/api";
+import { tr } from "../lib/i18n";
 import type { CompanyDocument } from "../types";
 
 export function useCompanyDocuments() {
@@ -46,7 +47,7 @@ export function useCompanyDocuments() {
     try {
       const response = await documentsApi.delete(token, document.id);
       if (!response.ok) {
-        setDeleteError(response.data.detail || "Eliminazione del documento non riuscita.");
+        setDeleteError(response.data.detail || tr("Eliminazione del documento non riuscita."));
         return;
       }
       setDocuments((current) => current.filter((item) => item.id !== document.id));

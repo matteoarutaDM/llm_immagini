@@ -62,6 +62,23 @@ describe("accesso", () => {
     expect(screen.getByText(/credenziali te le fornisce il responsabile/i)).toBeInTheDocument();
   });
 
+  it("dal login si sceglie la lingua: l'interfaccia cambia subito e la scelta resta salvata", async () => {
+    vi.stubGlobal("fetch", vi.fn());
+    const user = userEvent.setup();
+    const { unmount } = render(<Home />);
+
+    const select = screen.getByLabelText("Lingua");
+    expect(select).toHaveValue("it");
+    await user.selectOptions(select, "es");
+    expect(window.localStorage.getItem("answerLanguage")).toBe("es");
+    expect(screen.getByRole("button", { name: "Iniciar sesión" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Idioma")).toHaveValue("es");
+
+    unmount();
+    render(<Home />);
+    await waitFor(() => expect(screen.getByLabelText("Idioma")).toHaveValue("es"));
+  });
+
   it("al primo accesso chiede di accettare i termini, poi apre l'app", async () => {
     let termsAccepted = false;
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
@@ -237,6 +254,42 @@ describe("invio domanda (/api/ask)", () => {
         }),
       ),
     );
+  });
+});
+
+describe("lingua delle risposte", () => {
+  it("mostra la pagina nella lingua scelta e invia a /api/ask la lingua, con la domanda predefinita in italiano", async () => {
+    window.localStorage.setItem("assistant-token", "fake-token");
+    window.localStorage.setItem("answerLanguage", "fr");
+    if (!URL.createObjectURL) URL.createObjectURL = vi.fn(() => "blob:fake");
+    if (!URL.revokeObjectURL) URL.revokeObjectURL = vi.fn();
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:fake");
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, _init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes("/auth/me")) return jsonResponse({ email: "user@digitalmens.it", company_domain: "digitalmens.it" });
+      if (url.includes("/analyses") || url.includes("/chats") || url.includes("/company/documents")) return jsonResponse([]);
+      if (url === "/api/ask") return jsonResponse({ recognized: false, reason: "test", question: "domanda" });
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const user = userEvent.setup();
+    render(<Home />);
+    await waitFor(() => expect(screen.getByText("user@digitalmens.it")).toBeInTheDocument());
+
+    const fileInput = document.getElementById("machine-image") as HTMLInputElement;
+    await user.upload(fileInput, new File(["fake-image-bytes"], "machine.png", { type: "image/png" }));
+    expect((screen.getByLabelText("Question technique") as HTMLTextAreaElement).value).toMatch(/^Identifie l'objet sur la photo/);
+    await user.click(screen.getByRole("button", { name: /Analyser et répondre/ }));
+
+    await waitFor(() => expect(fetchMock.mock.calls.some(([url]) => url === "/api/ask")).toBe(true));
+    const [, init] = fetchMock.mock.calls.find(([url]) => url === "/api/ask")!;
+    const body = init?.body as FormData;
+    expect(body.get("language")).toBe("fr");
+    // The manuals are in Italian: the untouched default question is sent in Italian.
+    expect(body.get("question")).toMatch(/^Identifica l'oggetto nella foto/);
   });
 });
 

@@ -127,6 +127,10 @@ ALLOWED_ORIGINS = [
     origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", _default_origins).split(",") if origin.strip()
 ]
 
+# Same codes as model_service.ANSWER_LANGUAGES, kept here so /api/ask can
+# validate them without importing the ML stack.
+ANSWER_LANGUAGE_CODES = ("it", "en", "es", "de", "fr")
+
 # The ML/RAG/vision stack (backend.model_service) is imported lazily on first
 # use rather than at module import time. This keeps auth, chat and document
 # endpoints usable (and unit-testable) even when the heavy torch/transformers/
@@ -1555,6 +1559,7 @@ def ask(
     image: Annotated[UploadFile, File()],
     chat_id: Annotated[int | None, Form()] = None,
     top_k: Annotated[int, Form()] = 12,
+    language: Annotated[str, Form()] = "it",
 ) -> dict:
     profile = perf.current()
     if profile is not None:
@@ -1564,6 +1569,8 @@ def ask(
         raise HTTPException(status_code=400, detail="La domanda e obbligatoria.")
     if not image.content_type or not image.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Carica un file immagine valido.")
+    if language not in ANSWER_LANGUAGE_CODES:
+        raise HTTPException(status_code=400, detail="Lingua della risposta non supportata.")
 
     started = time.monotonic()
     suffix = Path(image.filename or "upload.jpg").suffix or ".jpg"
@@ -1604,6 +1611,7 @@ def ask(
             company_domain=user["company_domain"],
             company_document_ids=company_document_ids,
             chat_id=chat_id,
+            language=language,
         )
         db_started = time.perf_counter()
         if chat_id is not None:

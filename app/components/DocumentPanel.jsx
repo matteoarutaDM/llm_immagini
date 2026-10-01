@@ -1,14 +1,20 @@
 import { useEffect, useRef } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
+import { useLanguage } from "../lib/i18n";
+
 export function DocumentPanel({
   open,
   onClose,
   children,
-  title = "Documenti aziendali",
-  description = "Fonti disponibili per le chat aziendali.",
-  closeLabel = "Chiudi pannello documenti",
+  title,
+  description,
+  closeLabel,
 }) {
+  const { t } = useLanguage();
+  title ??= t("Documenti aziendali");
+  description ??= t("Fonti disponibili per le chat aziendali.");
+  closeLabel ??= t("Chiudi pannello documenti");
   const closeButtonRef = useRef(null);
 
   useEffect(() => {

@@ -1,6 +1,9 @@
 import { CpuChipIcon, UserIcon } from "@heroicons/react/24/outline";
 
+import { useLanguage } from "../lib/i18n";
+
 export function MessageBubble({ message }) {
+  const { t } = useLanguage();
   const isUser = message.role === "user";
   const Icon = isUser ? UserIcon : CpuChipIcon;
   return (
@@ -9,7 +12,7 @@ export function MessageBubble({ message }) {
         <Icon className="h-4 w-4" />
       </span>
       <div className="min-w-0 pt-1">
-        <p className="text-xs font-medium text-app-muted">{isUser ? "Tu" : "Assistente"}</p>
+        <p className="text-xs font-medium text-app-muted">{isUser ? t("Tu") : t("Assistente")}</p>
         <p className="mt-1 whitespace-pre-wrap text-sm leading-6 text-app-secondary">{message.content}</p>
       </div>
     </article>

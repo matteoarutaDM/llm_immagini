@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { speechApi } from "../lib/api";
+import { tr } from "../lib/i18n";
 
 /** Long recordings are cut here: a question never needs more, and it bounds the upload. */
 const MAX_RECORDING_MS = 60_000;
@@ -56,18 +57,18 @@ export function useVoiceRecorder(token: string | null, onText: (text: string) =>
     if (cancelledRef.current) return;
     if (audio.size === 0) {
       setStatus("idle");
-      setError("Nessun audio registrato.");
+      setError(tr("Nessun audio registrato."));
       return;
     }
     setStatus("transcribing");
     try {
       const response = await speechApi.transcribe(token, audio);
       if (!response.ok || !response.data.text) {
-        throw new Error(response.data.detail ?? "Trascrizione non riuscita.");
+        throw new Error(response.data.detail ?? tr("Trascrizione non riuscita."));
       }
       onText(response.data.text);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Trascrizione non riuscita.");
+      setError(err instanceof Error ? err.message : tr("Trascrizione non riuscita."));
     } finally {
       setStatus("idle");
     }
@@ -82,7 +83,7 @@ export function useVoiceRecorder(token: string | null, onText: (text: string) =>
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch (err) {
       const denied = err instanceof DOMException && (err.name === "NotAllowedError" || err.name === "SecurityError");
-      setError(denied ? "Permesso microfono negato." : "Microfono non disponibile.");
+      setError(denied ? tr("Permesso microfono negato.") : tr("Microfono non disponibile."));
       return;
     }
 

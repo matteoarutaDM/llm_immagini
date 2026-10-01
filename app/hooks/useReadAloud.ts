@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { speechApi } from "../lib/api";
+import { tr } from "../lib/i18n";
 
 /** Short chunks: the first one comes back fast, the next is prepared while it plays. */
 const MAX_CHUNK_CHARS = 400;
@@ -87,7 +88,7 @@ export function useReadAloud(token: string | null) {
 
   async function fetchChunk(text: string): Promise<string> {
     const response = await speechApi.speak(token, text);
-    if (!response.ok) throw new Error(response.detail ?? "Lettura non riuscita.");
+    if (!response.ok) throw new Error(response.detail ?? tr("Lettura non riuscita."));
     const url = URL.createObjectURL(response.audio);
     urlsRef.current.push(url);
     return url;
@@ -99,7 +100,7 @@ export function useReadAloud(token: string | null) {
       audio.onended = () => resolve();
       // Only this chunk's errors count, not a late one from the SILENT_WAV unlock.
       audio.onerror = () => {
-        if (audio.src === url) reject(new Error("Riproduzione non riuscita."));
+        if (audio.src === url) reject(new Error(tr("Riproduzione non riuscita.")));
       };
       audio.src = url;
       audio.play().catch(reject);
@@ -135,7 +136,7 @@ export function useReadAloud(token: string | null) {
         if (session !== sessionRef.current) return;
       }
     } catch (err) {
-      if (session === sessionRef.current) setError(err instanceof Error ? err.message : "Lettura non riuscita.");
+      if (session === sessionRef.current) setError(err instanceof Error ? err.message : tr("Lettura non riuscita."));
     } finally {
       if (session === sessionRef.current) {
         release();

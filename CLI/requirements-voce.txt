@@ -1,0 +1,5 @@
+# Script CLI/voce_traduzione.py (non serve al backend)
+SpeechRecognition>=3.10
+deep-translator>=1.11
+# Per il microfono serve anche PyAudio, da installare a parte DOPO portaudio:
+#   brew install portaudio && pip install PyAudio

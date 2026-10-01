@@ -237,10 +237,11 @@ export const companyApi = {
 };
 
 export const askApi = {
-  ask: (token: string | null, image: File, question: string, chatId?: number) => {
+  ask: (token: string | null, image: File, question: string, chatId?: number, language?: string) => {
     const body = new FormData();
     body.append("image", image);
     body.append("question", question);
+    if (language) body.append("language", language);
     if (chatId !== undefined) body.append("chat_id", String(chatId));
     return request<AskResult>("/api/ask", { method: "POST", headers: authHeaders(token), body });
   },

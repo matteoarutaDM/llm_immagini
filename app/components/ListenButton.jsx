@@ -1,13 +1,15 @@
 import { ArrowPathIcon, SpeakerWaveIcon, StopIcon } from "@heroicons/react/24/outline";
 
 import { useReadAloud } from "../hooks/useReadAloud";
+import { useLanguage } from "../lib/i18n";
 
 /** Reads a text aloud with the backend's voice; mount it with `key={text}` so a new text stops the old reading. */
 export function ListenButton({ text, token, className = "" }) {
+  const { t } = useLanguage();
   const reader = useReadAloud(token);
   const active = reader.status !== "idle";
   const loading = reader.status === "loading";
-  const label = active ? "Interrompi lettura" : "Ascolta la risposta";
+  const label = active ? t("Interrompi lettura") : t("Ascolta la risposta");
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       {reader.error ? (
@@ -26,7 +28,7 @@ export function ListenButton({ text, token, className = "" }) {
         }`}
       >
         {loading ? <ArrowPathIcon className="h-4 w-4 animate-spin" /> : active ? <StopIcon className="h-4 w-4" /> : <SpeakerWaveIcon className="h-4 w-4" />}
-        {loading ? "Preparo..." : active ? "Stop" : "Ascolta"}
+        {loading ? t("Preparo...") : active ? "Stop" : t("Ascolta")}
       </button>
     </div>
   );

@@ -10,6 +10,8 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 
+import { useLanguage } from "../lib/i18n";
+
 export function AnalysisComposer({
   previewUrl,
   onImageChange,
@@ -24,6 +26,7 @@ export function AnalysisComposer({
   error,
   onSubmit,
 }) {
+  const { t } = useLanguage();
   const [dragActive, setDragActive] = useState(false);
 
   function onDrop(event) {
@@ -40,12 +43,12 @@ export function AnalysisComposer({
 
         {previewUrl ? (
           <div className="relative border-b border-app-border bg-black/25 p-3 sm:p-4">
-            <img src={previewUrl} alt="Anteprima immagine caricata" className="h-52 w-full rounded-xl object-contain sm:h-64" />
+            <img src={previewUrl} alt={t("Anteprima immagine caricata")} className="h-52 w-full rounded-xl object-contain sm:h-64" />
             <div className="absolute right-5 top-5 flex gap-2">
-              <label htmlFor="machine-image" className="touch-target grid cursor-pointer place-items-center rounded-xl border border-white/10 bg-black/65 text-white backdrop-blur transition hover:bg-black/80" aria-label="Sostituisci immagine">
+              <label htmlFor="machine-image" className="touch-target grid cursor-pointer place-items-center rounded-xl border border-white/10 bg-black/65 text-white backdrop-blur transition hover:bg-black/80" aria-label={t("Sostituisci immagine")}>
                 <ArrowPathIcon className="h-5 w-5" />
               </label>
-              <button type="button" onClick={() => onImageChange(null)} className="touch-target grid place-items-center rounded-xl border border-white/10 bg-black/65 text-white backdrop-blur transition hover:bg-red-500/80" aria-label="Rimuovi immagine">
+              <button type="button" onClick={() => onImageChange(null)} className="touch-target grid place-items-center rounded-xl border border-white/10 bg-black/65 text-white backdrop-blur transition hover:bg-red-500/80" aria-label={t("Rimuovi immagine")}>
                 <TrashIcon className="h-5 w-5" />
               </button>
             </div>
@@ -64,20 +67,20 @@ export function AnalysisComposer({
             <span className="grid h-12 w-12 place-items-center rounded-2xl border border-app-border bg-app-surface text-app-accent shadow-lg shadow-black/20">
               <PhotoIcon className="h-6 w-6" />
             </span>
-            <span className="mt-4 text-sm font-medium text-app-text">Trascina una foto della macchina</span>
-            <span className="mt-1 text-xs text-app-muted">oppure tocca per usare fotocamera o galleria</span>
-            <span className="mt-4 rounded-lg bg-app-accent-soft px-3 py-2 text-xs font-semibold text-app-accent">Scegli immagine</span>
+            <span className="mt-4 text-sm font-medium text-app-text">{t("Trascina una foto della macchina")}</span>
+            <span className="mt-1 text-xs text-app-muted">{t("oppure tocca per usare fotocamera o galleria")}</span>
+            <span className="mt-4 rounded-lg bg-app-accent-soft px-3 py-2 text-xs font-semibold text-app-accent">{t("Scegli immagine")}</span>
           </label>
         )}
 
         <div className="px-4 pt-1 sm:px-5">
-          <label htmlFor="machine-question" className="sr-only">Domanda tecnica</label>
+          <label htmlFor="machine-question" className="sr-only">{t("Domanda tecnica")}</label>
           <textarea
             id="machine-question"
             className="min-h-28 w-full resize-y bg-transparent py-4 text-base leading-7 text-app-text outline-none placeholder:text-app-muted sm:min-h-32"
             value={question}
             onChange={(event) => onQuestionChange(event.target.value)}
-            placeholder="Chiedi qualcosa sulla macchina..."
+            placeholder={t("Chiedi qualcosa sulla macchina...")}
           />
         </div>
 
@@ -85,7 +88,7 @@ export function AnalysisComposer({
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <label htmlFor="machine-image" className="touch-target inline-flex cursor-pointer items-center gap-2 rounded-xl px-3 text-sm font-medium text-app-secondary transition hover:bg-app-hover hover:text-app-text">
               <ArrowUpTrayIcon className="h-4 w-4" />
-              {previewUrl ? "Cambia foto" : "Foto"}
+              {previewUrl ? t("Cambia foto") : t("Foto")}
             </label>
             {voice?.supported ? <VoiceButton voice={voice} /> : null}
             {hasCompanyAccess ? (
@@ -97,20 +100,20 @@ export function AnalysisComposer({
           </div>
           <button type="submit" disabled={!canSubmit} className="touch-target inline-flex w-full items-center justify-center gap-2 rounded-xl bg-app-accent px-5 text-sm font-semibold text-[#062114] transition hover:bg-app-accent-bright active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-app-raised disabled:text-app-muted sm:w-auto">
             <PaperAirplaneIcon className="h-4 w-4" />
-            {loading ? "Analisi in corso..." : "Analizza e rispondi"}
+            {loading ? t("Analisi in corso...") : t("Analizza e rispondi")}
           </button>
         </div>
       </div>
 
       {voice?.error ? (
         <div role="alert" className="mt-3 rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-          <strong className="font-medium">Dettatura non riuscita.</strong> {voice.error}
+          <strong className="font-medium">{t("Dettatura non riuscita.")}</strong> {voice.error}
         </div>
       ) : null}
 
       {error ? (
         <div role="alert" className="mt-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-          <strong className="font-medium">Analisi non completata.</strong> {error}
+          <strong className="font-medium">{t("Analisi non completata.")}</strong> {error}
         </div>
       ) : null}
     </form>
@@ -118,9 +121,10 @@ export function AnalysisComposer({
 }
 
 function VoiceButton({ voice }) {
+  const { t } = useLanguage();
   const recording = voice.status === "recording";
   const transcribing = voice.status === "transcribing";
-  const label = recording ? "Interrompi dettatura" : transcribing ? "Trascrizione in corso" : "Detta la domanda";
+  const label = recording ? t("Interrompi dettatura") : transcribing ? t("Trascrizione in corso") : t("Detta la domanda");
   return (
     <button
       type="button"
@@ -134,7 +138,7 @@ function VoiceButton({ voice }) {
       }`}
     >
       {recording ? <StopIcon className="h-4 w-4 animate-pulse" /> : transcribing ? <ArrowPathIcon className="h-4 w-4 animate-spin" /> : <MicrophoneIcon className="h-4 w-4" />}
-      {recording ? "Stop" : transcribing ? "Trascrivo..." : "Detta"}
+      {recording ? "Stop" : transcribing ? t("Trascrivo...") : t("Detta")}
     </button>
   );
 }

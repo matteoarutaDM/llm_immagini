@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 
 import { chatsApi } from "../lib/api";
+import { tr } from "../lib/i18n";
 import type { AnalysisEntry, Chat, ChatMessage } from "../types";
 
 export function useChats() {
@@ -51,7 +52,7 @@ export function useChats() {
     if (!token || creatingChat) return;
     setCreatingChat(true);
     try {
-      const title = knowledgeMode === "base" ? "Conoscenza base" : "Conoscenza aziendale";
+      const title = knowledgeMode === "base" ? tr("Conoscenza base") : tr("Conoscenza aziendale");
       const response = await chatsApi.create(token, knowledgeMode, title, selectedDocuments);
       if (response.ok) {
         setChats((current) => [response.data, ...current]);
@@ -72,7 +73,7 @@ export function useChats() {
     try {
       const response = await chatsApi.delete(token, chat.id);
       if (!response.ok) {
-        setDeleteError(response.data.detail ?? "Non è stato possibile eliminare la chat.");
+        setDeleteError(response.data.detail ?? tr("Non è stato possibile eliminare la chat."));
         return;
       }
 
@@ -93,7 +94,7 @@ export function useChats() {
     try {
       const response = await chatsApi.rename(token, chat.id, newTitle);
       if (!response.ok) {
-        setRenameError(response.data.detail ?? "Non è stato possibile rinominare la chat.");
+        setRenameError(response.data.detail ?? tr("Non è stato possibile rinominare la chat."));
         return;
       }
 

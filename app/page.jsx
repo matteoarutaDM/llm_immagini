@@ -24,8 +24,10 @@ import { useChats } from "./hooks/useChats";
 import { useCompanyDocuments } from "./hooks/useCompanyDocuments";
 import { useVoiceRecorder } from "./hooks/useVoiceRecorder";
 import { authApi, chatsApi, documentsApi } from "./lib/api";
+import { useLanguage } from "./lib/i18n";
 
 export default function Home() {
+  const { t } = useLanguage();
   const auth = useAuth();
   const chats = useChats();
   const documents = useCompanyDocuments();
@@ -153,21 +155,21 @@ export default function Home() {
               type="button"
               className="touch-target grid place-items-center rounded-xl text-app-secondary transition hover:bg-app-hover hover:text-app-text lg:hidden"
               onClick={() => setNavigationOpen(true)}
-              aria-label="Apri navigazione"
+              aria-label={t("Apri navigazione")}
               aria-expanded={navigationOpen}
             >
               <Bars3Icon className="h-5 w-5" />
             </button>
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-app-text">{chats.activeChat?.title ?? "Nuova analisi"}</p>
+              <p className="truncate text-sm font-medium text-app-text">{chats.activeChat?.title ?? t("Nuova analisi")}</p>
               <p className="truncate text-xs text-app-muted">
-                {chats.activeChat?.knowledge_mode === "merged" ? "Conoscenza aziendale" : "Manuali tecnici di base"}
+                {chats.activeChat?.knowledge_mode === "merged" ? t("Conoscenza aziendale") : t("Manuali tecnici di base")}
               </p>
             </div>
             <div className="ml-auto flex items-center gap-2">
               <span className="hidden items-center gap-2 text-xs text-app-muted sm:flex">
                 <span className="h-1.5 w-1.5 rounded-full bg-app-accent shadow-[0_0_10px_var(--accent)]" />
-                Sistema operativo
+                {t("Sistema operativo")}
               </span>
               {auth.companyDomain ? (
                 <button
@@ -249,9 +251,9 @@ export default function Home() {
       <DocumentPanel
         open={profileOpen}
         onClose={() => setProfileOpen(false)}
-        title="Profilo"
-        description="Il tuo account e la password."
-        closeLabel="Chiudi profilo"
+        title={t("Profilo")}
+        description={t("Il tuo account e la password.")}
+        closeLabel={t("Chiudi profilo")}
       >
         <ProfilePanel profile={auth.profile} onChangePassword={auth.changePassword} />
       </DocumentPanel>

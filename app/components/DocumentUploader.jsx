@@ -7,6 +7,8 @@ import {
   XCircleIcon,
 } from "@heroicons/react/24/outline";
 
+import { useLanguage } from "../lib/i18n";
+
 const STATUS = {
   indexed: { label: "Indicizzato", icon: CheckCircleIcon, className: "text-app-accent" },
   pending: { label: "In elaborazione", icon: ClockIcon, className: "text-amber-300" },
@@ -24,21 +26,22 @@ export function DocumentUploader({
   onDelete,
   canManage = false,
 }) {
+  const { t } = useLanguage();
   return (
     <div className="flex min-h-full flex-col">
       <div className="rounded-xl border border-app-border bg-app-raised/45 p-4">
-        <p className="text-sm font-medium text-app-text">Selezione per la prossima chat</p>
+        <p className="text-sm font-medium text-app-text">{t("Selezione per la prossima chat")}</p>
         <p className="mt-1 text-xs leading-5 text-app-muted">
           {canManage
-            ? "La casella include il PDF nella conoscenza aziendale. Il cestino elimina invece il file definitivamente."
-            : "La casella include il PDF nella conoscenza aziendale della prossima chat."}
+            ? t("La casella include il PDF nella conoscenza aziendale. Il cestino elimina invece il file definitivamente.")
+            : t("La casella include il PDF nella conoscenza aziendale della prossima chat.")}
         </p>
         {canManage ? (
           <a href="/azienda?sezione=documenti" className="mt-2 inline-block text-xs font-medium text-app-accent hover:underline">
-            Gestisci indicizzazione e archivio
+            {t("Gestisci indicizzazione e archivio")}
           </a>
         ) : (
-          <p className="mt-2 text-xs text-app-muted">I documenti sono gestiti dal responsabile della tua azienda.</p>
+          <p className="mt-2 text-xs text-app-muted">{t("I documenti sono gestiti dal responsabile della tua azienda.")}</p>
         )}
       </div>
 
@@ -46,11 +49,11 @@ export function DocumentUploader({
         {documents.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-app-border-strong px-5 py-10 text-center">
             <DocumentIcon className="mx-auto h-7 w-7 text-app-muted" />
-            <p className="mt-3 text-sm font-medium text-app-secondary">Nessun documento aziendale</p>
+            <p className="mt-3 text-sm font-medium text-app-secondary">{t("Nessun documento aziendale")}</p>
             <p className="mt-1 text-xs leading-5 text-app-muted">
               {canManage
-                ? "Carica un PDF tecnico per renderlo disponibile nelle nuove chat aziendali."
-                : "Il responsabile della tua azienda non ha ancora caricato documenti."}
+                ? t("Carica un PDF tecnico per renderlo disponibile nelle nuove chat aziendali.")
+                : t("Il responsabile della tua azienda non ha ancora caricato documenti.")}
             </p>
           </div>
         ) : (
@@ -65,7 +68,7 @@ export function DocumentUploader({
                     <input
                       type="checkbox"
                       className="mt-1 h-4 w-4 shrink-0 accent-[var(--accent)]"
-                      aria-label={`Includi ${document.filename} nella prossima chat aziendale`}
+                      aria-label={t("Includi {file} nella prossima chat aziendale", { file: document.filename })}
                       checked={selectedDocuments.includes(document.filename)}
                       onChange={(event) => onToggle(document.filename, event.target.checked)}
                     />
@@ -73,17 +76,17 @@ export function DocumentUploader({
                       <span className="block break-words text-sm leading-5 text-app-text">{document.filename}</span>
                       <span className={`mt-1.5 flex items-center gap-1.5 text-[11px] ${status.className}`}>
                         <StatusIcon className="h-3.5 w-3.5" />
-                        {status.label}
+                        {t(status.label)}
                       </span>
                     </span>
                   </label>
                   {canManage ? (
                     <button
                       type="button"
-                      aria-label={`Rimuovi ${document.filename} dalla memoria RAG`}
+                      aria-label={t("Rimuovi {file} dalla memoria RAG", { file: document.filename })}
                       disabled={isDeleting}
                       onClick={() => {
-                        if (window.confirm(`Rimuovere definitivamente "${document.filename}" dalla memoria RAG?`)) onDelete(document);
+                        if (window.confirm(t("Rimuovere definitivamente \"{file}\" dalla memoria RAG?", { file: document.filename }))) onDelete(document);
                       }}
                       className="touch-target grid shrink-0 place-items-center rounded-xl text-app-muted transition hover:bg-red-500/10 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-40"
                     >
@@ -103,17 +106,17 @@ export function DocumentUploader({
         <>
           <label className="touch-target mt-5 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-app-border-strong bg-app-raised px-4 text-sm font-medium text-app-secondary transition hover:border-app-accent/40 hover:bg-app-accent-soft hover:text-app-accent">
             <ArrowUpTrayIcon className="h-4 w-4" />
-            {uploading ? "Caricamento e indicizzazione..." : "Carica un nuovo PDF"}
+            {uploading ? t("Caricamento e indicizzazione...") : t("Carica un nuovo PDF")}
             <input
               type="file"
               accept="application/pdf"
               disabled={uploading}
               onChange={(event) => onUpload(event.target.files?.[0] ?? null)}
               className="sr-only"
-              aria-label="Carica documento PDF aziendale"
+              aria-label={t("Carica documento PDF aziendale")}
             />
           </label>
-          {uploading ? <p className="mt-2 text-center text-xs text-app-muted">Il pannello può restare aperto durante l’indicizzazione.</p> : null}
+          {uploading ? <p className="mt-2 text-center text-xs text-app-muted">{t("Il pannello può restare aperto durante l’indicizzazione.")}</p> : null}
         </>
       ) : null}
     </div>

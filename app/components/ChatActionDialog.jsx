@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { ChatBubbleLeftRightIcon, ExclamationTriangleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
+import { useLanguage } from "../lib/i18n";
+
 export function ChatActionDialog({ action, onClose, onConfirm }) {
+  const { t } = useLanguage();
   const [title, setTitle] = useState("");
   const inputRef = useRef(null);
   const cancelButtonRef = useRef(null);
@@ -35,7 +38,7 @@ export function ChatActionDialog({ action, onClose, onConfirm }) {
   if (!action) return null;
 
   const isRename = action.type === "rename";
-  const resolvedTitle = title.trim() || "Nuova chat";
+  const resolvedTitle = title.trim() || t("Nuova chat");
 
   function submit(event) {
     event.preventDefault();
@@ -47,7 +50,7 @@ export function ChatActionDialog({ action, onClose, onConfirm }) {
       <button
         type="button"
         className="absolute inset-0 bg-black/75 backdrop-blur-sm"
-        aria-label="Chiudi finestra"
+        aria-label={t("Chiudi finestra")}
         onClick={onClose}
       />
       <form
@@ -64,22 +67,22 @@ export function ChatActionDialog({ action, onClose, onConfirm }) {
           </span>
           <div className="min-w-0 flex-1">
             <h2 id="chat-dialog-title" className="font-display text-lg font-semibold text-app-text">
-              {isRename ? "Rinomina chat" : "Elimina chat"}
+              {isRename ? t("Rinomina chat") : t("Elimina chat")}
             </h2>
             <p id="chat-dialog-description" className="mt-1 text-sm leading-6 text-app-secondary">
               {isRename
-                ? "Scegli un nome breve e riconoscibile per questa conversazione."
-                : <>La chat <strong className="font-medium text-app-text">“{action.chat.title}”</strong> e tutti i suoi messaggi verranno eliminati definitivamente.</>}
+                ? t("Scegli un nome breve e riconoscibile per questa conversazione.")
+                : <>{t("La chat ")}<strong className="font-medium text-app-text">“{action.chat.title}”</strong>{t(" e tutti i suoi messaggi verranno eliminati definitivamente.")}</>}
             </p>
           </div>
-          <button type="button" onClick={onClose} className="touch-target -mr-2 -mt-2 grid shrink-0 place-items-center rounded-xl text-app-muted transition hover:bg-app-hover hover:text-app-text" aria-label="Chiudi finestra">
+          <button type="button" onClick={onClose} className="touch-target -mr-2 -mt-2 grid shrink-0 place-items-center rounded-xl text-app-muted transition hover:bg-app-hover hover:text-app-text" aria-label={t("Chiudi finestra")}>
             <XMarkIcon className="h-5 w-5" />
           </button>
         </div>
 
         {isRename ? (
           <label className="mt-5 block">
-            <span className="mb-2 block text-xs font-medium text-app-secondary">Nome della chat</span>
+            <span className="mb-2 block text-xs font-medium text-app-secondary">{t("Nome della chat")}</span>
             <input
               ref={inputRef}
               type="text"
@@ -87,12 +90,12 @@ export function ChatActionDialog({ action, onClose, onConfirm }) {
               onChange={(event) => setTitle(event.target.value)}
               maxLength={120}
               className="touch-target w-full rounded-xl border border-app-border-strong bg-app-raised px-3.5 text-sm text-app-text outline-none transition placeholder:text-app-muted focus:border-app-accent/60 focus:ring-4 focus:ring-app-accent/10"
-              placeholder="Nome della chat"
+              placeholder={t("Nome della chat")}
             />
           </label>
         ) : (
           <div className="mt-5 rounded-xl border border-red-500/15 bg-red-500/[0.06] px-4 py-3 text-xs leading-5 text-red-200/80">
-            Questa operazione non può essere annullata.
+            {t("Questa operazione non può essere annullata.")}
           </div>
         )}
 
@@ -103,13 +106,13 @@ export function ChatActionDialog({ action, onClose, onConfirm }) {
             onClick={onClose}
             className="touch-target rounded-xl border border-app-border-strong px-4 text-sm font-medium text-app-secondary transition hover:bg-app-hover hover:text-app-text"
           >
-            Annulla
+            {t("Annulla")}
           </button>
           <button
             type="submit"
             className={`touch-target rounded-xl px-4 text-sm font-semibold transition active:scale-[0.99] ${isRename ? "bg-app-accent text-[#062114] hover:bg-app-accent-bright" : "bg-red-500 text-white hover:bg-red-400"}`}
           >
-            {isRename ? "Salva nome" : "Elimina definitivamente"}
+            {isRename ? t("Salva nome") : t("Elimina definitivamente")}
           </button>
         </div>
       </form>

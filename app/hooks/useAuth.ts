@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { authApi } from "../lib/api";
+import { tr } from "../lib/i18n";
 import type { AuthMode, CurrentUser } from "../types";
 
 const TOKEN_STORAGE_KEY = "assistant-token";
@@ -54,19 +55,19 @@ export function useAuth() {
     try {
       const response = await authApi.login(email, password);
       if (!response.ok) {
-        setAuthError(response.data.detail ?? "Autenticazione non riuscita.");
+        setAuthError(response.data.detail ?? tr("Autenticazione non riuscita."));
         return null;
       }
       if (response.data.requires_2fa) {
         setChallengeToken(response.data.challenge_token ?? null);
         setTwoFactorCode("");
         setRecoveryCode("");
-        setAuthInfo("Ti abbiamo inviato un codice via email.");
+        setAuthInfo(tr("Ti abbiamo inviato un codice via email."));
         setAuthMode("2fa");
         return null;
       }
       const session = _applySession(response.data);
-      if (!session) setAuthError("Autenticazione non riuscita.");
+      if (!session) setAuthError(tr("Autenticazione non riuscita."));
       return session;
     } finally {
       setAuthSubmitting(false);
@@ -84,9 +85,9 @@ export function useAuth() {
 
   /** Optional, from the profile. The backend revokes the other sessions and returns a new token. */
   async function changePassword(currentPassword: string, newPassword: string): Promise<string | null> {
-    if (!token) return "Sessione scaduta.";
+    if (!token) return tr("Sessione scaduta.");
     const response = await authApi.changePassword(token, currentPassword, newPassword);
-    if (!response.ok || !response.data.token) return response.data.detail ?? "Cambio password non riuscito.";
+    if (!response.ok || !response.data.token) return response.data.detail ?? tr("Cambio password non riuscito.");
     persistToken(response.data.token);
     setProfile((current) => (current ? { ...current, password_is_temporary: false } : current));
     return null;
@@ -98,10 +99,10 @@ export function useAuth() {
     try {
       const response = await authApi.forgotPassword(forgotEmail);
       if (!response.ok) {
-        setAuthError(response.data.detail ?? "Richiesta non riuscita.");
+        setAuthError(response.data.detail ?? tr("Richiesta non riuscita."));
         return;
       }
-      setAuthInfo(response.data.message ?? "Se l'indirizzo esiste, riceverai un'email con le istruzioni.");
+      setAuthInfo(response.data.message ?? tr("Se l'indirizzo esiste, riceverai un'email con le istruzioni."));
       setAuthMode("login");
     } finally {
       setForgotSubmitting(false);
@@ -123,7 +124,7 @@ export function useAuth() {
     try {
       const response = await authApi.verify2fa(challengeToken, twoFactorCode.trim());
       if (!response.ok || !response.data.token) {
-        setAuthError(response.data.detail ?? "Codice non valido.");
+        setAuthError(response.data.detail ?? tr("Codice non valido."));
         return null;
       }
       const session = _applySession(response.data);
@@ -142,7 +143,7 @@ export function useAuth() {
     try {
       const response = await authApi.recovery2fa(challengeToken, recoveryCode.trim());
       if (!response.ok || !response.data.token) {
-        setAuthError(response.data.detail ?? "Codice di recupero non valido.");
+        setAuthError(response.data.detail ?? tr("Codice di recupero non valido."));
         return null;
       }
       const session = _applySession(response.data);
@@ -162,10 +163,10 @@ export function useAuth() {
     try {
       const response = await authApi.resend2fa(challengeToken);
       if (!response.ok) {
-        setAuthError(response.data.detail ?? "Impossibile inviare un nuovo codice.");
+        setAuthError(response.data.detail ?? tr("Impossibile inviare un nuovo codice."));
         return;
       }
-      setAuthInfo("Ti abbiamo inviato un nuovo codice via email.");
+      setAuthInfo(tr("Ti abbiamo inviato un nuovo codice via email."));
     } finally {
       setResendingTwoFactor(false);
     }

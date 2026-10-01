@@ -2,6 +2,7 @@ import { useState } from "react";
 import { KeyIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { displayNameFromEmail } from "../lib/format";
+import { useLanguage } from "../lib/i18n";
 import { PRIMARY_BUTTON_CLASS } from "./authStyles";
 import { PasswordInput } from "./PasswordInput";
 
@@ -85,12 +86,13 @@ function Row({ label, value }) {
 
 /** Reminder only: keeping the temporary password is allowed. */
 export function TemporaryPasswordNotice({ onOpenProfile, onDismiss }) {
+  const { t } = useLanguage();
   return (
     <div className="flex items-center gap-3 border-b border-amber-400/20 bg-amber-400/10 px-4 py-2 text-xs text-amber-100 sm:px-6 lg:px-8" role="status">
       <KeyIcon className="h-4 w-4 shrink-0 text-amber-300" />
-      <p className="min-w-0 flex-1">Stai usando la password temporanea ricevuta. Puoi cambiarla quando vuoi dal tuo profilo.</p>
-      <button type="button" onClick={onOpenProfile} className="shrink-0 font-medium text-amber-200 hover:underline">Cambia password</button>
-      <button type="button" onClick={onDismiss} className="grid h-7 w-7 shrink-0 place-items-center rounded-lg hover:bg-amber-400/10" aria-label="Nascondi avviso">
+      <p className="min-w-0 flex-1">{t("Stai usando la password temporanea ricevuta. Puoi cambiarla quando vuoi dal tuo profilo.")}</p>
+      <button type="button" onClick={onOpenProfile} className="shrink-0 font-medium text-amber-200 hover:underline">{t("Cambia password")}</button>
+      <button type="button" onClick={onDismiss} className="grid h-7 w-7 shrink-0 place-items-center rounded-lg hover:bg-amber-400/10" aria-label={t("Nascondi avviso")}>
         <XMarkIcon className="h-4 w-4" />
       </button>
     </div>
