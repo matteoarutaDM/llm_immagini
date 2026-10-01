@@ -153,7 +153,7 @@ def _build_modal() -> ModalClient | None:
         base_url=base_url,
         api_key=api_key,
         model=_env("MODAL_MODEL") or DEFAULT_MODAL_MODEL,
-        timeout=_float_env("MODAL_TIMEOUT", 120.0),
+        timeout=_float_env("MODAL_TIMEOUT", 300.0),
         connect_timeout=_float_env("MODAL_CONNECT_TIMEOUT", 10.0),
         max_concurrent=_int_env("MODAL_MAX_CONCURRENT_REQUESTS", 2),
         # Same output cap as the primary, so both behave alike.

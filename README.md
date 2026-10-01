@@ -738,7 +738,7 @@ Se anche Modal fallisce, il sito riceve l'errore di Modal: 504 per timeout, 503 
 | `MODAL_BASE_URL` | vuoto | URL dell'app Modal, senza `/v1` |
 | `MODAL_API_KEY` | vuoto | uguale a `VLLM_API_KEY` nel secret Modal. Solo lato server: non va nel frontend, nei log né su git |
 | `MODAL_MODEL` | `meta-llama/Llama-3.1-8B-Instruct` | deve coincidere con il modello del deploy |
-| `MODAL_TIMEOUT` / `MODAL_CONNECT_TIMEOUT` | `120` / `10` | il timeout comprende l'eventuale avvio a freddo della GPU |
+| `MODAL_TIMEOUT` / `MODAL_CONNECT_TIMEOUT` | `300` / `10` | il timeout comprende l'avvio a freddo della GPU (~2 minuti dopo una pausa) |
 | `MODAL_MAX_CONCURRENT_REQUESTS` | `2` | massimo di richieste Modal contemporanee da questo backend; le altre aspettano |
 | `LLM_PRIMARY_FAILURE_THRESHOLD` | `3` | errori infrastrutturali consecutivi che aprono il circuit breaker |
 | `LLM_PRIMARY_COOLDOWN_SECONDS` | `60` | per quanto la RTX 5090 viene saltata dopo l'apertura |
