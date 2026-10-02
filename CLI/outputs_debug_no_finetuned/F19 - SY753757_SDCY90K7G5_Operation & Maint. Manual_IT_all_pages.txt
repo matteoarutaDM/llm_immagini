@@ -1876,8 +1876,7 @@ ATTENZIONE
 Rischio di lesioni!
 L’inosservanza di tale indicazione potrebbe provocare lesioni personali.
 • I vigili del fuoco devono indossare una maschera antincendio per prevenire lesioni durante 
-l'estinzione dell'incendio con estintore a CO
-2, schiuma e polvere secca.
+l'estinzione dell'incendio con estintore a CO2, schiuma e polvere secca.
 Per prevenire lesioni o incendi, osservare le 
 seguenti precauzioni:
 • Mantenere a disposizione un estintore e un 
@@ -3360,8 +3359,7 @@ refrigerante e utilizzarlo correttamente. Il tipo di refrigerante è R134a; non 
 ranti che possono causare danni al sistema di climatizzazione.
 • Non lasciare che i refrigeranti penetrino nella pelle.
 • Il refrigerante R134a genera effetto serra. L'emissione di 1 kg di R134a (dopo vent'anni) equi -
-vale a 3400 g di emissione di CO
-2. Rispettare le normative locali sullo smaltimento dei materiali 
+vale a 3400 g di emissione di CO2. Rispettare le normative locali sullo smaltimento dei materiali 
 refrigeranti. Non rilasciare il refrigerante direttamente nell'aria.
 2.4.20 Precauzioni per la manutenzione del motore
 Per evitare lesioni, non eseguire alcun inter-
@@ -3987,7 +3985,8 @@ rezza inizierà a emettere un allarme. Nel frat-
 tempo, la spia di malfunzionamento inizierà a 
 lampeggiare e lo schermo visualizzerà “Inter-
 ruttore bypass di sicurezza attivato”. La prote-
-zione viene annullata.3.2.5.4 Interruttore di arresto di emergenza
+zione viene annullata.
+3.2.5.4 Interruttore di arresto di emergenza
 L'interruttore di arresto di emergenza viene uti-
 lizzato per spegnere l'intero impianto elettrico e 
 arrestare tutti i movimenti del movimentatore di 
@@ -4079,11 +4078,11 @@ Premere F3 per accedere al menu delle infor-
 mazioni sull’impianto idraulico.
 Questo menu mostra la lunghezza del blocco, 
 la pressione del sistema, il conteggio del bloc-
-co, il peso del carico e la percentuale di carico.3.3.7 Menu allarmi di guasto
+co, il peso del carico e la percentuale di carico.
+3.3.7 Menu allarmi di guasto
 Premere F6 per accedere al menu degli allarmi 
 di guasto.
-In caso di allarme, l’indicatore 
- a sinistra di-
+In caso di allarme, l’indicatore a sinistra di-
 venta .
 Fig. 3-40 Menu informazioni cambio
 Fig. 3-41 Menu informazioni impianto idraulico
@@ -4244,8 +4243,7 @@ della ventola alla riaccensione del controller.
 Premere l'interruttore di accensione dopo l'avvio del motore per avviare la ventola dell'eva-
 poratore. A causa della funzione di memoria del controller dopo lo spegnimento, il condizionatore 
 potrebbe essere avviarsi nella condizione iniziale. Regolare come necessario.
-1. Premere l'interruttore di modalità 
- per 
+1. Premere l'interruttore di modalità per 
 scegliere la modalità operativa del condiziona-
 tore. Ad esempio, inizia a lampeggiare 
 quando la modalità è impostata su refrigerazio-
@@ -4272,8 +4270,7 @@ trebbe adattarsi a una temperatura tra 22 e
 è inferiore al valore impostato, il sensore in-
 vierà segnali al controller e il condizionatore 
 smetterà di raffreddare.
-3. Premere 
- per regolare il volume dell'aria. 
+3. Premere per regolare il volume dell'aria. 
 Vedere “Interruttore di velocità della ventola” a 
 pagina 3-30.
 Fig. 3-56 Interruttore di temperatura o pagina
@@ -4762,7 +4759,8 @@ Continuare a sollevare la maniglia per alzare il
 sedile di altri 30 mm dopo il secondo "scatto". 
 Sollevarla un'altra volta per abbassare il sedile 
 nella posizione originale.
-Intervallo di altezza: 0-60 mm4.1.3.2 Regolazione dello specchietto retrovisore
+Intervallo di altezza: 0-60 mm
+4.1.3.2 Regolazione dello specchietto retrovisore
 ATTENZIONE
 Regolare sempre lo specchietto retrovisore prima dell'uso.
 L’inosservanza di tale operazione può causare lesioni all’operatore e agli altri derivanti da una 
@@ -6998,8 +6996,7 @@ Esaminare le cinghie di trasmissione usurate o
 allentate, i collegamenti allentati o i tubi e i cavi 
 danneggiati. L'ispezione richiede solo pochi mi-
 nuti, ma può permettere di evitare gravi interru-
-zioni del servizio e riparazioni costose.
-Fig. 5-9 Controllo perdite di olio
+zioni del servizio e riparazioni costose. Fig. 5-9 Controllo perdite di olio
 
 ---------------------------------------- [FINE PAGINA 233] ----------------------------------------
 
@@ -10703,8 +10700,7 @@ collegare l'anodo con il catodo per evitare di danneggiare la batteria.
 4. Con la batteria completamente carica, si verificheranno i seguenti fenomeni:
 • La tensione di anodo e catodo supera i 12,56 V (per quanto riguarda la misurazione dell'appa-
 recchiatura di rilevamento della batteria), e non varia in tre ore.
-• La densità dell'elettrolita è superiore a 1,275 g/cm
-3 (25°C) e quella di ogni cella dovrebbe corri-
+• La densità dell'elettrolita è superiore a 1,275 g/cm3 (25°C) e quella di ogni cella dovrebbe corri-
 spondere. La densità non deve variare in tre ore.
 • Le bolle sono vicine e ben distribuite nella batteria.
 NOTA:
@@ -15263,8 +15259,7 @@ Energia (J=N·m)
 kJ x 0,948 =Btu x 1,055 =kJ
 J x 0,239 =caloria x 4,19 =J
 Velocità e accelerazione
-m/s
-2 x 3,28 =ft/s2 x 0,305 =m/s2
+m/s2 x 3,28 =ft/s2 x 0,305 =m/s2
 m/s x 3,28 =ft/s x 0,305 =m/s
 km/h x 0,62 =mph x 1,61 =km/h
 Potenza/coppia
@@ -15929,7 +15924,7 @@ Questo pulsante è perfetto per ogni tipo di mu-
 sica, che sia jazz, vocal, pop, classica o rock.
 Premere per selezionare BASS-Treb 
 per il proprio stile audio o regolare le imposta-
-zioni con i pulsanti del volume verso l’alto/ver-
+zioni con i pulsanti del volume verso l’alto/ver -
 so il basso per selezionare uno degli stili audio 
 predefiniti:
 -BASS-TRE: impostazioni 

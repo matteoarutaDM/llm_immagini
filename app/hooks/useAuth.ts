@@ -1,7 +1,8 @@
 import { useState } from "react";
 
 import { authApi } from "../lib/api";
-import type { AuthMode } from "../types";
+import { tr } from "../lib/i18n";
+import type { AuthMode, CurrentUser } from "../types";
 
 const TOKEN_STORAGE_KEY = "assistant-token";
 
@@ -9,15 +10,12 @@ export function useAuth() {
   const [token, setTokenState] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [companyDomain, setCompanyDomain] = useState<string | null>(null);
+  // The signed-in account (role, company, onboarding state). null until known.
+  const [profile, setProfile] = useState<CurrentUser | null>(null);
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [authError, setAuthError] = useState<string | null>(null);
   const [authInfo, setAuthInfo] = useState<string | null>(null);
   const [authSubmitting, setAuthSubmitting] = useState(false);
-  const [verificationToken, setVerificationToken] = useState("");
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  const [resendingVerification, setResendingVerification] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotSubmitting, setForgotSubmitting] = useState(false);
   const [challengeToken, setChallengeToken] = useState<string | null>(null);
@@ -34,6 +32,7 @@ export function useAuth() {
   function clearSession() {
     window.localStorage.removeItem(TOKEN_STORAGE_KEY);
     setTokenState(null);
+    setProfile(null);
   }
 
   /** Reads a previously saved token from storage and adopts it optimistically. */
@@ -43,74 +42,55 @@ export function useAuth() {
     return saved;
   }
 
-  function hydrateProfile(nextEmail: string, nextCompanyDomain: string | null) {
-    setEmail(nextEmail);
-    setCompanyDomain(nextCompanyDomain);
+  function hydrateProfile(nextProfile: CurrentUser) {
+    setEmail(nextProfile.email ?? "");
+    setProfile(nextProfile);
   }
 
-  async function submitAuth(mode: "login" | "register"): Promise<{ token: string; companyDomain: string | null } | null> {
+  /** Login only: accounts are created by the company admin or the platform administration. */
+  async function submitAuth(): Promise<{ token: string } | null> {
     setAuthError(null);
     setAuthInfo(null);
-    if (mode === "register" && password !== confirmPassword) {
-      setAuthError("Le due password non coincidono.");
-      return null;
-    }
     setAuthSubmitting(true);
     try {
-      const response =
-        mode === "register" ? await authApi.register(email, password, termsAccepted) : await authApi.login(email, password);
+      const response = await authApi.login(email, password);
       if (!response.ok) {
-        setAuthError(response.data.detail ?? "Autenticazione non riuscita.");
+        setAuthError(response.data.detail ?? tr("Autenticazione non riuscita."));
         return null;
       }
-      if (mode === "register" && !response.data.token) {
-        // Email verification is required in this environment: the account
-        // stays pending until the confirmation link/token is verified.
-        setAuthInfo(response.data.message ?? "Controlla la tua email per confermare l'account.");
-        setAuthMode("verify");
-        return null;
-      }
-      if (mode === "login" && response.data.requires_2fa) {
+      if (response.data.requires_2fa) {
         setChallengeToken(response.data.challenge_token ?? null);
         setTwoFactorCode("");
         setRecoveryCode("");
-        setAuthInfo("Ti abbiamo inviato un codice via email.");
+        setAuthInfo(tr("Ti abbiamo inviato un codice via email."));
         setAuthMode("2fa");
         return null;
       }
-      if (!response.data.token) {
-        setAuthError("Autenticazione non riuscita.");
-        return null;
-      }
-      persistToken(response.data.token);
-      setCompanyDomain(response.data.company_domain ?? null);
-      return { token: response.data.token, companyDomain: response.data.company_domain ?? null };
+      const session = _applySession(response.data);
+      if (!session) setAuthError(tr("Autenticazione non riuscita."));
+      return session;
     } finally {
       setAuthSubmitting(false);
     }
   }
 
-  async function verifyEmail() {
-    setAuthError(null);
-    const response = await authApi.verifyEmail(verificationToken);
-    if (!response.ok) {
-      setAuthError(response.data.detail ?? "Verifica non riuscita.");
-      return;
-    }
-    setAuthInfo(response.data.message ?? "Email confermata. Ora puoi accedere.");
-    setVerificationToken("");
-    setAuthMode("login");
+  /** First login: records the acceptance of Terms and Privacy. */
+  async function acceptTerms(): Promise<boolean> {
+    if (!token) return false;
+    const response = await authApi.acceptTerms(token);
+    if (!response.ok) return false;
+    setProfile((current) => (current ? { ...current, terms_accepted: true } : current));
+    return true;
   }
 
-  async function resendVerification() {
-    setAuthError(null);
-    setResendingVerification(true);
-    try {
-      const response = await authApi.resendVerification(email);
-      setAuthInfo(response.data.message ?? "Se l'indirizzo esiste, riceverai una nuova email.");
-    } finally {
-      setResendingVerification(false);
-    }
+  /** Optional, from the profile. The backend revokes the other sessions and returns a new token. */
+  async function changePassword(currentPassword: string, newPassword: string): Promise<string | null> {
+    if (!token) return tr("Sessione scaduta.");
+    const response = await authApi.changePassword(token, currentPassword, newPassword);
+    if (!response.ok || !response.data.token) return response.data.detail ?? tr("Cambio password non riuscito.");
+    persistToken(response.data.token);
+    setProfile((current) => (current ? { ...current, password_is_temporary: false } : current));
+    return null;
   }
 
   async function forgotPassword() {
@@ -119,21 +99,22 @@ export function useAuth() {
     try {
       const response = await authApi.forgotPassword(forgotEmail);
       if (!response.ok) {
-        setAuthError(response.data.detail ?? "Richiesta non riuscita.");
+        setAuthError(response.data.detail ?? tr("Richiesta non riuscita."));
         return;
       }
-      setAuthInfo(response.data.message ?? "Se l'indirizzo esiste, riceverai un'email con le istruzioni.");
+      setAuthInfo(response.data.message ?? tr("Se l'indirizzo esiste, riceverai un'email con le istruzioni."));
       setAuthMode("login");
     } finally {
       setForgotSubmitting(false);
     }
   }
 
-  function _applySession(response: { token?: string; company_domain?: string | null }) {
+  function _applySession(response: CurrentUser & { token?: string }) {
     if (!response.token) return null;
-    persistToken(response.token);
-    setCompanyDomain(response.company_domain ?? null);
-    return { token: response.token, companyDomain: response.company_domain ?? null };
+    const { token: nextToken, ...nextProfile } = response;
+    persistToken(nextToken);
+    setProfile(nextProfile);
+    return { token: nextToken };
   }
 
   async function verifyTwoFactor() {
@@ -143,7 +124,7 @@ export function useAuth() {
     try {
       const response = await authApi.verify2fa(challengeToken, twoFactorCode.trim());
       if (!response.ok || !response.data.token) {
-        setAuthError(response.data.detail ?? "Codice non valido.");
+        setAuthError(response.data.detail ?? tr("Codice non valido."));
         return null;
       }
       const session = _applySession(response.data);
@@ -162,7 +143,7 @@ export function useAuth() {
     try {
       const response = await authApi.recovery2fa(challengeToken, recoveryCode.trim());
       if (!response.ok || !response.data.token) {
-        setAuthError(response.data.detail ?? "Codice di recupero non valido.");
+        setAuthError(response.data.detail ?? tr("Codice di recupero non valido."));
         return null;
       }
       const session = _applySession(response.data);
@@ -182,10 +163,10 @@ export function useAuth() {
     try {
       const response = await authApi.resend2fa(challengeToken);
       if (!response.ok) {
-        setAuthError(response.data.detail ?? "Impossibile inviare un nuovo codice.");
+        setAuthError(response.data.detail ?? tr("Impossibile inviare un nuovo codice."));
         return;
       }
-      setAuthInfo("Ti abbiamo inviato un nuovo codice via email.");
+      setAuthInfo(tr("Ti abbiamo inviato un nuovo codice via email."));
     } finally {
       setResendingTwoFactor(false);
     }
@@ -205,7 +186,6 @@ export function useAuth() {
     }
     clearSession();
     setPassword("");
-    setConfirmPassword("");
     setAuthError(null);
     setAuthInfo(null);
     setAuthMode("login");
@@ -215,11 +195,11 @@ export function useAuth() {
     token,
     email,
     password,
-    confirmPassword,
-    setConfirmPassword,
     setPassword,
     setEmail,
-    companyDomain,
+    profile,
+    companyDomain: profile?.company_domain ?? null,
+    isCompanyAdmin: profile?.role === "company_admin",
     authMode,
     setAuthMode,
     authError,
@@ -227,11 +207,6 @@ export function useAuth() {
     authSubmitting,
     setAuthError,
     setAuthInfo,
-    verificationToken,
-    setVerificationToken,
-    termsAccepted,
-    setTermsAccepted,
-    resendingVerification,
     forgotEmail,
     setForgotEmail,
     forgotSubmitting,
@@ -246,8 +221,8 @@ export function useAuth() {
     hydrateProfile,
     clearSession,
     submitAuth,
-    verifyEmail,
-    resendVerification,
+    acceptTerms,
+    changePassword,
     forgotPassword,
     verifyTwoFactor,
     verifyRecoveryCode,

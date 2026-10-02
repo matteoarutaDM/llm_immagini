@@ -1,18 +1,21 @@
 import { useState } from "react";
 import { CheckIcon, ClipboardDocumentIcon, IdentificationIcon } from "@heroicons/react/24/outline";
 
+import { useLanguage } from "../lib/i18n";
+
 export function OcrCard({ identifiers }) {
+  const { t } = useLanguage();
   const fields = [
-    ["Modello", identifiers?.model_code],
-    ["Matricola / seriale", identifiers?.serial_number],
-    ["Asset tag", identifiers?.asset_tag],
+    [t("Modello"), identifiers?.model_code],
+    [t("Matricola / seriale"), identifiers?.serial_number],
+    [t("Asset tag"), identifiers?.asset_tag],
   ].filter(([, value]) => Boolean(value));
 
   return (
     <section className="border-t border-app-border pt-8" aria-labelledby="ocr-title">
       <div className="flex items-center gap-2">
         <IdentificationIcon className="h-5 w-5 text-app-secondary" />
-        <h3 id="ocr-title" className="font-display text-lg font-semibold text-app-text">Dati targhetta</h3>
+        <h3 id="ocr-title" className="font-display text-lg font-semibold text-app-text">{t("Dati targhetta")}</h3>
       </div>
       {identifiers?.available ? (
         <div className="mt-5">
@@ -23,23 +26,24 @@ export function OcrCard({ identifiers }) {
           ) : null}
           {identifiers.visible_text?.length ? (
             <div className="mt-4 rounded-xl bg-app-raised p-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-app-muted">Testo rilevato</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-app-muted">{t("Testo rilevato")}</p>
               <div className="mt-3 space-y-1 font-mono text-xs leading-5 text-app-secondary">
                 {identifiers.visible_text.slice(0, 8).map((line, index) => <p key={`${line}-${index}`}>{line}</p>)}
               </div>
             </div>
           ) : null}
-          {!fields.length && !identifiers.visible_text?.length ? <p className="mt-3 text-sm text-app-muted">Nessun dato leggibile trovato sulla targhetta.</p> : null}
+          {!fields.length && !identifiers.visible_text?.length ? <p className="mt-3 text-sm text-app-muted">{t("Nessun dato leggibile trovato sulla targhetta.")}</p> : null}
           {identifiers.notes ? <p className="mt-3 text-xs leading-5 text-app-muted">{identifiers.notes}</p> : null}
         </div>
       ) : (
-        <p className="mt-3 text-sm leading-6 text-app-muted">OCR non disponibile{identifiers?.error ? `: ${identifiers.error}` : "."}</p>
+        <p className="mt-3 text-sm leading-6 text-app-muted">{t("OCR non disponibile")}{identifiers?.error ? `: ${identifiers.error}` : "."}</p>
       )}
     </section>
   );
 }
 
 function IdentifierField({ label, value }) {
+  const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -58,7 +62,7 @@ function IdentifierField({ label, value }) {
         <dt className="text-[11px] uppercase tracking-[0.1em] text-app-muted">{label}</dt>
         <dd className="mt-1 break-all font-mono text-sm font-medium text-app-text">{value}</dd>
       </div>
-      <button type="button" onClick={() => void copy()} aria-label={`Copia ${label.toLowerCase()}`} className="touch-target grid shrink-0 place-items-center rounded-xl text-app-muted transition hover:bg-app-hover hover:text-app-text">
+      <button type="button" onClick={() => void copy()} aria-label={t("Copia {label}", { label: label.toLowerCase() })} className="touch-target grid shrink-0 place-items-center rounded-xl text-app-muted transition hover:bg-app-hover hover:text-app-text">
         {copied ? <CheckIcon className="h-4 w-4 text-app-accent" /> : <ClipboardDocumentIcon className="h-4 w-4" />}
       </button>
     </div>

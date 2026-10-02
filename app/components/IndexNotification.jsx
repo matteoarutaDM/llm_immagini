@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { CheckCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
+import { useLanguage } from "../lib/i18n";
+
 export function IndexNotification({ filename, onDismiss }) {
+  const { t } = useLanguage();
   useEffect(() => {
     if (!filename) return undefined;
     const timeout = window.setTimeout(onDismiss, 2500);
@@ -20,10 +23,10 @@ export function IndexNotification({ filename, onDismiss }) {
         <CheckCircleIcon className="h-5 w-5" />
       </span>
       <div className="min-w-0 flex-1 pt-0.5">
-        <p className="text-sm font-medium text-app-text">Documento indicizzato</p>
+        <p className="text-sm font-medium text-app-text">{t("Documento indicizzato")}</p>
         <p className="mt-1 truncate text-xs text-app-secondary" title={filename}>{filename}</p>
       </div>
-      <button type="button" onClick={onDismiss} className="touch-target -mr-2 -mt-2 grid shrink-0 place-items-center rounded-xl text-app-muted transition hover:bg-app-hover hover:text-app-text" aria-label="Chiudi notifica">
+      <button type="button" onClick={onDismiss} className="touch-target -mr-2 -mt-2 grid shrink-0 place-items-center rounded-xl text-app-muted transition hover:bg-app-hover hover:text-app-text" aria-label={t("Chiudi notifica")}>
         <XMarkIcon className="h-4 w-4" />
       </button>
     </div>

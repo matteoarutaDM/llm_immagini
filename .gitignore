@@ -14,3 +14,9 @@ data/*.db-*
 data/companies/
 *.tsbuildinfo
 .claude/
+
+# Segreti della configurazione Docker
+.env.docker
+
+# Secret per il deploy Modal (token Hugging Face, chiave API del fallback)
+deploy/.env.modal

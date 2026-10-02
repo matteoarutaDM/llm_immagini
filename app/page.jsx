@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 
 import { AnalysisComposer } from "./components/AnalysisComposer";
+import { AnalysisHistory } from "./components/AnalysisHistory";
 import { AnswerCard } from "./components/AnswerCard";
-import { AuthPanel } from "./components/AuthPanel";
+import { AuthPanel, TermsGate } from "./components/AuthPanel";
 import { CandidatesCard } from "./components/CandidatesCard";
 import { ChatSidebar } from "./components/ChatSidebar";
 import { DocumentUploader } from "./components/DocumentUploader";
@@ -15,20 +16,29 @@ import { InferenceProgress } from "./components/InferenceProgress";
 import { IndexNotification } from "./components/IndexNotification";
 import { MessageList } from "./components/MessageList";
 import { OcrCard } from "./components/OcrCard";
+import { ProfilePanel, TemporaryPasswordNotice } from "./components/ProfilePanel";
 import { SourcesPanel } from "./components/SourcesPanel";
 import { useAsk } from "./hooks/useAsk";
 import { useAuth } from "./hooks/useAuth";
 import { useChats } from "./hooks/useChats";
 import { useCompanyDocuments } from "./hooks/useCompanyDocuments";
+import { useVoiceRecorder } from "./hooks/useVoiceRecorder";
 import { authApi, chatsApi, documentsApi } from "./lib/api";
+import { useLanguage } from "./lib/i18n";
 
 export default function Home() {
+  const { t } = useLanguage();
   const auth = useAuth();
   const chats = useChats();
   const documents = useCompanyDocuments();
-  const ask = useAsk();
+  const ask = useAsk(chats.activeChat?.id);
+  const voice = useVoiceRecorder(auth.token, ask.appendToQuestion);
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [documentsOpen, setDocumentsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [temporaryNoticeDismissed, setTemporaryNoticeDismissed] = useState(false);
+  // Archived documents stay in the company admin's list but are not offered for chats.
+  const chatDocuments = documents.documents.filter((document) => document.status !== "archived");
 
   async function loadWorkspace(authToken) {
     const [meResponse, chatsResponse, documentsResponse] = await Promise.all([
@@ -40,7 +50,10 @@ export default function Home() {
       auth.clearSession();
       return;
     }
-    auth.hydrateProfile(meResponse.data.email ?? "", meResponse.data.company_domain ?? null);
+    auth.hydrateProfile(meResponse.data);
+    // Until the Terms are accepted the rest of the API answers 403: TermsGate
+    // is shown, and the workspace is loaded again right after acceptance.
+    if (meResponse.data.terms_accepted === false) return;
     if (chatsResponse.ok) {
       chats.hydrate(chatsResponse.data);
       if (chatsResponse.data[0]) await chats.selectChat(authToken, chatsResponse.data[0]);
@@ -57,8 +70,8 @@ export default function Home() {
   async function onAuthSubmit(event) {
     event.preventDefault();
     let session = null;
-    if (auth.authMode === "login" || auth.authMode === "register") {
-      session = await auth.submitAuth(auth.authMode);
+    if (auth.authMode === "login") {
+      session = await auth.submitAuth();
     } else if (auth.authMode === "2fa") {
       session = await auth.verifyTwoFactor();
     } else if (auth.authMode === "2fa-recovery") {
@@ -71,19 +84,42 @@ export default function Home() {
 
   function onSubmitAsk(event) {
     event.preventDefault();
-    void ask.submit(auth.token, chats.activeChat?.id, chats.appendExchange);
+    voice.stop();
+    const chatId = chats.activeChat?.id;
+    // The new search joins the history cards once the answer is recorded.
+    void ask.submit(auth.token, chats.appendExchange).then(() => chats.refreshAnalyses(auth.token, chatId));
   }
 
   if (!auth.token) return <AuthPanel auth={auth} onAuthSubmit={onAuthSubmit} />;
+  if (auth.profile?.terms_accepted === false) {
+    return <TermsGate auth={auth} onAccepted={() => void loadWorkspace(auth.token)} />;
+  }
+
+  // The latest answer is shown in full by AnswerCard: when the history reloaded
+  // from the server already ends with that same answer, don't repeat it.
+  const lastMessage = chats.history[chats.history.length - 1];
+  const visibleHistory =
+    ask.result?.answer && lastMessage?.role === "assistant" && lastMessage.content === ask.result.answer
+      ? chats.history.slice(0, -1)
+      : chats.history;
+  // The answer on screen is shown in full above: the history lists the searches before it.
+  const pastAnalyses = chats.analyses.filter((entry) => entry.id !== ask.result?.analysis_id);
 
   return (
-    <main className="h-dvh overflow-hidden bg-app-bg text-app-text">
+    <main className="relative h-dvh overflow-hidden bg-app-bg text-app-text">
       <div className="flex h-full min-w-0">
         <ChatSidebar
           open={navigationOpen}
           onClose={() => setNavigationOpen(false)}
           email={auth.email}
+          fullName={auth.profile?.full_name}
           companyDomain={auth.companyDomain}
+          companyName={auth.profile?.company_name}
+          isCompanyAdmin={auth.isCompanyAdmin}
+          onOpenProfile={() => {
+            setProfileOpen(true);
+            setNavigationOpen(false);
+          }}
           onLogout={() => void auth.logout()}
           chats={chats.chats}
           activeChat={chats.activeChat}
@@ -91,7 +127,10 @@ export default function Home() {
             void chats.selectChat(auth.token, chat);
             setNavigationOpen(false);
           }}
-          onDeleteChat={(chat) => void chats.deleteChat(auth.token, chat)}
+          onDeleteChat={(chat) => {
+            ask.forgetChat(chat.id);
+            void chats.deleteChat(auth.token, chat);
+          }}
           onRenameChat={(chat, title) => void chats.renameChat(auth.token, chat, title)}
           renamingChatId={chats.renamingChatId}
           renameError={chats.renameError}
@@ -102,7 +141,7 @@ export default function Home() {
           creatingChat={chats.creatingChat}
           deletingChatId={chats.deletingChatId}
           deleteError={chats.deleteError}
-          documentCount={documents.documents.length}
+          documentCount={chatDocuments.length}
           selectedDocumentCount={documents.selectedDocuments.length}
           onOpenDocuments={() => {
             setDocumentsOpen(true);
@@ -116,21 +155,21 @@ export default function Home() {
               type="button"
               className="touch-target grid place-items-center rounded-xl text-app-secondary transition hover:bg-app-hover hover:text-app-text lg:hidden"
               onClick={() => setNavigationOpen(true)}
-              aria-label="Apri navigazione"
+              aria-label={t("Apri navigazione")}
               aria-expanded={navigationOpen}
             >
               <Bars3Icon className="h-5 w-5" />
             </button>
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-app-text">{chats.activeChat?.title ?? "Nuova analisi"}</p>
+              <p className="truncate text-sm font-medium text-app-text">{chats.activeChat?.title ?? t("Nuova analisi")}</p>
               <p className="truncate text-xs text-app-muted">
-                {chats.activeChat?.knowledge_mode === "merged" ? "Conoscenza aziendale" : "Manuali tecnici di base"}
+                {chats.activeChat?.knowledge_mode === "merged" ? t("Conoscenza aziendale") : t("Manuali tecnici di base")}
               </p>
             </div>
             <div className="ml-auto flex items-center gap-2">
               <span className="hidden items-center gap-2 text-xs text-app-muted sm:flex">
                 <span className="h-1.5 w-1.5 rounded-full bg-app-accent shadow-[0_0_10px_var(--accent)]" />
-                Sistema operativo
+                {t("Sistema operativo")}
               </span>
               {auth.companyDomain ? (
                 <button
@@ -143,11 +182,13 @@ export default function Home() {
               ) : null}
             </div>
           </header>
+          {auth.profile?.password_is_temporary && !temporaryNoticeDismissed ? (
+            <TemporaryPasswordNotice onOpenProfile={() => setProfileOpen(true)} onDismiss={() => setTemporaryNoticeDismissed(true)} />
+          ) : null}
 
-          <div className="min-h-0 flex-1 overflow-y-auto">
-            <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
+          <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-12 [@media(max-height:760px)]:lg:py-6">
               <div className="mx-auto w-full max-w-4xl">
-                <MessageList history={chats.history} />
                 {!ask.result && !ask.loading ? <EmptyState /> : null}
 
                 <AnalysisComposer
@@ -155,6 +196,7 @@ export default function Home() {
                   onImageChange={ask.onFileChange}
                   question={ask.question}
                   onQuestionChange={ask.setQuestion}
+                  voice={voice}
                   selectedDocumentCount={documents.selectedDocuments.length}
                   hasCompanyAccess={Boolean(auth.companyDomain)}
                   onOpenDocuments={() => setDocumentsOpen(true)}
@@ -167,7 +209,7 @@ export default function Home() {
                 {ask.loading ? <InferenceProgress /> : null}
                 {ask.result ? (
                   <div className="mt-10 space-y-8 pb-12">
-                    <AnswerCard result={ask.result} />
+                    <AnswerCard result={ask.result} token={auth.token} />
                     {ask.result.recognized ? (
                       <>
                         <OcrCard identifiers={ask.result.image_identifiers} />
@@ -180,6 +222,13 @@ export default function Home() {
                     ) : null}
                   </div>
                 ) : null}
+
+                {/* Chats older than the history cards have only messages: show those. */}
+                {chats.analyses.length ? (
+                  <AnalysisHistory entries={pastAnalyses} token={auth.token} />
+                ) : (
+                  <MessageList history={visibleHistory} />
+                )}
               </div>
             </div>
           </div>
@@ -188,7 +237,8 @@ export default function Home() {
 
       <DocumentPanel open={documentsOpen && Boolean(auth.companyDomain)} onClose={() => setDocumentsOpen(false)}>
         <DocumentUploader
-          documents={documents.documents}
+          canManage={auth.isCompanyAdmin}
+          documents={chatDocuments}
           selectedDocuments={documents.selectedDocuments}
           uploading={documents.uploading}
           deletingId={documents.deletingId}
@@ -197,6 +247,15 @@ export default function Home() {
           onUpload={(file) => void documents.upload(auth.token, file)}
           onDelete={(document) => void documents.remove(auth.token, document)}
         />
+      </DocumentPanel>
+      <DocumentPanel
+        open={profileOpen}
+        onClose={() => setProfileOpen(false)}
+        title={t("Profilo")}
+        description={t("Il tuo account e la password.")}
+        closeLabel={t("Chiudi profilo")}
+      >
+        <ProfilePanel profile={auth.profile} onChangePassword={auth.changePassword} />
       </DocumentPanel>
       <IndexNotification
         filename={documents.indexedDocument}

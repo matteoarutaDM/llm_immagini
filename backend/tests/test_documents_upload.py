@@ -45,7 +45,7 @@ def test_user_without_company_cannot_upload(client):
 
 def test_company_user_can_upload_valid_pdf(client, monkeypatch):
     fake = _fake_assistant(monkeypatch)
-    token = signup(client, "user@digitalmens.it")
+    token = signup(client, "user@digitalmens.it", role="company_admin")
     response = _upload(client, token)
     assert response.status_code == 200
     assert response.json()["filename"] == "manuale.pdf"
@@ -59,7 +59,7 @@ def test_company_user_can_upload_valid_pdf(client, monkeypatch):
 
 def test_upload_marks_document_failed_when_indexing_raises(client, monkeypatch):
     _fake_assistant(monkeypatch, fail_indexing=True)
-    token = signup(client, "user@digitalmens.it")
+    token = signup(client, "user@digitalmens.it", role="company_admin")
     response = _upload(client, token)
     assert response.status_code == 200
     assert response.json()["status"] == "failed"
@@ -70,14 +70,14 @@ def test_upload_marks_document_failed_when_indexing_raises(client, monkeypatch):
 
 def test_upload_rejects_wrong_content_type(client, monkeypatch):
     _fake_assistant(monkeypatch)
-    token = signup(client, "user@digitalmens.it")
+    token = signup(client, "user@digitalmens.it", role="company_admin")
     response = _upload(client, token, content_type="text/plain")
     assert response.status_code == 400
 
 
 def test_upload_rejects_file_without_pdf_magic_bytes(client, monkeypatch):
     _fake_assistant(monkeypatch)
-    token = signup(client, "user@digitalmens.it")
+    token = signup(client, "user@digitalmens.it", role="company_admin")
     response = _upload(client, token, content=b"not really a pdf but claims to be")
     assert response.status_code == 400
 
@@ -85,7 +85,7 @@ def test_upload_rejects_file_without_pdf_magic_bytes(client, monkeypatch):
 def test_upload_rejects_oversized_file(client, monkeypatch):
     _fake_assistant(monkeypatch)
     monkeypatch.setattr(main_module, "MAX_UPLOAD_BYTES", 100)
-    token = signup(client, "user@digitalmens.it")
+    token = signup(client, "user@digitalmens.it", role="company_admin")
     oversized = PDF_BYTES + b"0" * 1000
     response = _upload(client, token, content=oversized)
     assert response.status_code == 413
@@ -93,7 +93,7 @@ def test_upload_rejects_oversized_file(client, monkeypatch):
 
 def test_two_uploads_with_same_original_filename_do_not_collide(client, monkeypatch):
     _fake_assistant(monkeypatch)
-    token = signup(client, "user@digitalmens.it")
+    token = signup(client, "user@digitalmens.it", role="company_admin")
     first = _upload(client, token, content=PDF_BYTES + b"\nfirst")
     second = _upload(client, token, content=PDF_BYTES + b"\nsecond")
     assert first.status_code == second.status_code == 200
@@ -105,7 +105,7 @@ def test_two_uploads_with_same_original_filename_do_not_collide(client, monkeypa
 
 def test_delete_document_removes_it_and_invalidates_rag(client, monkeypatch):
     fake = _fake_assistant(monkeypatch)
-    token = signup(client, "user@digitalmens.it")
+    token = signup(client, "user@digitalmens.it", role="company_admin")
     uploaded = _upload(client, token).json()
     fake.invalidated.clear()
 
@@ -119,8 +119,8 @@ def test_delete_document_removes_it_and_invalidates_rag(client, monkeypatch):
 
 def test_delete_document_from_another_company_is_not_found(client, monkeypatch):
     _fake_assistant(monkeypatch)
-    token_a = signup(client, "user@digitalmens.it")
-    token_b = signup(client, "user@othercorp.it")
+    token_a = signup(client, "user@digitalmens.it", role="company_admin")
+    token_b = signup(client, "user@othercorp.it", role="company_admin")
     uploaded = _upload(client, token_a).json()
 
     response = client.delete(f"/api/company/documents/{uploaded['id']}", headers=auth_headers(token_b))

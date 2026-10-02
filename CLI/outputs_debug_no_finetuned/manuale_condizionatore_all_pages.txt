@@ -1,6 +1,5 @@
 Manuale d'uso
-Climatizzatore per interni Daikin
-Italiano
+Climatizzatore per interni Daikin Italiano
 Manuale d'uso
 Climatizzatore per interni Daikin
 CTXM15R2V1B
@@ -29,7 +28,7 @@ Sommario
 1 Note relative alla documentazione 2
 1.1 Informazioni su questo documento ........................................... 2
 2 Istruzioni di sicurezza per l'utente 2
-2.1 Generale .................................................................................... 3
+2.1 Generale.................................................................................... 3
 2.2 Istruzioni per un utilizzo sicuro .................................................. 3
 3 Informazioni sul sistema 5
 3.1 Unità interna .............................................................................. 5
@@ -38,68 +37,68 @@ Sommario
 3.2.1 Componenti: Interfaccia utente ................................... 6
 4 Prima dell'uso 6
 4.1 Inserimento delle batterie .......................................................... 6
-4.2 Montaggio del supporto di interfaccia utente ............................. 6
-4.3 Impostazione dell'orologio ......................................................... 6
+4.2 Montaggio del supporto di interfaccia utente............................. 6
+4.3 Impostazione dell'orologio......................................................... 6
 4.4 Impostazione della luminosità del display dell'unità interna ...... 7
-4.5 Attivazione dell'alimentazione elettrica ...................................... 7
+4.5 Attivazione dell'alimentazione elettrica...................................... 7
 5 Funzionamento 7
 5.1 Portata di funzionamento .......................................................... 7
-5.2 Modalità di funzionamento e setpoint della temperatura ........... 7
+5.2 Modalità di funzionamento e setpoint della temperatura........... 7
 5.2.1 Avvio/arresto della modalità di funzionamento e
-impostazione della temperatura .................................. 8
-5.3 Tasso del flusso d'aria ............................................................... 8
+impostazione della temperatura.................................. 8
+5.3 Tasso del flusso d'aria............................................................... 8
 5.3.1 Regolazione del tasso del flusso dell'aria ................... 8
 5.4 Direzione aria ............................................................................ 8
 5.4.1 Regolazione della direzione del flusso dell'aria
-verticale ....................................................................... 8
+verticale....................................................................... 8
 5.4.2 Regolazione della direzione del flusso dell'aria
-orizzontale ................................................................... 8
+orizzontale................................................................... 8
 5.4.3 Utilizzo della direzione del flusso dell'aria 3D ............. 9
-5.5 Funzionamento "Comfort airflow" e "Intelligent Eye" ................. 9
+5.5 Funzionamento "Comfort airflow" e "Intelligent Eye"................. 9
 5.5.1 Funzionamento "Comfort airflow" ............................... 9
 5.5.2 Funzionamento "Intelligent Eye" ................................. 9
 5.5.3 Avvio/Arresto del funzionamento "Comfort" e
-"Intelligent Eye" ........................................................... 9
-5.6 Funzionamento in modalità "Powerful" ...................................... 9
-5.6.1 Avvio/Arresto del funzionamento "Powerful" ............... 9
+"Intelligent Eye"........................................................... 9
+5.6 Funzionamento in modalità "Powerful"...................................... 9
+5.6.1 Avvio/Arresto del funzionamento "Powerful"............... 9
 5.7 Funzionamento a basso rumore dell'unità esterna ed Econo ... 10
 5.7.1 Funzionamento "Econo" ............................................. 10
 5.7.2 Funzionamento a basso rumore dell'unità esterna ..... 10
 5.7.3 Avvio/arresto del funzionamento a basso rumore
-dell'unità esterna ed Econo ......................................... 10
+dell'unità esterna ed Econo......................................... 10
 5.8 Funzionamento del Flash Streamer (pulizia dell'aria) ............... 10
 5.8.1 Come avviare/arrestare il funzionamento del Flash
 Streamer (pulizia dell'aria) .......................................... 10
-5.9 Funzione di ACCENSIONE/SPEGNIMENTO del timer ............. 10
+5.9 Funzione di ACCENSIONE/SPEGNIMENTO del timer............. 10
 5.9.1 Avvio/Arresto della funzione di SPEGNIMENTO del
 timer ............................................................................ 10
 5.9.2 Avvio/Arresto della funzione di ACCENSIONE del
 timer ............................................................................ 11
 5.9.3 Combinazione delle funzioni di ACCENSIONE e
-SPEGNIMENTO del timer ........................................... 11
+SPEGNIMENTO del timer........................................... 11
 5.10 Funzionamento del timer settimanale ....................................... 11
 5.10.1 Impostazione del funzionamento del timer
-settimanale .................................................................. 12
+settimanale.................................................................. 12
 5.10.2 Copia delle prenotazioni ............................................. 12
-5.10.3 Conferma di prenotazioni ............................................ 12
+5.10.3 Conferma di prenotazioni............................................ 12
 5.10.4 Disattivare o riattivare il funzionamento del Timer
-settimanale .................................................................. 13
+settimanale.................................................................. 13
 5.10.5 Eliminazione di prenotazioni ....................................... 13
-5.11 Connessione LAN Wireless ....................................................... 13
-5.11.1 Precauzioni per l'uso della rete LAN wireless ............. 13
+5.11 Connessione LAN Wireless....................................................... 13
+5.11.1 Precauzioni per l'uso della rete LAN wireless............. 13
 5.11.2 Installazione dell'applicazione Daikin Residential
 Controller .................................................................... 13
-5.11.3 Impostazione della connessione wireless ................... 13
+5.11.3 Impostazione della connessione wireless................... 13
 6 Risparmio energetico e funzionamento
 ottimale 15
 7 Manutenzione e assistenza 15
-7.1 Panoramica: Manutenzione e assistenza ................................... 15
+7.1 Panoramica: Manutenzione e assistenza................................... 15
 7.2 Pulizia dell'unità interna e dell'interfaccia utente ........................ 16
 7.3 Pulizia del pannello anteriore ..................................................... 16
-7.4 Rimozione del pannello anteriore ............................................... 16
+7.4 Rimozione del pannello anteriore............................................... 16
 7.5 Pulizia dei filtri dell'aria ............................................................... 17
 7.6 Pulizia del filtro deodorante al titanio rivestito di apatite e del
-filtro antiallergico in argento per la purificazione dell'aria ........... 17
+filtro antiallergico in argento per la purificazione dell'aria........... 17
 7.7 Sostituzione del filtro deodorante al titanio rivestito di apatite e
 del filtro antiallergico in argento per la purificazione dell'aria ..... 18
 7.8 Reinstallazione del pannello anteriore ....................................... 18
@@ -584,70 +583,52 @@ Per un funzionamento sicuro ed efficiente, utilizzare il sistema
 all'interno dei seguenti range di temperatura e umidità.
 In combinazione con unità esterna RZAG
 Raffreddamento e
-deumidificazione
-(
-a) (b)
-Riscaldamento
-(a)
+deumidificazione(
+a)(b)
+Riscaldamento(a)
 Temperatura esterna –20~52°C DB –20~24°C DB
 -21~18°C WB
 Temperatura interna 17~38°C DB
 12~28°C WB
 10~27°C DB
-Umidità interna ≤80%
-(b)
-—
-( a )
-Un dispositivo di sicurezza potrebbe arrestare il funzionamento
+Umidità interna ≤80%(b) —
+(a) Un dispositivo di sicurezza potrebbe arrestare il funzionamento
 del sistema quando l'unità supera il proprio intervallo di
 funzionamento.
-( b )
-Potrebbero verificarsi condensa e gocciolamento dell'acqua
+(b) Potrebbero verificarsi condensa e gocciolamento dell'acqua
 quando l'unità supera il proprio intervallo di funzionamento.
 In combinazione con unità esterne: RXM71R, 2MXM, 3MXM,
 4MXM, 5MXM
 Raffreddamento e
-deumidificazione
-(
-a) (b)
-Riscaldamento
-(a)
+deumidificazione(
+a)(b)
+Riscaldamento(a)
 Temperatura esterna -10~46°C DB -15~24°C DB
 -15~18°C WB
 Temperatura interna 18~37°C DB
 14~28°C WB
 10~30°C DB
-Umidità interna ≤80%
-(b)
-—
-( a )
-Un dispositivo di sicurezza potrebbe arrestare il funzionamento
+Umidità interna ≤80%(b) —
+(a) Un dispositivo di sicurezza potrebbe arrestare il funzionamento
 del sistema quando l'unità supera il proprio intervallo di
 funzionamento.
-( b )
-Potrebbero verificarsi condensa e gocciolamento dell'acqua
+(b) Potrebbero verificarsi condensa e gocciolamento dell'acqua
 quando l'unità supera il proprio intervallo di funzionamento.
 In combinazione con altre unità esterne
 Raffreddamento e
-deumidificazione
-(
-a) (b)
-Riscaldamento
-(a)
+deumidificazione(
+a)(b)
+Riscaldamento(a)
 Temperatura esterna -10~50°C DB –20~24°C DB
 -21~18°C WB
 Temperatura interna 18~37°C DB
 14~28°C WB
 10~30°C DB
-Umidità interna ≤80%
-(b)
-—
-( a )
-Un dispositivo di sicurezza potrebbe arrestare il funzionamento
+Umidità interna ≤80%(b) —
+(a) Un dispositivo di sicurezza potrebbe arrestare il funzionamento
 del sistema quando l'unità supera il proprio intervallo di
 funzionamento.
-( b )
-Potrebbero verificarsi condensa e gocciolamento dell'acqua
+(b) Potrebbero verificarsi condensa e gocciolamento dell'acqua
 quando l'unità supera il proprio intervallo di funzionamento.
 5.2 Modalità di funzionamento e
 setpoint della temperatura
@@ -660,27 +641,22 @@ raffreddamento
 Cosa. Il sistema funziona in maniera diversa a seconda della
 selezione dell'utente.
 INFORMAZIONI
-Modalità di funzionamento: il raffreddamento , la
+Modalità di funzionamento: il raffreddamento, la
 deumidificazione e il funzionamento automatico NON
 sono disponibili per la versione per solo riscaldamento
 del prodotto.
 Impostazione Descrizione
- Automatica
-Il sistema raffredda o riscalda una
+ Automatica Il sistema raffredda o riscalda una
 stanza al setpoint di temperatura. Se
 necessario passa automaticamente tra
 raffreddamento e riscaldamento.
- Deumidificazione
-Il sistema diminuisce l'umidità in una
+ Deumidificazione Il sistema diminuisce l'umidità in una
 stanza.
- Riscaldamento
-Il sistema riscalda una stanza al
+ Riscaldamento Il sistema riscalda una stanza al
 setpoint di temperatura.
- Raffreddamento
-Il sistema raffredda una stanza al
+ Raffreddamento Il sistema raffredda una stanza al
 setpoint di temperatura.
- Ventilazione
-Il sistema controlla solo il flusso d'aria
+ Ventilazione Il sistema controlla solo il flusso d'aria
 (direzione e tasso del flusso d'aria).
 Il sistema NON controlla la temperatura.
 
@@ -728,7 +704,7 @@ sul display LCD.
 3 Premere 
  o 
  una o più volte per ridurre o aumentare la
-temperatura .
+temperatura.
 Funzionament
 o in
 raffreddament
@@ -745,7 +721,7 @@ ne o solo
 ventilazione
 18~32°C 10~30°C 18~30°C —
 Nota: Quando si utilizza la modalità in deumidificazione o solo
-ventilazione , non è possibile regolare la temperatura.
+ventilazione, non è possibile regolare la temperatura.
 4 Premere 
  per interrompere il funzionamento.
 Risultato: 
@@ -863,7 +839,7 @@ e "Intelligent Eye"
 Eye" separatamente, o combinarli.
 5.5.1 Funzionamento "Comfort airflow"
 Questo funzionamento può essere utilizzato nella modalità di
-riscaldamento o di raffreddamento . Fornirà un flusso d'aria
+riscaldamento o di raffreddamento. Fornirà un flusso d'aria
 confortevole che NON sarà a contatto diretto con le persone. Il
 sistema imposta automaticamente la posizione fissa del flusso d'aria
 verso l'alto nella modalità di funzionamento in Raffreddamento e
@@ -908,7 +884,7 @@ Display Funzionamento
 "Comfort airflow"
 "Intelligent Eye"
 +
-"Comfort airflow" e "Intelligent Eye"
+ "Comfort airflow" e "Intelligent Eye"
 — Entrambi disattivati
 Nota: Se sono presenti persone nei pressi del lato frontale dell'unità
 interna o se ci sono troppe persone, usare contemporaneamente
@@ -1061,7 +1037,7 @@ utente.
 INFORMAZIONI
 L'orologio DEVE essere correttamente impostato prima di
 utilizzare qualsiasi funzione del timer. Consultare
-"4.3 Impostazione dell'orologio"  [4   6 ] .
+"4.3 Impostazione dell'orologio" [4 6].
 5.9.1 Avvio/Arresto della funzione di
 SPEGNIMENTO del timer
 1 Premere 
@@ -1152,9 +1128,9 @@ visualizzati sul display LCD.
 5.9.3 Combinazione delle funzioni di
 ACCENSIONE e SPEGNIMENTO del timer
 1 Per impostare i timer, fare riferimento a "5.9.1  Avvio/Arresto
-della funzione di SPEGNIMENTO del timer"  [4   10 ] e a
+della funzione di SPEGNIMENTO del timer"  [4  10] e a
 "5.9.2  Avvio/Arresto della funzione di ACCENSIONE del
-timer"  [4   11 ] .
+timer" [4 11].
 Risultato: 
  e 
  vengono visualizzati sul display LCD.
@@ -1219,7 +1195,7 @@ l'impostazione del funzionamento del timer settimanale.
 INFORMAZIONI
 L'orologio DEVE essere correttamente impostato prima di
 utilizzare qualsiasi funzione del timer. Consultare
-"4.3 Impostazione dell'orologio"  [4   6 ] .
+"4.3 Impostazione dell'orologio" [4 6].
 INFORMAZIONI
 ▪ NON è possibile usare contemporaneamente il
 funzionamento di timer settimanale e accensione/
@@ -1315,7 +1291,7 @@ Risultato:
  viene visualizzato sul display LCD.
 Nota: È possibile copiare una prenotazione con le stesse
 impostazioni per un altro giorno. Consultare "5.10.2  Copia delle
-prenotazioni"  [4   12 ] .
+prenotazioni" [4 12].
 5.10.2 Copia delle prenotazioni
 È possibile copiare la prenotazione creata per un altro giorno. La
 completa prenotazione del giorno selezionato della settimana verrà
@@ -1344,7 +1320,7 @@ Risultato:
  viene visualizzato sul display LCD.
 Nota: Se si modifica l'impostazione della prenotazione dopo la
 copia, fare riferimento a "5.10.1 Impostazione del funzionamento del
-timer settimanale"  [4   12 ] .
+timer settimanale" [4 12].
 5.10.3 Conferma di prenotazioni
 È possibile confermare se tutte le prenotazioni sono impostate in
 base alle proprie esigenze.
@@ -1368,7 +1344,7 @@ numero di prenotazione da confermare e vedere i dettagli della
 prenotazione.
 Nota: Per modificare l'impostazione della prenotazione, fare
 riferimento a "5.10.1  Impostazione del funzionamento del timer
-settimanale"  [4   12 ] .
+settimanale" [4 12].
 3 Premere 
  per uscire dalla modalità di conferma.
 5.10.4 Disattivare o riattivare il funzionamento
@@ -1472,7 +1448,7 @@ smart.
 LAN wireless comunicherà con il dispositivo smart nella rete
 domestica utilizzando un modem, un router o un dispositivo simile.
 Per ulteriori informazioni e FAQ, fare riferimento al link:
-http://www.onlinecontroller.daikineurope.com/ .
+http://www.onlinecontroller.daikineurope.com/.
 1 Arrestare il funzionamento prima di impostare il collegamento
 wireless.
 2 Utilizzare l'interfaccia utente per selezionare il menu di
@@ -1578,7 +1554,7 @@ intervalli di 1 secondo e il LED di funzionamento è spento.
 INFORMAZIONI
 Se non è possibile connettersi al router, provare la
 procedura "Collegamento mediante codice SSID e
-CHIAVE"  [4   14 ] .
+CHIAVE" [4 14].
 5 Premere 
  per uscire dal menu.
 Risultato: Il display tornerà alla schermata predefinita.
@@ -1756,11 +1732,8 @@ Valore potenziale di riscaldamento globale (GWP): 675
 NOTA
 Le normative vigenti sui gas fluorurati a effetto serra
 richiedono che la carica di refrigerante dell'unità sia
-indicata sia in peso che in CO
-2
- equivalente.
-Formula per calcolare la quantità in tonnellate di CO
-2
+indicata sia in peso che in CO2 equivalente.
+Formula per calcolare la quantità in tonnellate di CO 2
 equivalente: valore GWP del refrigerante × carica totale di
 refrigerante [in kg] / 1000
 Per ulteriori informazioni, contattare il proprio installatore.
@@ -1990,7 +1963,7 @@ INFORMAZIONI
 Per ulteriori suggerimenti per la risoluzione dei problemi,
 consultare la guida di riferimento disponibile all'indirizzo
 http://www.daikineurope.com/support-and-manuals/
-product-information/ .
+product-information/.
 Se, una volta controllati tutti i punti di cui sopra, risulta impossibile
 risolvere il problema da soli, rivolgersi all'installatore e segnalare i
 sintomi, il nome completo del modello dell'unità (possibilmente con il

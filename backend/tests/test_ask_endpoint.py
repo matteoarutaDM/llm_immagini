@@ -32,8 +32,10 @@ class FakeAssistant:
         }
 
 
-def _ask(client, token, chat_id=None, question="Come funziona?"):
+def _ask(client, token, chat_id=None, question="Come funziona?", language=None):
     data = {"question": question}
+    if language is not None:
+        data["language"] = language
     if chat_id is not None:
         data["chat_id"] = str(chat_id)
     return client.post(
@@ -83,6 +85,30 @@ def test_ask_without_chat_uses_base_knowledge_mode(client, monkeypatch):
     assert response.status_code == 200
     assert fake.calls[0]["knowledge_mode"] == "base"
     assert fake.calls[0]["company_document_ids"] is None
+
+
+def test_ask_defaults_to_italian_answers(client, monkeypatch):
+    fake = FakeAssistant()
+    monkeypatch.setattr(main_module, "get_assistant", lambda: fake)
+    token = signup(client, "user@digitalmens.it")
+    assert _ask(client, token).status_code == 200
+    assert fake.calls[0]["language"] == "it"
+
+
+def test_ask_forwards_chosen_answer_language(client, monkeypatch):
+    fake = FakeAssistant()
+    monkeypatch.setattr(main_module, "get_assistant", lambda: fake)
+    token = signup(client, "user@digitalmens.it")
+    assert _ask(client, token, language="de").status_code == 200
+    assert fake.calls[0]["language"] == "de"
+
+
+def test_ask_rejects_unsupported_answer_language(client, monkeypatch):
+    fake = FakeAssistant()
+    monkeypatch.setattr(main_module, "get_assistant", lambda: fake)
+    token = signup(client, "user@digitalmens.it")
+    assert _ask(client, token, language="xx").status_code == 400
+    assert fake.calls == []
 
 
 def test_ask_with_merged_chat_forwards_selected_documents(client, monkeypatch):

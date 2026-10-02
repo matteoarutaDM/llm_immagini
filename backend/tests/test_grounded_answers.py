@@ -44,6 +44,61 @@ def test_answer_uses_verified_pdf_source_and_page(monkeypatch):
     assert QUOTE in llm.call_args.args[0]
 
 
+def test_quote_with_typographic_apostrophe_is_still_verified(monkeypatch):
+    assistant = service.MachineAssistant()
+    quote = QUOTE.replace("'", "\u2019")
+    monkeypatch.setattr(assistant, "call_llm", lambda prompt: json.dumps({"points": [{"text": "Verifica l'olio.", "passage_id": 1, "quote": quote}]}))
+    assert "gru.pdf, pagina 42" in assistant.answer_from_manuals("Controlli?", MACHINE, HITS)
+
+
+def test_answer_in_chosen_language_translates_text_but_keeps_original_quote(monkeypatch):
+    assistant = service.MachineAssistant()
+    llm = Mock(side_effect=[
+        json.dumps({"points": [{"text": "Verifica il livello dell'olio prima di avviare.", "passage_id": 1, "quote": QUOTE}]}),
+        json.dumps({"translations": ["Check the oil level before starting."]}),
+    ])
+    monkeypatch.setattr(assistant, "call_llm", llm)
+    answer = assistant.answer_from_manuals("Checks?", MACHINE, HITS, "en")
+    # Generated and verified in Italian, then only the explanation is translated.
+    assert "Rispondi in italiano" in llm.call_args_list[0].args[0]
+    assert "into English" in llm.call_args_list[1].args[0]
+    assert QUOTE not in llm.call_args_list[1].args[0]
+    assert answer == f"• Check the oil level before starting.\n  Source: gru.pdf, page 42.\n  Excerpt: «{QUOTE}»"
+
+
+@pytest.mark.parametrize("translation", ["not json", '{"translations": []}', '{"translations": [""]}'])
+def test_unusable_translation_keeps_verified_italian_text(monkeypatch, translation):
+    assistant = service.MachineAssistant()
+    llm = Mock(side_effect=[
+        json.dumps({"points": [{"text": "Verifica il livello dell'olio.", "passage_id": 1, "quote": QUOTE}]}),
+        translation,
+    ])
+    monkeypatch.setattr(assistant, "call_llm", llm)
+    answer = assistant.answer_from_manuals("Fragen?", MACHINE, HITS, "de")
+    assert "Verifica il livello dell'olio." in answer
+    assert "Quelle: gru.pdf, Seite 42." in answer
+
+
+def test_italian_answer_needs_no_translation_call(monkeypatch):
+    assistant = service.MachineAssistant()
+    llm = Mock(return_value=json.dumps({"points": [{"text": "Verifica l'olio.", "passage_id": 1, "quote": QUOTE}]}))
+    monkeypatch.setattr(assistant, "call_llm", llm)
+    assistant.answer_from_manuals("Controlli?", MACHINE, HITS)
+    assert llm.call_count == 1
+
+
+def test_fallback_is_in_chosen_language(monkeypatch):
+    assistant = service.MachineAssistant()
+    monkeypatch.setattr(assistant, "call_llm", lambda prompt: '{"points": []}')
+    assert assistant.answer_from_manuals("Fragen?", MACHINE, HITS, "de") == service.ANSWER_LANGUAGES["de"]["fallback"]
+
+
+def test_api_and_service_accept_the_same_languages():
+    from backend import main
+
+    assert set(main.ANSWER_LANGUAGE_CODES) == set(service.ANSWER_LANGUAGES)
+
+
 @pytest.mark.parametrize("response", [
     "L'oggetto è una pompa idraulica. Controlla che funzioni.",
     '{"points": []}',
