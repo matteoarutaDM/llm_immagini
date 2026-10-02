@@ -31,7 +31,9 @@ def test_unrecognized_image_stops_before_ocr_retrieval_and_llm(monkeypatch):
 def test_no_passages_does_not_call_llm(monkeypatch):
     assistant = service.MachineAssistant()
     monkeypatch.setattr(assistant, "call_llm", Mock(side_effect=AssertionError("Must not be called")))
-    assert "informazioni sufficienti" in assistant.answer_from_manuals("Controlli?", MACHINE, [])
+    answer = assistant.answer_from_manuals("Controlli?", MACHINE, [])
+    assert "informazioni sufficienti" in answer
+    assert answer.endswith("FONTI UTILIZZATE: NESSUNA")
 
 
 def test_answer_uses_verified_pdf_source_and_page(monkeypatch):
@@ -39,8 +41,9 @@ def test_answer_uses_verified_pdf_source_and_page(monkeypatch):
     llm = Mock(return_value=json.dumps({"points": [{"text": "Verifica il livello dell'olio prima di avviare.", "passage_id": 1, "quote": QUOTE}]}))
     monkeypatch.setattr(assistant, "call_llm", llm)
     answer = assistant.answer_from_manuals("Controlli?", MACHINE, HITS)
-    assert "gru.pdf, pagina 42" in answer
+    assert "(*gru.pdf*, p. 42)" in answer
     assert QUOTE in answer
+    assert answer.endswith("FONTI UTILIZZATE: gru.pdf (p. 42)")
     assert QUOTE in llm.call_args.args[0]
 
 
