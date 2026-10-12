@@ -50,6 +50,10 @@ class ModalClient:
             timeout=httpx.Timeout(timeout, connect=connect_timeout),
             # The key lives only in this header: never logged, never sent to the browser.
             headers={"Authorization": f"Bearer {api_key}"},
+            # Modal answers a web request still running after 150 s (cold start
+            # included) with a 303 to a same-host result URL: follow it to wait
+            # for the answer instead of failing.
+            follow_redirects=True,
             transport=transport,
         )
 
