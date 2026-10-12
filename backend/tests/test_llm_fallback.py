@@ -226,6 +226,19 @@ def test_modal_concurrency_limit_caps_parallel_requests():
     assert peak == 2
 
 
+def test_modal_long_request_redirect_is_followed_to_the_answer():
+    def modal_slow(request):
+        if "__modal_function_call_id" not in request.url.query.decode():
+            return httpx.Response(303, headers={"Location": "/v1/chat/completions?__modal_function_call_id=fc-1"})
+        return modal_ok(request)
+
+    calls = Recorder(modal_slow)
+    client = ModalClient("https://m.modal.run", MODAL_KEY, "m", transport=httpx.MockTransport(calls))
+    assert client.chat(MESSAGES) == "risposta Modal"
+    assert calls.calls == 2
+    assert calls.requests[1].headers["Authorization"] == f"Bearer {MODAL_KEY}"
+
+
 def test_modal_health_check_makes_no_network_call():
     calls = Recorder(modal_ok)
     client = ModalClient("https://m.modal.run", MODAL_KEY, "m", transport=httpx.MockTransport(calls))

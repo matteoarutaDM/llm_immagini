@@ -63,6 +63,7 @@ logger = logging.getLogger("backend.model_service")
 
 DEVICE = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 
+DEFAULT_ANSWER_LANGUAGE = "it"
 
 QA_PROMPT = """# FINORA — SENIOR FINANCIAL ADVISOR
 
@@ -474,6 +475,7 @@ class MachineAssistant:
             "per formulare una risposta finanziaria affidabile.\n\n"
             "FONTI UTILIZZATE: NESSUNA"
         )
+        prompt_started = time.perf_counter()
         passages = []
         remaining = CONTEXT_MAX_CHARS
         for hit in hits:
@@ -510,29 +512,12 @@ class MachineAssistant:
         perf.metric("answer_verified", bool(points))
         if not points:
             return fallback
-        points = []
-        cited_passages = []
-        for point in payload["points"]:
-            if not isinstance(point, dict):
-                return fallback
-            passage_id = point.get("passage_id")
-            text, quote = point.get("text"), point.get("quote")
-            if (type(passage_id) is not int or not 1 <= passage_id <= len(passages)
-                    or not isinstance(text, str) or not text.strip()
-                    or not isinstance(quote, str) or len(quote.strip()) < 20):
-                return fallback
-            passage = passages[passage_id - 1]
-            if " ".join(quote.split()) not in " ".join(passage["text"].split()):
-                return fallback
-            page_reference = format_page_reference(passage["page"])
-            points.append(
-                f"{text.strip()} (*{passage['source']}*, {page_reference})\n\n"
-                f"> Evidenza: «{quote.strip()}»"
-            )
-            cited_passages.append(passage)
-        if not points:
-            return fallback
-        return "\n\n".join(points) + "\n\n" + sources_footer(cited_passages)
+        formatted = [
+            f"{point['text']} (*{point['source']}*, {format_page_reference(point['page'])})\n\n"
+            f"> Evidenza: «{point['quote']}»"
+            for point in points
+        ]
+        return "\n\n".join(formatted) + "\n\n" + sources_footer(points)
 
     def ask_machine(
         self,
