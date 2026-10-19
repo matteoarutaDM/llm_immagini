@@ -183,6 +183,85 @@ L'installazione parte vuota. Per portare i dati, sull'altro computer ripristina 
 | `ports are not available: 3000` | La porta è occupata, di solito da `npm run dev`. |
 | Il codice OTP dell'admin non arriva | `SMTP_*` non è configurato, oppure l'email dell'admin non è una casella reale. |
 
+### 3.9 Aggiornare il sito online
+
+Oggi l'aggiornamento è manuale, via SSH. Sul server ci sono due cartelle: `~/assistente-macchine-github`, copia git di riferimento, e `~/assistente-macchine`, la cartella in esecuzione con `.env.docker` e i dati reali. Il codice è **incorporato nell'immagine Docker** (`COPY` nei Dockerfile): copiare i file non basta, bisogna ricostruire e riavviare il servizio. Il servizio `db` non si tocca mai.
+
+**0. Codice nuovo ed elenco dei file cambiati**
+
+```bash
+ssh <utente>@<server>
+cd ~/assistente-macchine-github
+VECCHIO=$(git rev-parse HEAD)          # versione attualmente online
+git switch -q main && git pull origin main
+NUOVO=$(git rev-parse HEAD)
+OGGI=$(date +%Y%m%d)
+git diff --name-status $VECCHIO $NUOVO  # M = modificato, A = nuovo, D = cancellato, R = rinominato
+```
+
+Esegui tutti i passi nella **stessa sessione SSH**: `VECCHIO`, `NUOVO` e `OGGI` servono fino al rollback.
+
+**1. Backup** del codice che verrà sostituito e di `.env.docker`:
+
+```bash
+cd ~
+git -C assistente-macchine-github diff --name-only --diff-filter=MDR $VECCHIO $NUOVO > /tmp/file-vecchi.txt
+tar czf ~/backup-codice-$OGGI.tgz -C assistente-macchine -T /tmp/file-vecchi.txt
+cp -p assistente-macchine/.env.docker assistente-macchine/.env.docker.backup-$OGGI
+```
+
+**2. Copia dei file nuovi e cancellazione di quelli tolti.** Non sovrascrivere mai `.env.docker`, `data/` o `CLI/pdf_immagini/`.
+
+```bash
+cd ~
+git -C assistente-macchine-github diff --name-status $VECCHIO $NUOVO | while read stato file altro; do
+  case "$stato" in
+    M|A) mkdir -p "assistente-macchine/$(dirname "$file")"; cp "assistente-macchine-github/$file" "assistente-macchine/$file" ;;
+    D)   rm -f "assistente-macchine/$file" ;;
+    R*)  rm -f "assistente-macchine/$file"; mkdir -p "assistente-macchine/$(dirname "$altro")"; cp "assistente-macchine-github/$altro" "assistente-macchine/$altro" ;;
+  esac
+done
+```
+
+**3. Variabili.** Se l'aggiornamento introduce variabili nuove (confronta con `.env.docker.example`), aggiungile a mano in `~/assistente-macchine/.env.docker`.
+
+**4. Rebuild e riavvio del solo servizio cambiato**
+
+| Se cambiano… | Servizio |
+|---|---|
+| `backend/`, `requirements.txt`, `CLI/`, `database/` | `backend` |
+| `app/`, `package.json`, `next.config.ts`, `proxy.js` | `web` |
+
+```bash
+cd ~/assistente-macchine
+sudo docker compose build backend            # oppure: web
+sudo docker compose up -d --no-deps backend  # oppure: web
+```
+
+Con `requirements.txt` cambiato il build dura circa 5 minuti; fino al comando `up` il sito resta online con la versione vecchia.
+
+**5. Verifica**
+
+```bash
+sudo docker compose ps                       # tutti "healthy"
+curl -I https://assistente.digitalmens.dev   # HTTP 200
+sudo docker exec assistente-macchine-backend-1 python -c "import urllib.request as u;print(u.urlopen('http://127.0.0.1:8000/health/ai').read().decode())"
+sudo docker compose logs --since 5m backend | grep -i error
+```
+
+`/health/ai` deve rispondere `"status":"ok"`. Poi fai una domanda di prova dal sito.
+
+**6. Rollback**
+
+```bash
+cd ~/assistente-macchine
+tar xzf ~/backup-codice-$OGGI.tgz              # rimette i file modificati, cancellati o rinominati
+cp -p .env.docker.backup-$OGGI .env.docker     # solo se avevi cambiato le variabili
+# cancella a mano i file nuovi: righe "A" (e il nuovo nome delle righe "R") dell'elenco del passo 0
+sudo docker compose build backend && sudo docker compose up -d --no-deps backend
+git -C ~/assistente-macchine-github checkout $VECCHIO
+```
+
 ---
 
 ## 4. Sviluppo in locale
