@@ -384,9 +384,8 @@ def health() -> dict[str, str]:
 
 @app.get("/health/ai")
 def health_ai(response: Response) -> dict:
-    """Primary: cheap model listing, no generation. Fallback: configuration only,
-    so a health check never starts a paid GPU. No server address in the body.
-    200 = ok or degraded (primary down, fallback answering); 503 = no provider."""
+    """Configuration only: every OVH request is billed, so this never calls the
+    model. No address or key in the body. 200 = configured; 503 = no API key."""
     status = get_llm_service().health_check()
     if status.get("status") == "unavailable":
         response.status_code = 503

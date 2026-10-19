@@ -19,15 +19,14 @@ Questo è l'unico documento del progetto: avvio, Docker, funzionamento, backoffi
 11. [Struttura del codice](#11-struttura-del-codice)
 12. [Test](#12-test)
 13. [Limiti noti e debiti tecnici](#13-limiti-noti-e-debiti-tecnici)
-14. [Remote Ollama / RTX 5090 setup](#14-remote-ollama--rtx-5090-setup)
-15. [LLM fallback: RTX 5090 -> Modal](#15-llm-fallback-rtx-5090---modal)
+14. [LLM: OVH AI Endpoints](#14-llm-ovh-ai-endpoints)
 
 ---
 
 ## 1. Architettura
 
 ```
-Browser ──► Next.js :3000 ──┬──► FastAPI :8000 ──► Ollama :11434 (LLM, locale o PC GPU remoto, §14)
+Browser ──► Next.js :3000 ──┬──► FastAPI :8000 ──► OVH AI Endpoints (LLM Qwen3.5-9B, HTTPS, §14)
             sito + /admin   │        │
                             └────────┴──► PostgreSQL (schemi app + ops)
 ```
@@ -38,7 +37,7 @@ Browser ──► Next.js :3000 ──┬──► FastAPI :8000 ──► Ollam
 | **Backoffice** (`/admin`) | Next.js, route handler in `app/api/admin` | area del team interno (admin e support) |
 | **Backend** | FastAPI (Python 3.12) | autenticazione degli utenti, chat, documenti, riconoscimento + OCR + ricerca nei manuali |
 | **Database** | PostgreSQL 18 | dati del sito (schema `app`) e del backoffice (schema `ops`) |
-| **LLM** | Ollama (API nativa `/api/chat`), locale o remoto | scrittura della risposta |
+| **LLM** | Qwen3.5-9B su OVHcloud AI Endpoints (API OpenAI), pagato a token | scrittura della risposta |
 
 - **Accesso al backend:** il browser parla solo con Next.js. Il sito raggiunge FastAPI tramite i proxy `app/api/backend/[...path]` e `app/api/ask`, quindi l'indirizzo del backend non è mai esposto.
 - **Accesso al database del backoffice:** il backoffice legge e scrive PostgreSQL direttamente. Chiama il backend solo per le operazioni che toccano i file e l'indice dei manuali, cioè l'eliminazione dei documenti.
@@ -70,13 +69,13 @@ Sito su <http://localhost:3000>, backoffice su <http://localhost:3000/admin>. De
 | `backend` | FastAPI con i modelli AI (PyTorch solo CPU) | nessuna, raggiungibile solo dal servizio web |
 | `web` | sito + backoffice (Next.js `standalone`) | `3000`, oppure `WEB_PORT=3001 docker compose up -d` |
 
-- **LLM su Ollama, fuori da Docker:** sul Mac girano solo sito, backend e database. Il modello linguistico gira su Ollama nel PC Windows aziendale con RTX 5090, che il backend raggiunge via Tailscale all'indirizzo di `OLLAMA_BASE_URL` in `.env.docker` (per esempio `http://100.x.x.x:11434`, [§14](#14-remote-ollama--rtx-5090-setup)). Per usare l'Ollama installato sul Mac: `OLLAMA_BASE_URL=http://host.docker.internal:11434`. Dentro Docker su Mac il modello non userebbe la GPU e sarebbe molto più lento.
+- **LLM su OVH, fuori da Docker:** in Docker girano solo sito, backend e database. Il modello linguistico è Qwen3.5-9B su OVHcloud AI Endpoints, che il backend chiama in HTTPS con la chiave `OVH_AI_API_KEY` di `.env.docker` ([§14](#14-llm-ovh-ai-endpoints)). Non serve nessuna GPU nostra.
 - **File:** i file coinvolti sono `docker-compose.yml`, `docker/backend.Dockerfile`, `docker/web.Dockerfile`, `.dockerignore` e `.env.docker.example`.
 
 ### 3.2 Prerequisiti e configurazione
 
 - **Docker Desktop:** installa la versione giusta per il processore (Mac Intel, Mac Apple Silicon o Windows) e assegnale almeno **8 GB di memoria** da Settings → Resources.
-- **Ollama:** deve essere acceso sul PC GPU, con il modello di `OLLAMA_MODEL` già scaricato (per esempio `ollama pull llama3.1:8b`), e raggiungibile dal Mac via Tailscale: `curl http://100.x.x.x:11434/api/tags`.
+- **Chiave OVH AI Endpoints:** serve un progetto Public Cloud con metodo di pagamento e una chiave API ([§14.3](#143-attivazione)). Senza chiave il sito parte, ma ogni domanda all'AI risponde 503.
 - **Manuali di base:** la cartella `CLI/pdf_immagini/` (circa 370 MB) non è su git e va copiata a mano. Viene montata nel container in sola lettura.
 
 ```bash
@@ -88,7 +87,7 @@ In `.env.docker` compila:
 - `POSTGRES_PASSWORD`, e la stessa password dentro `DATABASE_URL`;
 - `AUTH_SECRET` e `BACKOFFICE_API_TOKEN`, due segreti diversi generati con `python3 -c "import secrets; print(secrets.token_urlsafe(32))"`;
 - `SMTP_*`: in produzione è obbligatorio, perché serve per la 2FA, il reset della password e l'OTP degli admin;
-- `OLLAMA_BASE_URL` e `OLLAMA_MODEL` (§14.1). Vanno in `.env.docker`, non in `.env`: Docker Compose passa al container solo `.env.docker`.
+- `OVH_AI_API_KEY` (§14.2). Va in `.env.docker`, non in `.env`: Docker Compose passa al container solo `.env.docker`.
 
 `.env.docker` è escluso da git e dalle immagini. Va passato a mano, in modo privato.
 
@@ -156,7 +155,7 @@ docker compose up -d
 ### 3.6 Usare il progetto da un altro dispositivo
 
 **Installarlo su un altro computer.** Su quel computer:
-1. installa Docker Desktop, Ollama e git;
+1. installa Docker Desktop e git;
 2. `git clone -b fase1 https://github.com/matteoarutaDM/llm_immagini.git`;
 3. copia a mano `CLI/pdf_immagini/` e `.env.docker`;
 4. lancia `docker compose up -d --build`.
@@ -170,14 +169,14 @@ L'installazione parte vuota. Per portare i dati, sull'altro computer ripristina 
 ### 3.7 Messa online
 
 - **HTTPS obbligatorio:** metti davanti un reverse proxy con certificato (Caddy, Traefik, Nginx) e aggiorna `FRONTEND_URL` e `ALLOWED_ORIGINS`.
-- **LLM:** imposta `OLLAMA_BASE_URL` verso un Ollama raggiungibile dal server, per esempio il PC GPU via Tailscale ([§14](#14-remote-ollama--rtx-5090-setup)). Senza GPU le risposte sono lente.
+- **LLM:** metti `OVH_AI_API_KEY` nel `.env.docker` del server ([§14](#14-llm-ovh-ai-endpoints)). Il server non ha bisogno di GPU.
 - **Porta del database:** se il database non serve da fuori, togli `ports` dal servizio `db`.
 
 ### 3.8 Problemi comuni
 
 | Sintomo | Causa probabile |
 |---|---|
-| Le risposte falliscono con «Servizio AI non disponibile» | Ollama è spento o irraggiungibile, oppure il modello di `OLLAMA_MODEL` non è stato scaricato. Controlla `GET /health/ai` ([§14](#14-remote-ollama--rtx-5090-setup)). |
+| Le risposte falliscono con «Servizio AI non disponibile» | Manca `OVH_AI_API_KEY`, OVH non è raggiungibile o è oltre il limite di richieste. Controlla `GET /health/ai` e i log `OVH request` ([§14.5](#145-troubleshooting)). |
 | Il backend si riavvia di continuo | Leggi `docker compose logs backend`. Di solito manca `AUTH_SECRET`, oppure c'è `DEBUG_EMAIL_TOKENS=true` insieme ad `APP_ENV=production`. |
 | "Manuali mancanti" nei log | `CLI/pdf_immagini/` è vuota o non contiene i PDF elencati in `CLI/machine.json`. |
 | Il container del backend viene chiuso per memoria | Porta la memoria di Docker Desktop ad almeno 8 GB. |
@@ -188,13 +187,13 @@ L'installazione parte vuota. Per portare i dati, sull'altro computer ripristina 
 
 ## 4. Sviluppo in locale
 
-Servono Python 3.12, Node 20.9+, PostgreSQL (per esempio [Postgres.app](https://postgresapp.com)) e Ollama con il modello scaricato.
+Servono Python 3.12, Node 20.9+, PostgreSQL (per esempio [Postgres.app](https://postgresapp.com)) e una chiave OVH AI Endpoints in `OVH_AI_API_KEY` (§14).
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 npm install
-cp .env.example .env          # imposta almeno DATABASE_URL e, per il backoffice, BACKOFFICE_API_TOKEN
+cp .env.example .env          # imposta almeno DATABASE_URL, OVH_AI_API_KEY e, per il backoffice, BACKOFFICE_API_TOKEN
 ```
 
 In due terminali:
@@ -214,24 +213,25 @@ npm run dev        # Next.js su :3000 (sito e backoffice, con ricarica automatic
 `POST /api/ask` riceve, in multipart, `question`, `image`, `chat_id` (facoltativo) e `top_k` (default 12).
 
 1. **Riconoscimento della macchina.** SigLIP (`google/siglip-base-patch16-224`) in modalità zero-shot confronta la foto con le immagini di riferimento di ogni macchina (`CLI/machine.json`, `CLI/reference_images/`). Sotto la soglia `IMAGE_RECOGNITION_THRESHOLD` (default 0.730) la macchina viene dichiarata "non riconosciuta" e la pipeline si ferma lì.
-2. **Lettura della targhetta.** GOT-OCR-2.0 (`backend/ocr_service.py`, caricato una volta e tenuto in memoria) estrae modello, matricola e asset tag, con un fuzzy match sui codici noti. Il testo letto resta in una piccola cache in memoria per hash della foto, quindi più domande sulla stessa foto non rifanno l'OCR. Con `OCR_IN_PROCESS=0` torna il vecchio subprocess `CLI/got_ocr_runner.py`. Con `OCR_BACKEND` diverso da `got` lo fa invece un LLM multimodale. Se l'OCR fallisce, la pipeline prosegue senza.
+2. **Lettura della targhetta.** GOT-OCR-2.0 (`backend/ocr_service.py`, caricato una volta e tenuto in memoria) estrae modello, matricola e asset tag, con un fuzzy match sui codici noti. Il testo letto resta in una piccola cache in memoria per hash della foto, quindi più domande sulla stessa foto non rifanno l'OCR. Con `OCR_IN_PROCESS=0` torna il vecchio subprocess `CLI/got_ocr_runner.py`. Con `OCR_BACKEND` diverso da `got` lo fa invece l'LLM su OVH, che legge anche le immagini (`VISION_LLM_MODEL`, default il modello di `OVH_AI_MODEL`). Se l'OCR fallisce, la pipeline prosegue senza.
 3. **Ricerca nei manuali (RAG).** La query è composta da macchina, tipo, codici letti e domanda. Cerca nei manuali della macchina riconosciuta (libreria `ragmens_core`: chunk, embedding `all-MiniLM-L6-v2`, FAISS). Nelle chat `merged` unisce anche i risultati dell'indice dell'azienda, riordina tutto per punteggio e tronca a `top_k`.
-4. **Risposta verificata.** L'LLM deve rispondere in JSON citando passaggi dei manuali parola per parola (almeno 20 caratteri). Ogni punto senza una citazione verificabile viene scartato; se non ne resta nessuno, l'utente riceve "non ho trovato informazioni sufficienti".
+4. **Risposta verificata.** L'LLM deve rispondere in JSON citando passaggi dei manuali parola per parola (almeno 20 caratteri). Ogni punto senza una citazione verificabile viene scartato e gli altri vengono pubblicati; se non ne resta nessuno, l'utente riceve "non ho trovato informazioni sufficienti". Nel confronto, apostrofi e virgolette tipografiche e le parole spezzate a fine riga con il trattino nel PDF ("acci-↵dentali" = "accidentali") contano come uguali. La riga `PERF` riporta quanti punti sono stati scartati (`answer_points_discarded`).
 5. **Salvataggio.** Se c'è una chat, domanda e risposta vanno in `app.messages`. Ogni richiesta, riconosciuta, non riconosciuta o fallita, va in `app.analyses` con esito, macchina, targhetta, risposta, fonti, errore interno e durata. È quello che vede il backoffice.
 6. **Foto.** Viene salvata in un file temporaneo e **cancellata sempre** a fine richiesta. Resta solo una miniatura JPEG (lato massimo 320 px) nella colonna `analyses.image_thumbnail`, mostrata nella cronologia della chat.
 
 ### 5.1 Tempi e profiling
 
-Ogni `/api/ask` scrive nei log del backend una riga `PERF` con il tempo di ogni fase e metriche non sensibili (dimensioni, conteggi, mai testi, prompt o immagini), più una riga `OLLAMA PERF` con i tempi restituiti da Ollama. Il `request_id` compare in tutte le righe della richiesta ed è restituito nell'header `X-Request-ID`.
+Ogni `/api/ask` scrive nei log del backend una riga `PERF` con il tempo di ogni fase e metriche non sensibili (dimensioni, conteggi, mai testi, prompt o immagini), più una riga `OVH request` con durata e token della chiamata al modello. Il `request_id` compare in tutte le righe della richiesta ed è restituito nell'header `X-Request-ID`.
 
 ```bash
-docker compose logs backend | grep -E "PERF|OLLAMA PERF"
-# PERF /api/ask rid=… total_ms=20750 upload_auth_ms=… recognition_ms=730 ocr_ms=18970 retrieval_ms=100
-#   prompt_build_ms=0 ollama_ms=1350 citation_validation_ms=0 memory_save_ms=90 db_save_ms=… rag_hits=12 …
-# OLLAMA PERF load_ms=11 prompt_tokens=2776 prompt_eval_ms=339 output_tokens=168 generation_ms=743 generation_tps=226 …
+docker compose logs backend | grep -E "PERF|OVH request"
+# PERF /api/ask rid=… total_ms=… upload_auth_ms=… recognition_ms=730 ocr_ms=18970 retrieval_ms=100
+#   prompt_build_ms=0 llm_ms=… citation_validation_ms=0 memory_save_ms=90 db_save_ms=… rag_hits=12
+#   llm_provider=ovh ovh_prompt_tokens=… ovh_output_tokens=… …
+# OVH request provider=ovh model=Qwen3.5-9B duration_seconds=… status=200 prompt_tokens=… output_tokens=…
 ```
 
-Tempi misurati su Mac Intel i7-8750H (Docker, solo CPU) con `llama3.1:8b` sulla RTX 5090:
+Tempi misurati su Mac Intel i7-8750H (Docker, solo CPU) quando il modello era ancora `llama3.1:8b` sulla RTX 5090 aziendale, poi dismessa. Con OVH le prime prove su domande brevi hanno dato 1,6–1,8 s per risposta: i tempi con i prompt reali sono da rimisurare.
 
 | Caso | Prima | Dopo |
 |---|---|---|
@@ -239,7 +239,7 @@ Tempi misurati su Mac Intel i7-8750H (Docker, solo CPU) con `llama3.1:8b` sulla 
 | Stessa foto, domanda successiva | ~47 s | ~3 s |
 | Prima domanda dopo un riavvio | ~248 s | ~95 s senza preload; ~76 s con `PRELOAD_MODELS=1` (il preload dura 50–60 s in background) |
 
-Il collo di bottiglia che resta è GOT-OCR su CPU: l'encoder visivo lavora a 1024×1024 in float32 e costa ~10 s anche su foto piccole, mentre Ollama risponde in 1–2 s. Sotto carico prolungato il Mac rallenta per il calore (`pmset -g therm`: `CPU_Speed_Limit` fino a 48), e i tempi dell'OCR oscillano tra 16 e 35 s.
+Il collo di bottiglia che resta è GOT-OCR su CPU: l'encoder visivo lavora a 1024×1024 in float32 e costa ~10 s anche su foto piccole, mentre il modello risponde in 1–2 s. Sotto carico prolungato il Mac rallenta per il calore (`pmset -g therm`: `CPU_Speed_Limit` fino a 48), e i tempi dell'OCR oscillano tra 16 e 35 s.
 
 Benchmark ripetibile, che non scrive la memoria reale:
 
@@ -470,7 +470,7 @@ Oggi le applicazioni usano un unico utente amministratore del database.
 | DELETE | `/internal/company-documents/{id}` | solo backoffice, header `X-Internal-Token` |
 | POST | `/internal/companies`, `/internal/companies/{id}/accounts?role=`, `/internal/users/{id}/role`, `/internal/users/{id}/reset-password`, `/internal/company-documents/{id}/archive`, `/reindex` | solo backoffice (super admin), header `X-Internal-Token` |
 | GET | `/health` | controllo di salute (non dipende dal modello) |
-| GET | `/health/ai` | raggiungibilità di Ollama e presenza del modello, senza generare: 200 `{status: "ok", provider, model}` oppure 503 `{status: "unavailable", provider}`. Non passa dal proxy del sito |
+| GET | `/health/ai` | configurazione del modello, senza chiamarlo (ogni richiesta a OVH si paga): 200 `{status: "ok", provider: "ovh", configured: true, model}` oppure 503 `{status: "unavailable", provider: "ovh", configured: false, reason: "missing_api_key"}`. Non passa dal proxy del sito |
 
 ### 9.2 Backoffice (Next.js, `/api/admin/*`)
 
@@ -490,7 +490,7 @@ Tutte le variabili sono elencate in `.env.example` (sviluppo) e `.env.docker.exa
 | Email | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`, `SMTP_USE_TLS`, `DEBUG_EMAIL_TOKENS` |
 | Collegamenti | `BACKEND_URL` (default `http://127.0.0.1:8000`), `ASK_TIMEOUT_SECONDS` (default 1800), `MAX_UPLOAD_MB` |
 | Limiti di richieste | `RATE_LIMIT_LOGIN_*`, `RATE_LIMIT_ASK_*`, `RATE_LIMIT_TRANSCRIBE_*`, `RATE_LIMIT_SPEAK_*`, `RATE_LIMIT_2FA_*`, `RATE_LIMIT_2FA_SEND_*`, `RATE_LIMIT_FORGOT_PASSWORD_*` |
-| LLM | `OLLAMA_BASE_URL` (default `http://localhost:11434`), `OLLAMA_MODEL` (default `llama3.2`), `OLLAMA_TIMEOUT` (120 s), `OLLAMA_CONNECT_TIMEOUT` (10 s), `OLLAMA_NUM_CTX`, `OLLAMA_NUM_PREDICT`, `OLLAMA_KEEP_ALIVE`, `VISION_LLM_BASE_URL`, `VISION_LLM_MODEL`. Fallback: `LLM_FALLBACK_ENABLED`, `MODAL_*`, `LLM_PRIMARY_*` ([§15](#15-llm-fallback-rtx-5090---modal)). Ancora accettate se le `OLLAMA_*` mancano: `OPENAI_BASE_URL` (il suffisso `/v1` viene tolto) e `LLM_MODEL`. Dettagli in [§14](#14-remote-ollama--rtx-5090-setup) |
+| LLM | `OVH_AI_API_KEY` (obbligatoria), `OVH_AI_ALLOW_ANONYMOUS` (solo prove in locale), `OVH_AI_BASE_URL`, `OVH_AI_MODEL` (`Qwen3.5-9B`), `OVH_AI_REASONING_EFFORT` (`none`), `OVH_AI_MAX_TOKENS` (1024), `OVH_AI_TIMEOUT` (120 s), `OVH_AI_CONNECT_TIMEOUT` (10 s), `OVH_AI_MAX_CONCURRENT_REQUESTS` (4), `VISION_LLM_MODEL`. Dettagli in [§14](#14-llm-ovh-ai-endpoints) |
 | Modelli e OCR | `SIGLIP_MODEL`, `EMBEDDING_MODEL`, `OCR_BACKEND` (`got`), `GOT_OCR_MODEL`, `OCR_DEVICE` (`cpu`), `OCR_IN_PROCESS` (1), `OCR_CACHE_SIZE` (32), `OCR_MAX_NEW_TOKENS` (512), `PRELOAD_MODELS` (0; 1 in Docker), `HF_LOCAL_FILES_ONLY`, `IMAGE_RECOGNITION_THRESHOLD` (0.730) |
 | Dettatura vocale | `WHISPER_MODEL` (`small`), `WHISPER_DEVICE` (`cpu`), `WHISPER_COMPUTE_TYPE` (`int8`), `WHISPER_LANGUAGE` (`it`), `WHISPER_CPU_THREADS`, `MAX_AUDIO_MB` (10) |
 | Lettura delle risposte | `PIPER_VOICE` (`it_IT-paola-medium`), `PIPER_VOICE_REPO` (`rhasspy/piper-voices`), `PIPER_LENGTH_SCALE` (1.05), `MAX_SPEAK_CHARS` (2000) |
@@ -524,9 +524,8 @@ backend/                     FastAPI
   main.py                    endpoint (sito, area aziendale, /internal), limiti di richieste, salvataggio delle analisi
   accounts.py                creazione account con password temporanea, registro attività
   model_service.py           SigLIP, OCR, RAG generale e per azienda, prompt e verifica delle citazioni
-  llm_service.py             unico punto d'accesso al modello (configurazione, futuro fallback)
-  ollama_client.py           unico client HTTP verso Ollama (/api/chat, /api/generate, /api/tags)
-  modal_client.py            client del fallback Modal (API OpenAI di vLLM)
+  llm_service.py             unico punto d'accesso al modello (configurazione, log, errori)
+  ovh_client.py              client HTTP verso OVH AI Endpoints (API OpenAI, Qwen3.5-9B, anche immagini)
   llm_errors.py              errori del modello → 503 / 504 / 500
   ocr_service.py             GOT-OCR residente in memoria, cache per foto, warm-up
   perf.py                    profiling per richiesta (righe PERF, request id)
@@ -537,7 +536,6 @@ database/                    schema, seed, migrazione da SQLite
 docker/                      Dockerfile di backend e sito, script di importazione
 docker-compose.yml
 scripts/benchmark_ask.py     benchmark della pipeline senza HTTP né database
-deploy/modal_app.py          app Modal del fallback LLM (vLLM + Llama 3.1 8B), deploy separato
 CLI/                         pipeline originale e dati del modello
   modello_riconoscimento_finale.ipynb   notebook di riferimento (portato in model_service.py)
   modello_no_finetuned.ipynb, rag_llm.ipynb
@@ -565,7 +563,7 @@ npm test               # sito e backoffice (Vitest): usa il database assistente_
 ```
 
 I test non toccano il database `assistente`. Coprono:
-- **backend:** autenticazione, 2FA, reset della password, limiti di richieste, isolamento tra aziende, upload e documenti, registrazione delle analisi, account bloccati, endpoint interno, ruoli aziendali (account con password temporanea, termini al primo accesso, cambio password, area del responsabile, isolamento tra aziende, dashboard senza testo delle domande), client Ollama ed errori del modello (con HTTP simulato, senza un Ollama reale), `/health/ai`, fallback Modal e circuit breaker (senza chiamare Modal);
+- **backend:** autenticazione, 2FA, reset della password, limiti di richieste, isolamento tra aziende, upload e documenti, registrazione delle analisi, account bloccati, endpoint interno, ruoli aziendali (account con password temporanea, termini al primo accesso, cambio password, area del responsabile, isolamento tra aziende, dashboard senza testo delle domande), client OVH ed errori del modello (con HTTP simulato, senza chiamare OVH), `/health/ai`;
 - **backoffice:** permessi, password bcrypt e blocco, OTP, sessioni, blocco degli utenti con audit, analisi e dashboard, eliminazione dei documenti, aziende (creazione, account, ruoli, password) con audit sull'azienda;
 - **sito:** login (senza registrazione) e 2FA, primo accesso con i termini, password temporanea e cambio dal profilo, documenti per dipendenti e responsabili, invio della domanda, risposte per chat, logout, pagina «Gestione azienda».
 
@@ -573,9 +571,9 @@ I test non toccano il database `assistente`. Coprono:
 
 ## 13. Limiti noti e debiti tecnici
 
-- **Risposte prudenti con `llama3.2`.** È un modello piccolo e spesso non supera il controllo delle citazioni, quindi l'utente riceve "non ho trovato informazioni sufficienti" anche quando la macchina è riconosciuta e le fonti sono giuste. Da provare `llama3.1` o un controllo meno severo.
+- **Qualità di Qwen3.5-9B da verificare.** Il modello è nuovo per il progetto: va controllato con domande reali quanto spesso supera il controllo delle citazioni. Se risponde troppo spesso "non ho trovato informazioni sufficienti", si può provare un modello più grande del catalogo OVH cambiando solo `OVH_AI_MODEL`.
 - **Memoria della conversazione non usata.** Memoria breve e lunga vengono salvate a ogni domanda, ma la risposta non le rilegge (`build_prompt` non viene chiamata): l'assistente non "ricorda" i turni precedenti.
-- **OCR lento su CPU.** GOT-OCR gira sul processore del Mac (in Docker non c'è accesso alla GPU): ~19 s per ogni foto nuova. Spostarlo sul PC con la RTX 5090 lo porterebbe probabilmente sotto il secondo, ma richiede un servizio OCR su quel PC (§5.1).
+- **OCR lento su CPU.** GOT-OCR gira sul processore del Mac (in Docker non c'è accesso alla GPU): ~19 s per ogni foto nuova. In alternativa la targhetta si può far leggere a Qwen su OVH con `OCR_BACKEND` diverso da `got` (§5): più veloce, ma la precisione è da verificare.
 - **Una sola istanza.** I limiti di richieste e l'indice di ogni azienda sono in memoria di processo. Con più istanze servirebbe uno store condiviso (per esempio Redis).
 - **Indice non incrementale.** Ogni modifica ai PDF di un'azienda ricalcola l'intero indice.
 - **Interfaccia incompleta:**
@@ -586,229 +584,86 @@ I test non toccano il database `assistente`. Coprono:
 
 ---
 
-## 14. Remote Ollama / RTX 5090 setup
+## 14. LLM: OVH AI Endpoints
 
-Il modello può girare su un altro computer, per esempio il PC Windows aziendale con la RTX 5090. Il backend lo raggiunge in HTTP sulla rete privata Tailscale, e cambiare macchina richiede solo di modificare `OLLAMA_BASE_URL`, senza toccare il codice.
+Il modello linguistico è **Qwen3.5-9B su OVHcloud AI Endpoints**. Non c'è un server GPU nostro: la RTX 5090 aziendale con Ollama, usata fino a ottobre 2026, è stata dismessa, e non esiste un fallback.
 
 ```
-Browser ──► Next.js ──► FastAPI ──(OLLAMA_BASE_URL, rete Tailscale)──► PC Windows RTX 5090 ──► Ollama ──► Llama
+Browser ──► Next.js ──► FastAPI ──(HTTPS, OVH_AI_API_KEY)──► OVH AI Endpoints ──► Qwen3.5-9B
 ```
 
-- **Solo lato server.** L'indirizzo di Ollama esiste solo nelle variabili d'ambiente del backend. Il browser non lo vede mai, nemmeno in `/health/ai`, e il backend non espone un proxy generico verso Ollama.
-- **Un solo punto d'accesso al modello.** Tutte le chiamate passano da `backend/llm_service.py`, che usa `backend/ollama_client.py` (API native `/api/chat`, `/api/generate`, `/api/tags`, senza streaming). RAG, prompt, verifica delle citazioni e memoria non sono cambiati. Un secondo provider, come un fallback RunPod, si aggiunge in `LLMService` (c'è un TODO nel punto giusto).
-- **Avvio indipendente.** All'avvio il backend non contatta Ollama: parte anche con il PC GPU spento, e le domande rispondono 503 finché Ollama non torna raggiungibile.
-- **Tailscale** lavora solo a livello di rete: il backend non esegue comandi Tailscale e non contiene logica specifica.
+- **Perché OVH:** si paga a token (0,10 € / milione in ingresso, 0,15 € / milione in uscita, catalogo verificato a ottobre 2026), quindi zero quando non si usa; nessuna GPU da accendere, quindi nessun avvio a freddo; dati in Europa e stesso fornitore del server.
+- **Un solo punto d'accesso al modello.** Tutte le chiamate passano da `backend/llm_service.py`, che usa `backend/ovh_client.py` (`POST /v1/chat/completions`, senza streaming). RAG, prompt e verifica delle citazioni sono nel backend: OVH fa solo inference.
+- **Solo lato server.** La chiave esiste solo nelle variabili d'ambiente del backend: non arriva mai al browser, nei log o in `/health/ai`.
+- **Avvio indipendente.** All'avvio il backend non contatta OVH: parte anche senza chiave, e allora le domande all'AI rispondono 503.
+- **Immagini.** Qwen3.5-9B legge anche le immagini: con `OCR_BACKEND` diverso da `got` la targhetta viene letta da OVH al posto di GOT-OCR. Una foto vale circa 3.000 token in ingresso.
+- **Ragionamento di Qwen.** Qwen3.5 "pensa" prima di rispondere. Il ragionamento si paga e consuma `max_tokens`: in prova, con 200 token, li ha usati tutti per pensare e la risposta è arrivata vuota. Il client manda `reasoning_effort: "none"` (`OVH_AI_REASONING_EFFORT`), che lo spegne. OVH rifiuta invece `chat_template_kwargs`.
+- **Dati:** domande ed estratti dei manuali, anche aziendali, escono dalla rete aziendale verso OVH (datacenter UE).
 
-### 14.1 Variabili
+### 14.1 Errori
+
+| Situazione | Risposta del sito |
+|---|---|
+| `OVH_AI_API_KEY` mancante | 503 |
+| OVH irraggiungibile, connessione interrotta, oltre il limite di richieste (429), 502 / 503 / 504 | 503 |
+| Risposta oltre `OVH_AI_TIMEOUT` | 504 |
+| Modello inesistente (404, `OVH_AI_MODEL` sbagliato) | 503 |
+| Chiave sbagliata (401 / 403), richiesta non valida (400), errore di OVH (500), risposta vuota o non valida | 500 |
+
+Non ci sono nuovi tentativi né un secondo provider: l'errore arriva subito al sito. Ogni errore finisce anche in `app.analyses` e quindi nel backoffice. I log del backend (`backend.ovh`, `backend.llm`) riportano modello, durata, status HTTP e token, mai la chiave né il testo delle domande.
+
+### 14.2 Variabili
 
 | Variabile | Default | Significato |
 |---|---|---|
-| `OLLAMA_BASE_URL` | `http://localhost:11434` | `http://localhost:11434` in locale, `http://100.x.x.x:11434` o `http://server-ai:11434` (MagicDNS) in remoto |
-| `OLLAMA_MODEL` | `llama3.2` | nome esatto come in `ollama list`, per esempio `llama3.1:8b` |
-| `OLLAMA_TIMEOUT` | `120` | secondi di attesa della risposta completa |
-| `OLLAMA_CONNECT_TIMEOUT` | `10` | secondi per aprire la connessione: con il PC spento l'errore arriva dopo questo tempo |
-| `OLLAMA_NUM_CTX` | vuoto | finestra di contesto in token; vuoto = default del modello |
-| `OLLAMA_NUM_PREDICT` | vuoto | massimo di token generati per risposta (consigliato `1024`, le risposte valide sono 150–400 token). Senza limite, un modello che entra in un ciclo genera fino a `OLLAMA_TIMEOUT` e l'utente riceve 504 |
-| `OLLAMA_KEEP_ALIVE` | vuoto | per quanto il modello resta nella VRAM dopo una domanda (`30m`, `-1` = sempre); vuoto = default di Ollama, 5 minuti, dopo i quali ricaricarlo costa ~2–4,5 s |
+| `OVH_AI_API_KEY` | vuoto | chiave API di AI Endpoints, obbligatoria. Solo lato server: non va nel frontend, nei log né su git |
+| `OVH_AI_ALLOW_ANONYMOUS` | `false` | solo per prove in locale: senza chiave usa l'accesso anonimo di OVH, massimo 2 richieste al minuto. Ignorata con `APP_ENV=production`. `/health/ai` riporta `"anonymous": true` |
+| `OVH_AI_BASE_URL` | `https://oai.endpoints.kepler.ai.cloud.ovh.net` | con o senza `/v1` |
+| `OVH_AI_MODEL` | `Qwen3.5-9B` | nome esatto del catalogo OVH |
+| `OVH_AI_REASONING_EFFORT` | `none` | `none` spegne il ragionamento di Qwen; `low` / `medium` / `high` lo riattivano (più lento e più token) |
+| `OVH_AI_MAX_TOKENS` | `1024` | tetto ai token generati: ferma il modello se entra in un ciclo (le risposte valide sono 150–400 token) |
+| `OVH_AI_TIMEOUT` / `OVH_AI_CONNECT_TIMEOUT` | `120` / `10` | secondi di attesa della risposta / dell'apertura della connessione |
+| `OVH_AI_MAX_CONCURRENT_REQUESTS` | `4` | massimo di richieste contemporanee da questo backend; le altre aspettano |
+| `VISION_LLM_MODEL` | `OVH_AI_MODEL` | modello che legge la targhetta con `OCR_BACKEND` diverso da `got` |
 
-Le vecchie `OPENAI_BASE_URL` (per esempio `http://localhost:11434/v1`, il suffisso `/v1` viene tolto) e `LLM_MODEL` valgono ancora quando le `OLLAMA_*` non sono impostate. `OPENAI_API_KEY` non serve più.
+### 14.3 Attivazione
 
-**Errori restituiti al sito** (formato abituale `{ "detail": "..." }`, senza traceback né indirizzi):
-
-| Caso | HTTP |
-|---|---|
-| PC spento, Ollama non avviato, rete assente, connessione interrotta | 503 |
-| Modello non installato | 503 |
-| Risposta oltre `OLLAMA_TIMEOUT` | 504 |
-| Errore HTTP di Ollama o risposta non valida | 500 |
-
-Ogni errore finisce anche in `app.analyses` e quindi nel backoffice. I log del backend (`backend.ollama`) riportano endpoint, modello, durata, status HTTP e causa, per esempio `Ollama request model=llama3.1:8b duration=2.42s status=200`. Non riportano mai prompt, documenti o token.
-
-### 14.2 Sul PC RTX 5090 (Windows, PowerShell)
-
-```powershell
-ollama --version
-ollama pull llama3.1:8b
-ollama list                                        # il nome qui deve coincidere con OLLAMA_MODEL
-Invoke-RestMethod http://localhost:11434/api/tags  # Ollama risponde in locale
-
-# Di default Ollama ascolta solo su 127.0.0.1. Per renderlo raggiungibile via Tailscale:
-[Environment]::SetEnvironmentVariable("OLLAMA_HOST", "0.0.0.0:11434", "User")
-# poi chiudi Ollama dall'icona nella barra delle applicazioni e riaprilo.
-
-# Firewall (PowerShell come amministratore): porta 11434 aperta solo agli indirizzi Tailscale.
-New-NetFirewallRule -DisplayName "Ollama (solo Tailscale)" -Direction Inbound -Protocol TCP `
-  -LocalPort 11434 -RemoteAddress 100.64.0.0/10 -Action Allow
-
-tailscale ip -4                                    # indirizzo 100.x.x.x da usare in OLLAMA_BASE_URL
-```
-
-Ollama non ha autenticazione: **non** inoltrare mai la porta 11434 sul router e non esporla su Internet. Per restringere l'accesso al solo server del backend, usa anche le ACL di Tailscale.
-
-### 14.3 Sul computer del backend (Windows, PowerShell)
-
-```powershell
-# 1. Raggiungibilità del PC GPU
-tailscale status
-Test-NetConnection 100.x.x.x -Port 11434           # TcpTestSucceeded : True
-Invoke-RestMethod http://100.x.x.x:11434/api/tags  # elenco dei modelli installati
-
-# 2. Prova diretta di Ollama (senza backend)
-$body = @{ model = "llama3.1:8b"; messages = @(@{ role = "user"; content = "Ciao" }); stream = $false } | ConvertTo-Json -Depth 5
-(Invoke-RestMethod -Method Post http://100.x.x.x:11434/api/chat -ContentType "application/json" -Body $body).message.content
-
-# 3. Installazione e avvio del backend (serve anche PostgreSQL, vedi §4)
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-Copy-Item .env.example .env                        # poi imposta DATABASE_URL, OLLAMA_BASE_URL, OLLAMA_MODEL
-.\run_backend.ps1                                  # usa i valori di .env
-.\run_backend.ps1 -OllamaBaseUrl http://100.x.x.x:11434 -OllamaModel llama3.1:8b   # oppure li sovrascrive
-
-# 4. Health check (in un secondo terminale)
-curl.exe -i http://127.0.0.1:8000/health/ai
-# 200 {"status":"ok","provider":"ollama","model":"llama3.1:8b"}
-# 503 {"status":"unavailable","provider":"ollama"}
-
-# 5. Domanda completa: login, poi foto + domanda
-$login = Invoke-RestMethod -Method Post http://127.0.0.1:8000/api/auth/login -Body @{ email = "utente@azienda.it"; password = "..." }
-$token = $login.token                              # con la 2FA attiva serve prima /api/auth/2fa/verify
-curl.exe -s -X POST http://127.0.0.1:8000/api/ask -H "Authorization: Bearer $token" `
-  -F "question=Come si esegue la manutenzione ordinaria?" -F "image=@CLI\immagini_test\carroponte_portuale_test1.jpg"
-```
-
-**Verificare che lavori la RTX 5090.** Sul PC GPU, durante una domanda:
-
-```powershell
-nvidia-smi -l 1      # ollama.exe tra i processi, memoria GPU occupata e "GPU-Util" alta
-ollama ps            # colonna PROCESSOR: "100% GPU"
-```
-
-**Passare da locale a remoto.** In `.env` cambia solo l'indirizzo e riavvia il backend:
+1. Pannello OVHcloud → **Public Cloud** → il progetto. Se l'account non ne ha uno va creato, con un metodo di pagamento: un progetto in modalità Discovery non può usare le chiavi.
+2. Nel progetto, menu a sinistra → **AI & Machine Learning** → **AI Endpoints** → *Generate my first access Key* (oppure *+ Create a new API key*). Copia la chiave subito: OVH non la mostra più.
+3. In `.env.docker` (o `.env` in sviluppo):
 
 ```
-OLLAMA_BASE_URL=http://localhost:11434     # Ollama sullo stesso computer
-OLLAMA_BASE_URL=http://100.x.x.x:11434     # PC RTX 5090 via Tailscale
+OVH_AI_API_KEY=<la chiave>
 ```
 
-In alternativa, per una sola sessione: `$env:OLLAMA_BASE_URL = "http://100.x.x.x:11434"` prima di avviare il backend. Con il backend in Docker, metti il valore in `.env.docker`: il container deve poter raggiungere l'indirizzo Tailscale del PC GPU, quindi verificalo con `docker compose exec backend python -c "import httpx; print(httpx.get('http://100.x.x.x:11434/api/tags').status_code)"`.
-
-### 14.4 Troubleshooting
-
-| Problema | Cosa controllare |
-|---|---|
-| **Ollama non raggiungibile** (503, log `reason=unreachable` o `connect timeout`) | PC RTX acceso e non in sospensione; Ollama avviato (`ollama list` sul PC); Tailscale connesso su entrambi (`tailscale status`); `OLLAMA_HOST=0.0.0.0:11434` impostato e Ollama riavviato; `Test-NetConnection 100.x.x.x -Port 11434`; regola del Firewall di Windows |
-| **Timeout** (504, log `reason=timeout`) | modello troppo pesante per la VRAM; contesto troppo grande (`CONTEXT_MAX_CHARS`, `OLLAMA_NUM_CTX`); GPU occupata da altri processi (`nvidia-smi`); primo caricamento del modello in memoria; se serve, alza `OLLAMA_TIMEOUT` |
-| **Modello inesistente** (503, log `status=404`, `/health/ai` con `"reason": "model_not_found"`) | sul PC RTX `ollama list`; `OLLAMA_MODEL` deve coincidere con il nome, tag compreso (`llama3.1:8b`); altrimenti `ollama pull <modello>` |
-| **GPU non utilizzata** (risposte lente) | `nvidia-smi` durante una generazione e `ollama ps`: se PROCESSOR indica CPU, aggiorna i driver NVIDIA e Ollama (la serie RTX 50 richiede versioni recenti) oppure scegli un modello che entri nei 32 GB di VRAM |
-| **Errore del servizio AI** (500) | log `backend.ollama`: riportano lo status HTTP e il messaggio di Ollama (per esempio memoria esaurita) |
-
----
-
-## 15. LLM fallback: RTX 5090 -> Modal
-
-La RTX 5090 aziendale resta **sempre il provider principale**. Modal è un fallback serverless che entra in gioco **solo** quando il PC non può rispondere per un problema infrastrutturale. Le richieste non vanno mai a entrambi.
-
-```
-backend ─► LLMService ─┬─► PRIMARY  Ollama sulla RTX 5090 (Tailscale)
-                       └─► FALLBACK Modal: vLLM + meta-llama/Llama-3.1-8B-Instruct su GPU cloud
-                           (solo se il primario ha un errore infrastrutturale)
-```
-
-- **Cosa resta nel backend:** RAG, OCR, prompt e verifica delle citazioni sono gli stessi qualunque provider risponda. Modal riceve gli stessi messaggi, con la stessa temperatura e lo stesso limite di token (`OLLAMA_NUM_PREDICT` → `max_tokens`), e fa solo inference.
-- **Dati:** quando il fallback è attivo, domanda ed estratti dei manuali, anche aziendali, escono dalla rete aziendale verso Modal. Serve l'approvazione dell'azienda.
-- **Codice:** `backend/llm_service.py` (fallback, circuit breaker, contatori), `backend/modal_client.py`, `backend/llm_errors.py` (`INFRASTRUCTURE_ERRORS`), `deploy/modal_app.py`.
-
-### 15.1 Quando parte il fallback
-
-| Attiva il fallback | NON attiva il fallback (errore restituito così com'è) |
-|---|---|
-| connessione rifiutata o interrotta, host irraggiungibile, DNS | 400 (richiesta non valida) |
-| timeout di connessione (PC spento, Tailscale giù) | 401 / 403 (chiave o autenticazione) |
-| timeout di risposta (`OLLAMA_TIMEOUT`) | 500 o risposta non valida del modello |
-| HTTP 502 / 503 / 504 (e 429) | risposta valida ma senza citazioni verificabili |
-| modello non installato sul PC (404): quel server non può rispondere, Modal ha la sua copia | errori di database, autenticazione dell'utente, validazione |
-
-Se anche Modal fallisce, il sito riceve l'errore di Modal: 504 per timeout, 503 se non raggiungibile, 500 per errore o chiave sbagliata.
-
-### 15.2 Variabili (`.env.docker`)
-
-| Variabile | Default | Significato |
-|---|---|---|
-| `LLM_FALLBACK_ENABLED` | `false` | `true` attiva il fallback, ma solo con `MODAL_BASE_URL` e `MODAL_API_KEY` compilati. `false` + `docker compose up -d backend` lo spegne subito |
-| `MODAL_BASE_URL` | vuoto | URL dell'app Modal, senza `/v1` |
-| `MODAL_API_KEY` | vuoto | uguale a `VLLM_API_KEY` nel secret Modal. Solo lato server: non va nel frontend, nei log né su git |
-| `MODAL_MODEL` | `meta-llama/Llama-3.1-8B-Instruct` | deve coincidere con il modello del deploy |
-| `MODAL_TIMEOUT` / `MODAL_CONNECT_TIMEOUT` | `300` / `10` | il timeout comprende l'avvio a freddo della GPU (~2 minuti dopo una pausa) |
-| `MODAL_MAX_CONCURRENT_REQUESTS` | `2` | massimo di richieste Modal contemporanee da questo backend; le altre aspettano |
-| `LLM_PRIMARY_FAILURE_THRESHOLD` | `3` | errori infrastrutturali consecutivi che aprono il circuit breaker |
-| `LLM_PRIMARY_COOLDOWN_SECONDS` | `60` | per quanto la RTX 5090 viene saltata dopo l'apertura |
-| `OLLAMA_CONNECT_TIMEOUT` | `5` in Docker | breve, così con il PC spento il fallback parte dopo ~5 s |
-
-**Circuit breaker.** Dopo `LLM_PRIMARY_FAILURE_THRESHOLD` errori infrastrutturali di fila, per `LLM_PRIMARY_COOLDOWN_SECONDS` le domande vanno direttamente su Modal, senza aspettare il timeout del PC. Finito il cooldown, una sola richiesta riprova la RTX 5090, mentre le altre restano su Modal. Se va bene si torna al primario; se no si aspetta un altro cooldown. Vive in memoria nel processo del backend, senza Redis.
-
-### 15.3 Deploy su Modal
-
-Serve un account Modal e un account Hugging Face che abbia accettato la licenza di [Llama 3.1 8B Instruct](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct), con un token di lettura.
-
-```bash
-# 1. CLI Modal. Su Windows e sui Mac Apple Silicon basta: pip install modal
-#    Su questo Mac Intel pip non riesce a compilare una dipendenza (cbor2),
-#    quindi usa un container usa e getta:
-docker run --rm -it -v "$PWD/deploy:/deploy" python:3.12-slim bash
-pip install modal
-
-# 2. Login: apre un link da confermare nel browser
-modal setup
-
-# 3. Secret con il token Hugging Face e una chiave API nuova e casuale
-python -c "import secrets; print(secrets.token_urlsafe(32))"      # → chiave per VLLM_API_KEY
-modal secret create assistente-llm-fallback HF_TOKEN=hf_xxx VLLM_API_KEY=<chiave>
-
-# 4. Deploy: stampa l'URL, del tipo https://<workspace>--assistente-llm-fallback-serve.modal.run
-modal deploy /deploy/modal_app.py        # fuori dal container: modal deploy deploy/modal_app.py
-```
-
-L'app scala a zero: nessuna GPU è accesa quando il fallback non serve (`min_containers=0`, massimo 1 container). Dopo l'ultima richiesta il container resta pronto per `MODAL_SCALEDOWN_SECONDS` (default 300), poi si spegne. La richiesta successiva paga un avvio a freddo: GPU, caricamento del modello e, solo la prima volta, il download da Hugging Face in un volume Modal. Le impostazioni di deploy (`MODAL_GPU`, default `L4`, e le altre) sono descritte in cima a `deploy/modal_app.py`.
-
-Poi, in `.env.docker`:
-
-```
-LLM_FALLBACK_ENABLED=true
-MODAL_BASE_URL=https://<workspace>--assistente-llm-fallback-serve.modal.run
-MODAL_API_KEY=<la stessa chiave del secret>
-```
-
-e `docker compose up -d backend`. Controllo:
+4. `docker compose up -d backend`. Controllo:
 
 ```bash
 docker exec assistente-macchine-backend-1 python -c "import urllib.request as u;print(u.urlopen('http://127.0.0.1:8000/health/ai').read().decode())"
-# "fallback": {"provider": "modal", "enabled": true, "configured": true, ...}
+# {"provider": "ovh", "configured": true, "model": "Qwen3.5-9B", "status": "ok"}
 ```
 
-`/health/ai` non chiama mai Modal, per non accendere una GPU a pagamento a ogni controllo: per il fallback riporta solo la configurazione. Con il PC spento e il fallback pronto risponde `"status": "degraded"` con HTTP 200; senza nessun provider utilizzabile risponde 503.
-
-### 15.4 Test del failover
+`/health/ai` non chiama mai OVH, perché ogni richiesta si paga: controlla solo la configurazione. Per una prova vera fai una domanda dal sito e guarda i log:
 
 ```bash
-docker compose logs -f backend | grep -E "llm provider=|Modal request|circuit"
+docker compose logs -f backend | grep -E "llm provider=|OVH request"
+# llm provider=ovh result=success duration=…s
 ```
 
-| Test | Azione | Risultato atteso nei log |
-|---|---|---|
-| **A — primario** | PC e Ollama accesi, fai una domanda dal sito | `llm provider=ollama result=success`, nessuna riga `Modal request` |
-| **B — fallback** | chiudi Ollama sul PC (*Quit Ollama*), fai una domanda | `llm provider=ollama result=unavailable ... fallback=modal`, poi `llm provider=modal result=success`. Dalla 4ª domanda: `result=skipped reason=circuit_open`, senza più attesa sul PC |
-| **C — ritorno** | riapri Ollama, aspetta `LLM_PRIMARY_COOLDOWN_SECONDS`, fai una domanda | `llm provider=ollama result=success` e `circuit=closed` |
+Limiti di OVH: 400 richieste al minuto per progetto e per modello con la chiave, 2 al minuto senza.
 
-Ogni richiesta Modal registra `duration_seconds`, i token e i contatori (`llm_fallback_requests`, `llm_fallback_successes`, …), visibili anche in `/health/ai`. Il costo si ricava dalla durata e dal prezzo della GPU sul sito di Modal: il backend non lo stima.
+### 14.4 Costi
 
-### 15.5 Troubleshooting
+Ogni richiesta registra nei log `prompt_tokens` e `output_tokens`, e nella riga `PERF` `ovh_prompt_tokens` e `ovh_output_tokens`. Il costo si ricava dai prezzi del catalogo OVH: il backend non lo stima. Il consumo totale si vede anche nel pannello OVH, nel progetto Public Cloud. Togliere `OVH_AI_API_KEY` e fare `docker compose up -d backend` spegne l'AI subito.
+
+### 14.5 Troubleshooting
 
 | Problema | Cosa controllare |
 |---|---|
-| Il fallback non parte mai | `LLM_FALLBACK_ENABLED=true` e entrambe le variabili `MODAL_*` compilate. Nei log di avvio compare `role=fallback provider=modal`; con un errore 400/401/500 del primario il fallback non parte, ed è voluto |
-| Modal risponde 401 | `MODAL_API_KEY` diversa da `VLLM_API_KEY` nel secret Modal |
-| Prima risposta Modal in timeout (504) | avvio a freddo più lungo di `MODAL_TIMEOUT`: alzalo (per esempio 300) oppure aumenta `MODAL_SCALEDOWN_SECONDS` nel deploy |
-| Il deploy fallisce scaricando il modello | licenza Llama 3.1 non accettata su Hugging Face, oppure `HF_TOKEN` mancante o sbagliato nel secret |
-| Modal risponde 400 | prompt più lungo di `MODAL_MAX_MODEL_LEN` (8192). Ollama in quel caso tronca il prompt, vLLM invece rifiuta la richiesta |
-| Costi inattesi | log `Modal request ... duration_seconds` e dashboard Modal; `LLM_FALLBACK_ENABLED=false` + `docker compose up -d backend` spegne il fallback subito |
-
+| Tutte le domande rispondono 503, log `reason=missing_api_key` | `OVH_AI_API_KEY` vuota o non passata al container: va in `.env.docker`, poi `docker compose up -d backend` |
+| OVH risponde 401 | chiave sbagliata, scaduta o di un progetto senza metodo di pagamento |
+| OVH risponde 429 (nel sito 503) | oltre 400 richieste al minuto, oppure la chiave non arriva e OVH applica il limite anonimo di 2 al minuto |
+| OVH risponde 404 | `OVH_AI_MODEL` non è nel catalogo OVH (i nomi cambiano: controlla il catalogo AI Endpoints) |
+| Risposta vuota (500, log `empty message.content finish_reason=length`) | il ragionamento ha esaurito `max_tokens`: controlla che `OVH_AI_REASONING_EFFORT` sia `none`, oppure alza `OVH_AI_MAX_TOKENS` |
+| OVH risponde 400 `feature ... is not currently supported` | parametro non accettato da OVH (per esempio `chat_template_kwargs`) |
+| Timeout (504) | OVH lento o contesto molto grande (`CONTEXT_MAX_CHARS`); se capita spesso alza `OVH_AI_TIMEOUT` |

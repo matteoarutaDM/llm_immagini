@@ -1,6 +1,6 @@
 """Provider-agnostic LLM errors.
 
-Every provider (Ollama today, RunPod in the future) raises these, so the API
+The provider client (OVH AI Endpoints) raises these, so the API
 layer can map them to clean HTTP responses without knowing which provider
 answered. `str(exc)` is always the public, user-facing message: internal
 details (URLs, upstream bodies) only go to the logs, never to the frontend.
@@ -21,7 +21,7 @@ class LLMError(Exception):
 
 
 class LLMUnavailableError(LLMError):
-    """Server unreachable: PC off, Ollama not running, network down, connection dropped."""
+    """Provider unreachable or overloaded: network down, connection dropped, 429/502/503/504, no API key."""
 
     status_code = 503
     public_message = "Servizio AI non disponibile. Riprova piu tardi."
@@ -37,7 +37,7 @@ class LLMTimeoutError(LLMError):
 
 
 class LLMModelNotFoundError(LLMError):
-    """The configured model is not installed on the server (`ollama pull` missing)."""
+    """The configured model does not exist on the provider (wrong OVH_AI_MODEL)."""
 
     status_code = 503
     public_message = "Modello AI non disponibile sul server. Contatta l'amministratore."
@@ -53,18 +53,9 @@ class LLMResponseError(LLMError):
 
 class LLMAuthError(LLMResponseError):
     """401/403 from the provider: wrong or missing API key. A configuration
-    error, not an outage, so it never triggers the fallback."""
+    error, not an outage."""
 
     kind = "auth"
-
-
-# Errors meaning "the provider cannot serve right now", for which retrying on
-# another provider makes sense. Everything else (400, 401/403, invalid body,
-# answers that fail citation checks, database errors...) is NOT here and is
-# returned as is, because another provider would fail the same way.
-# The model missing on the primary counts: that server cannot answer at all,
-# and the fallback runs its own copy of the model.
-INFRASTRUCTURE_ERRORS: tuple[type[LLMError], ...] = (LLMUnavailableError, LLMTimeoutError, LLMModelNotFoundError)
 
 
 def error_for_status(status_code: int) -> type[LLMError]:

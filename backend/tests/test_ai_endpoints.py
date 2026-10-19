@@ -6,52 +6,39 @@ import pytest
 from backend import main as main_module
 from backend.llm_errors import LLMModelNotFoundError, LLMResponseError, LLMTimeoutError, LLMUnavailableError
 from backend.llm_service import LLMService
-from backend.ollama_client import OllamaClient
+from backend.ovh_client import OVHClient
 from backend.tests.helpers import auth_headers, signup
 from backend.tests.test_ask_endpoint import _ask
 
-
-def _service(handler) -> LLMService:
-    client = OllamaClient(
-        base_url="http://100.64.0.1:11434", model="llama3.1:8b", transport=httpx.MockTransport(handler)
-    )
-    return LLMService(client)
+OVH_KEY = "test-ovh-secret-key"
 
 
-def _offline(request):
-    raise httpx.ConnectError("simulated", request=request)
+def _calls_ovh(request):
+    raise AssertionError("/health/ai must never make a billed OVH request")
 
 
-def test_health_ai_ok(client, monkeypatch):
-    service = _service(lambda request: httpx.Response(200, json={"models": [{"name": "llama3.1:8b"}]}))
+def test_health_ai_ok_without_calling_ovh(client, monkeypatch):
+    service = LLMService(OVHClient("https://oai.example.ovh.net", OVH_KEY, "Qwen3.5-9B", transport=httpx.MockTransport(_calls_ovh)))
     monkeypatch.setattr(main_module, "get_llm_service", lambda: service)
 
     response = client.get("/health/ai")
 
     assert response.status_code == 200
-    body = response.json()
-    # Keys that existed before the fallback are unchanged.
-    assert {key: body[key] for key in ("status", "provider", "model")} == {
-        "status": "ok", "provider": "ollama", "model": "llama3.1:8b",
-    }
-    assert body["primary"] == {"provider": "ollama", "available": True, "circuit": "closed", "model": "llama3.1:8b"}
-    assert body["fallback"] == {"provider": "modal", "enabled": False, "configured": False}
+    assert response.json() == {"status": "ok", "provider": "ovh", "configured": True, "model": "Qwen3.5-9B"}
+    assert OVH_KEY not in response.text and "oai.example" not in response.text
 
 
-def test_health_ai_unavailable_returns_503_without_address(client, monkeypatch):
-    monkeypatch.setattr(main_module, "get_llm_service", lambda: _service(_offline))
+def test_health_ai_without_api_key_returns_503(client, monkeypatch):
+    monkeypatch.setattr(main_module, "get_llm_service", lambda: LLMService(None))
 
     response = client.get("/health/ai")
 
     assert response.status_code == 503
-    body = response.json()
-    assert body["status"] == "unavailable" and body["provider"] == "ollama"
-    assert body["primary"]["available"] is False
-    assert "100.64" not in response.text
+    assert response.json() == {"status": "unavailable", "provider": "ovh", "configured": False, "reason": "missing_api_key"}
 
 
-def test_app_health_does_not_depend_on_ollama(client, monkeypatch):
-    monkeypatch.setattr(main_module, "get_llm_service", lambda: _service(_offline))
+def test_app_health_does_not_depend_on_the_llm(client, monkeypatch):
+    monkeypatch.setattr(main_module, "get_llm_service", lambda: LLMService(None))
     assert client.get("/health").status_code == 200
 
 

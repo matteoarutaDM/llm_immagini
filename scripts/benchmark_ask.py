@@ -1,4 +1,4 @@
-"""Benchmark of the /api/ask pipeline (recognition, OCR, RAG, Ollama, citations)
+"""Benchmark of the /api/ask pipeline (recognition, OCR, RAG, LLM, citations)
 without HTTP, login or database.
 
 Non-destructive: the conversation memory is copied to a temporary directory,
@@ -40,7 +40,7 @@ STAGES = [
     "model_load_ms", "recognition_ms", "recognition.image_decode_ms", "recognition.siglip_ms",
     "ocr_ms", "ocr.model_load_ms", "ocr.inference_ms", "ocr.parse_ms", "ocr_cache_hit",
     "retrieval_ms", "retrieval.base_ms", "retrieval.company_ms",
-    "prompt_build_ms", "ollama_ms", "citation_validation_ms", "memory_save_ms", "other_ms", "total_ms",
+    "prompt_build_ms", "llm_ms", "citation_validation_ms", "memory_save_ms", "other_ms", "total_ms",
 ]
 
 
@@ -65,7 +65,7 @@ def main() -> int:
 
     memory_dir = isolate_memory()
     logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
-    logging.getLogger("backend.ollama").setLevel(logging.INFO)
+    logging.getLogger("backend.ovh").setLevel(logging.INFO)
 
     from backend import perf
     from backend.model_service import assistant
