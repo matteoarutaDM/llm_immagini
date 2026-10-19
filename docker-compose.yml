@@ -34,7 +34,7 @@ services:
       dockerfile: docker/backend.Dockerfile
     restart: unless-stopped
     env_file: .env.docker
-    # DATABASE_URL, AUTH_SECRET, OLLAMA_BASE_URL, SMTP... vengono da .env.docker.
+    # DATABASE_URL, AUTH_SECRET, OVH_AI_API_KEY, SMTP... vengono da .env.docker.
     environment:
       PDF_DIR: /data/manuals
       REFERENCE_IMAGES_DIR: /app/CLI/reference_images
@@ -43,8 +43,6 @@ services:
       MEM_DIR: /data/memory
       OUTPUT_DEBUG_DIR: /data/debug
       COMPANY_DATA_DIR: /app/data/companies
-    extra_hosts:
-      - "host.docker.internal:host-gateway"   # necessario su Linux, innocuo su Mac/Windows
     volumes:
       - ./CLI/pdf_immagini:/data/manuals:ro   # manuali di base (non sono nel repository)
       - rag-index:/data/index

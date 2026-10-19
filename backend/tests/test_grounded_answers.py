@@ -54,6 +54,44 @@ def test_quote_with_typographic_apostrophe_is_still_verified(monkeypatch):
     assert "gru.pdf, pagina 42" in assistant.answer_from_manuals("Controlli?", MACHINE, HITS)
 
 
+@pytest.mark.parametrize(
+    ("passage", "quote"),
+    [
+        # Real cases from the crane manual, quoted by Qwen3.5-9B with the word joined.
+        ("mettere la gru in sicurezza contro avviamenti acci-\ndentali. ", "mettere la gru in sicurezza contro avviamenti accidentali."),
+        ("si deve ri-\nmontare il blocco di accesso", "si deve ri-montare il blocco di accesso"),
+    ],
+    ids=["joined", "hyphen-kept"],
+)
+def test_quote_of_a_word_split_at_line_end_is_still_verified(passage, quote):
+    passages = [{"text": passage, "source": "gru.pdf", "page": 9}]
+    points = service.verified_points({"points": [{"text": "Punto.", "passage_id": 1, "quote": quote}]}, passages)
+    assert [point["quote"] for point in points] == [quote]
+
+
+def test_hyphen_does_not_make_different_words_match():
+    passages = [{"text": "controllare la fune-guida prima dell'avvio", "source": "gru.pdf", "page": 9}]
+    payload = {"points": [{"text": "Punto.", "passage_id": 1, "quote": "controllare la fune prima dell'avvio"}]}
+    assert service.verified_points(payload, passages) == []
+
+
+def test_only_verified_points_are_published(monkeypatch):
+    # Seen live with Qwen3.5-9B: one quote glued two sentences that are not
+    # adjacent in the manual. That point is dropped, the verified ones stay.
+    assistant = service.MachineAssistant()
+    bad_quote = QUOTE + " Possono essere utilizzati solo componenti originali!"
+    monkeypatch.setattr(assistant, "call_llm", lambda prompt: json.dumps({"points": [
+        {"text": "Verifica l'olio.", "passage_id": 1, "quote": QUOTE},
+        {"text": "Usa ricambi originali.", "passage_id": 1, "quote": bad_quote},
+        {"text": "Punto senza fonte.", "passage_id": 99, "quote": QUOTE},
+        "non è un punto",
+    ]}))
+    answer = assistant.answer_from_manuals("Controlli?", MACHINE, HITS)
+    assert "Verifica l'olio." in answer
+    assert "ricambi originali" not in answer and "senza fonte" not in answer
+    assert "informazioni sufficienti" not in answer
+
+
 def test_answer_in_chosen_language_translates_text_but_keeps_original_quote(monkeypatch):
     assistant = service.MachineAssistant()
     llm = Mock(side_effect=[

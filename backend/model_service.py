@@ -47,7 +47,7 @@ OCR_DEVICE = os.getenv("OCR_DEVICE", "cpu")
 # 1 = GOT-OCR stays loaded in this process (backend/ocr_service.py); 0 = old
 # CLI/got_ocr_runner.py subprocess, which reloads the model on every request.
 OCR_IN_PROCESS = os.getenv("OCR_IN_PROCESS", "1") == "1"
-# LLM server and model (OLLAMA_*): see backend/llm_service.py.
+# LLM provider and model (OVH_AI_*): see backend/llm_service.py.
 
 TOP_K = int(os.getenv("TOP_K", "12"))
 CONTEXT_MAX_CHARS = int(os.getenv("CONTEXT_MAX_CHARS", "16000"))
@@ -502,9 +502,9 @@ class MachineAssistant:
         perf.metric("rag_passages", len(passages))
         perf.metric("rag_context_chars", sum(len(item["text"]) for item in passages))
         perf.metric("prompt_chars", len(prompt))
-        # ~3.5 characters per Llama 3 token for Italian text; the real count is ollama_prompt_tokens.
+        # ~3.5 characters per token for Italian text; the real count is ovh_prompt_tokens.
         perf.metric("prompt_tokens_estimate", round(len(prompt) / 3.5))
-        with perf.stage("ollama"):
+        with perf.stage("llm"):
             raw_answer = self.call_llm(prompt)
         perf.metric("llm_answer_chars", len(raw_answer))
         with perf.stage("citation_validation"):
@@ -580,31 +580,36 @@ class MachineAssistant:
 # The LLM often swaps straight and typographic quotes/apostrophes (l'olio → l’olio):
 # the excerpt is still literal, so they are compared as the same character.
 _QUOTE_CHARS = str.maketrans({"\u2018": "'", "\u2019": "'", "\u02bc": "'", "\u201c": '"', "\u201d": '"', "\u00ab": '"', "\u00bb": '"'})
+# PDF text keeps words split at line ends ("acci-\ndentali", "ri-\nmontare") while
+# the LLM quotes them joined ("accidentali", "ri-montare"): a hyphen between two
+# letters, with or without a line break, is ignored on both sides.
+_WORD_HYPHEN = re.compile(r"(?<=\w)-\s*(?=\w)")
 
 
 def _comparable_quote(text: str) -> str:
-    return " ".join(text.translate(_QUOTE_CHARS).split())
+    return " ".join(_WORD_HYPHEN.sub("", text.translate(_QUOTE_CHARS)).split())
 
 
 def verified_points(payload: Any, passages: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Keeps the answer only if every point quotes its passage word for word;
-    any invalid point discards the whole answer (empty list)."""
+    """Keeps only the points that quote their passage word for word; the
+    others are dropped. An empty list means nothing can be published."""
     if not isinstance(payload, dict) or not isinstance(payload.get("points"), list):
         return []
     points = []
     for point in payload["points"]:
         if not isinstance(point, dict):
-            return []
+            continue
         passage_id = point.get("passage_id")
         text, quote = point.get("text"), point.get("quote")
         if (type(passage_id) is not int or not 1 <= passage_id <= len(passages)
                 or not isinstance(text, str) or not text.strip()
                 or not isinstance(quote, str) or len(quote.strip()) < 20):
-            return []
+            continue
         passage = passages[passage_id - 1]
         if _comparable_quote(quote) not in _comparable_quote(passage["text"]):
-            return []
+            continue
         points.append({"text": text.strip(), "quote": quote.strip(), "source": passage["source"], "page": passage["page"]})
+    perf.metric("answer_points_discarded", len(payload["points"]) - len(points))
     return points
 
 
